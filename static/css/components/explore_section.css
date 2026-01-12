@@ -1,0 +1,31 @@
+/* --- Explore Section Styling --- */
+.explore-section .section-title {
+    font-size: 2.5rem; /* Large prominent heading */
+    font-weight: 700;
+    color: #232a34; /* Dark blue/grey from the footer theme */
+}
+
+.text-orange {
+    color: #FF431E !important; /* AccessAdvisr primary orange */
+}
+
+.section-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #6c757d;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 767.98px) {
+    .explore-section .section-title {
+        font-size: 1.8rem; /* Scale down for mobile */
+        padding: 0 10px;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem;
+        padding: 0 15px !important;
+    }
+}

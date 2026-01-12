@@ -1,0 +1,54 @@
+/* --- Contribution Card Design --- */
+.contribution-card {
+    border: 1px solid #e0e0e0 !important; /* Subtle card border */
+    overflow: hidden;
+    height: 100%;
+}
+
+.reviewer-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.bg-orange {
+    background-color: #FF431E !important;
+}
+
+/* Specific styling for the orange review area */
+.card-footer-split {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+/* --- Mobile Slider Controls --- */
+.carousel-control-prev, .carousel-control-next {
+    width: 5%;
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    width: 30px;
+    height: 30px;
+    background-size: 50%;
+}
+
+/* Ensure the button stays centered */
+.btn-orange {
+    background-color: #FF431E;
+    color: white;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-orange:hover {
+    background-color: #e63d1b;
+}
+
+/* --- Mobile Fix --- */
+@media (max-width: 767.98px) {
+    .recent-contributions {
+        text-align: left !important;
+    }
+}

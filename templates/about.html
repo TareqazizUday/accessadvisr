@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>About Us - AccessAdvisr</title>
+	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+	
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!----- inner hder section ------>
+<section class="partners-header-section">
+    <div class="container text-center py-5">
+        <h1 class="text-white fw-bold mb-2">About Us</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item active text-orange" aria-current="page">ABOUT US</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+
+
+
+<!---- sub heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">About AccessAdvisr</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+
+<!----- sub header description section ------>
+<div class="container text-center mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <p class="text-muted medium mb-4 lh-lg">
+                AccessAdvisr exists to give disabled people a stronger voice in 
+                shaping accessibility. We provide a platform, supported by our website 
+                and social media channels, where people can rate, review, and discuss 
+                the accessibility—or inaccessibility—of different places. By sharing real 
+                experiences, we aim to make accessibility information transparent, practical, 
+                and genuinely useful for everyone.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!---- sub heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">Core Values Driving AccessAdvisr</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+<!----- sub header description section ------>
+<div class="container text-center mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <p class="text-muted medium mb-4 lh-lg">
+                Since its inception, AccessAdvisr has grown into a trusted accessibility platform, empowering people with disabilities worldwide. We actively engage with our community through YouTube, Facebook, Instagram, BlueSky, and LinkedIn, 
+                sharing insights, updates, and initiatives that reflect our commitment to inclusion.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!----------- about section cards ---------->
+<section class="about_section_values py-5">
+    <div class="container">
+        <div class="row gy-4">
+            
+            <div class="col-12 col-md-4">
+                <div class="card border-0 h-100">
+                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/group-businesspeople-fist-bumping-desk-300x200.jpg" class="card-img-top rounded-3 about_section_img" alt="Environmental Responsibility">
+                    <div class="card-body px-0 pt-4">
+                        <h5 class="fw-bold about_section_title mb-3">Commitment to Environmental Responsibility</h5>
+                        <p class="text-muted small about_section_text">
+                            AccessAdvisr is dedicated to sustainable practices in all aspects of our operations. From minimising our digital footprint to supporting eco-conscious initiatives, we strive to reduce environmental impact while promoting a culture of responsibility and care.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 h-100">
+                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/change-word-wooden-background-300x200.jpg" class="card-img-top rounded-3 about_section_img" alt="Meaningful Change">
+                    <div class="card-body px-0 pt-4">
+                        <h5 class="fw-bold about_section_title mb-3">Making Meaningful Change</h5>
+                        <p class="text-muted small about_section_text">
+                            Through accurate accessibility reviews and resources, AccessAdvisr empowers users to make informed decisions. Our work increases awareness, fosters inclusivity, and creates measurable positive outcomes for the disabled community globally.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 h-100">
+                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
+                    <div class="card-body px-0 pt-4">
+                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
+                        <p class="text-muted small about_section_text">
+                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 h-100">
+                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
+                    <div class="card-body px-0 pt-4">
+                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
+                        <p class="text-muted small about_section_text">
+                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 h-100">
+                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
+                    <div class="card-body px-0 pt-4">
+                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
+                        <p class="text-muted small about_section_text">
+                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!----------- about_section_contact_hero ---------- -->
+<section class="about_section_contact_hero d-flex align-items-center justify-content-center text-center text-white">
+    <div class="about_section_overlay"></div>
+    <div class="container position-relative z-index-1">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                
+                <div class="about_section_pin_wrap mb-4">
+                    <img src="{% static 'images/icons/map-location.png' %}" class="about_section_pin_icon" alt="Location Pin">
+                </div>
+
+                <h1 class="display-5 fw-bold mb-3">Contact us</h1>
+
+                <p class="lead mb-5 about_section_subtext px-md-5">
+                    Have Questions Or Feedback? Reach Out To AccessAdvisr And Let Us Know How We Can Help. We're Here To Support You With Accessible Places Information.
+                </p>
+
+                <a href="{% url 'contact' %}" class="btn btn-orange">
+                    Contact
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="spacer">
+</section>
+
+<!-------- stats-section ---------->
+{% include 'components/stats_section.html' %}
+
+<section class="spacer">
+</section>
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>	
+</body>
+</html>
+

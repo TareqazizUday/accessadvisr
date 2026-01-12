@@ -1,0 +1,88 @@
+/* --- Footer Styling --- */
+.footer-section {
+    background-color: #232a34;
+    color: #ffffff;
+
+}
+
+.footer-heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.footer-text, .footer-contact {
+    font-size: 0.9rem;
+    color: #adb5bd;
+}
+
+.footer-links li {
+    margin-bottom: 8px;
+}
+
+.footer-links a {
+    color: #adb5bd;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+/* Social Icons */
+.social-icons a {
+    color: #ffffff;
+    margin-right: 15px;
+    font-size: 1.1rem;
+}
+
+/* Newsletter Styles */
+.footer-input {
+    background: transparent;
+    border: 1px solid #495057;
+    color: white;
+    border-radius: 2px;
+}
+
+.newsletter-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Copyright Bottom Bar */
+.footer-bottom {
+    background-color: #1a1f26;
+}
+
+.scroll-top-btn {
+    background: #ffffff;
+    color: #FF431E;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- MOBILE RESPONSIVE FIX --- */
+@media (max-width: 767.98px) {
+    .footer-section {
+        text-align: left !important; /* Forces left alignment on mobile */
+    }
+    
+    .footer-bottom .text-start {
+        text-align: left !important;
+    }
+
+    .footer-bottom .text-end {
+        text-align: left !important; /* Aligns scroll button to left on small screens */
+    }
+
+    .scroll-top-btn {
+        margin-left: 0 !important; /* Removes centering from the button */
+    }
+
+    .ms-lg-auto {
+        margin-left: 0 !important; /* Removes the desktop spacer */
+    }
+}

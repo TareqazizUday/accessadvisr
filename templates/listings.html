@@ -1,0 +1,362 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listings - AccessAdvisr</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/listings.css' %}">
+</head>
+<body>
+    
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!-- Hero Section with Breadcrumb -->
+<section class="listings-hero position-relative d-flex align-items-center justify-content-center text-center text-white" style="min-height: 180px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;">
+    <div class="container">
+        <h1 class="fw-bold display-5 mb-2">Listings</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'listings' %}" class="text-white text-decoration-none">LISTINGS</a></li>
+                <li class="breadcrumb-item text-orange active" aria-current="page">{% if selected_amenity %}{{ selected_amenity|upper }}{% else %}ALL{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Sidebar - Filters -->
+            <div class="col-lg-3">
+                <div class="bg-white rounded-3 shadow-sm p-4">
+                    
+                    <form method="get" action="{% url 'listings' %}" id="filterForm">
+                    
+                    <!-- Keywords -->
+                    <div class="mb-3">
+                        <input type="text" name="keywords" class="form-control" placeholder="Keywords..." value="{{ keywords }}">
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <select name="category" class="form-select">
+                            <option value="" {% if not selected_category_value %}selected{% endif %}>Filter by category</option>
+                            <option value="food" {% if selected_category_value == 'food' %}selected{% endif %}>Food & Restaurants</option>
+                            <option value="education" {% if selected_category_value == 'education' %}selected{% endif %}>Education</option>
+                            <option value="sport" {% if selected_category_value == 'sport' %}selected{% endif %}>Sport</option>
+                            <option value="entertainment" {% if selected_category_value == 'entertainment' %}selected{% endif %}>Entertainment</option>
+                            <option value="shopping" {% if selected_category_value == 'shopping' %}selected{% endif %}>Shopping</option>
+                            <option value="travel" {% if selected_category_value == 'travel' %}selected{% endif %}>Travel & Tour</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <input type="text" name="location" class="form-control" placeholder="Location" value="{{ location_search }}">
+                    </div>
+                    
+                    <!-- City -->
+                    <div class="mb-3">
+                        <input type="text" name="city" class="form-control" placeholder="City" value="{{ city }}">
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <select name="price_range" class="form-select">
+                            <option value="">Price Range</option>
+                            <option value="0-50">$0 - $50</option>
+                            <option value="50-100">$50 - $100</option>
+                            <option value="100-200">$100 - $200</option>
+                            <option value="200+">$200+</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filter by Features -->
+                    <div class="mb-4">
+                        <h6 class="fw-semibold mb-3">Filter by Features</h6>
+                        
+                        {% for amenity in amenities %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="amenities" value="{{ amenity.id }}" id="amenity{{ amenity.id }}" 
+                                {% if amenity.id in selected_amenity_ids %}checked{% endif %}>
+                            <label class="form-check-label small {% if amenity.id in selected_amenity_ids %}text-orange{% else %}text-secondary{% endif %}" for="amenity{{ amenity.id }}">
+                                {{ amenity.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Filter Button -->
+                    <button type="submit" class="btn btn-orange w-100 py-2 fw-semibold">FILTER</button>
+                    
+                    </form>
+                    
+                    <!-- Active Filters -->
+                    {% if selected_amenity %}
+                    <div class="mt-4 small">
+                        <span class="text-muted">Showing results for</span>
+                        <span class="text-secondary">Amenity:</span>
+                        <a href="{% url 'listings' %}" class="text-orange text-decoration-underline">{{ selected_amenity }}</a>
+                        <a href="{% url 'listings' %}" class="badge bg-orange ms-2 text-decoration-none">Reset</a>
+                    </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            
+            <!-- Right Side - Listings -->
+            <div class="col-lg-9">
+                
+                <!-- Results Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-muted small" id="resultsCount">
+                        {{ total_count }} Result{{ total_count|pluralize }} Found {% if total_count > 0 %}(Showing {{ showing_from }} - {{ showing_to }}){% endif %}
+                    </span>
+                    <form method="get" action="{% url 'listings' %}" id="sortForm">
+                        <input type="hidden" name="amenity" value="{{ selected_amenity }}">
+                        <select name="sort" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+                            <option value="" {% if not sort_order %}selected{% endif %}>Default Order</option>
+                            <option value="newest" {% if sort_order == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="name-asc" {% if sort_order == 'name-asc' %}selected{% endif %}>Name: A to Z</option>
+                            <option value="name-desc" {% if sort_order == 'name-desc' %}selected{% endif %}>Name: Z to A</option>
+                        </select>
+                    </form>
+                </div>
+                
+                <!-- Listings Grid -->
+                <div class="row g-4" id="listingsContainer">
+                    
+                    {% if use_google_places %}
+                    <!-- Google Places results will be loaded here by JavaScript -->
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-orange" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading listings...</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    
+                    {% for location in locations %}
+                    <!-- Card -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card">
+                            <div class="position-relative">
+                                <img src="https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400" class="card-img-top" alt="{{ location.name }}" style="height: 180px; object-fit: cover;">
+                                <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">$60 - $85</span>
+                                <span class="position-absolute bottom-0 start-0 m-2 badge text-white small px-2 py-1" style="background-color: #ff9800;">4.0</span>
+                                <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2">
+                                    <i class="bi bi-heart"></i> Save
+                                </button>
+                                <div class="position-absolute bottom-0 start-50 translate-middle-x" style="margin-bottom: -25px;">
+                                    <img src="https://i.pravatar.cc/60?img={{ forloop.counter }}" alt="User" class="rounded-circle border border-3 border-white" style="width: 50px; height: 50px; object-fit: cover;">
+                                </div>
+                            </div>
+                            <div class="card-body text-center" style="padding-top: 2rem;">
+                                <h6 class="fw-bold mb-1">
+                                    <a href="{% url 'place_detail' location.id %}" class="text-dark text-decoration-none">{{ location.name }}</a>
+                                    {% if location.verified %}<i class="bi bi-patch-check-fill text-primary small"></i>{% endif %}
+                                </h6>
+                                <p class="text-muted small mb-2">{{ location.description|truncatewords:3|default:"Villa, food for you" }}</p>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-center align-items-center gap-2 small text-muted mb-1">
+                                        <i class="bi bi-geo-alt" style="color: #dc3545;"></i>
+                                        <span>New York, USA</span>
+                                    </div>
+                                    <div class="d-flex justify-content-center align-items-center gap-2 small text-muted">
+                                        <i class="bi bi-telephone" style="color: #28a745;"></i>
+                                        <span>+88-123-4***</span>
+                                        <span class="badge small px-2 py-1" style="background-color: #ff431e; color: white;">show</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
+                                    <div>
+                                        <a href="#" class="text-secondary text-decoration-none">{{ location.category.name|default:"Food & Restaurants" }}</a>
+                                        <span class="text-muted ms-1">+1</span>
+                                    </div>
+                                    <span class="text-success fw-semibold">Open</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="bi bi-info-circle me-2"></i> No listings found. Try adjusting your filters.
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% endif %}
+                    
+                </div>
+                
+                <!-- Load More Button -->
+                {% if total_count > showing_to %}
+                <div class="text-center mt-5">
+                    <button class="btn btn-orange px-5 py-2">Load More Listings</button>
+                </div>
+                {% endif %}
+                
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+{% if use_google_places %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
+<script>
+// Load Google Places results dynamically when amenity is selected
+document.addEventListener('DOMContentLoaded', function() {
+    const amenityName = "{{ selected_amenity }}";
+    
+    if (amenityName) {
+        // Get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                searchNearbyPlaces(position.coords.latitude, position.coords.longitude, amenityName);
+            }, function() {
+                // Default to a location if geolocation fails
+                searchNearbyPlaces(23.8103, 90.4125, amenityName); // Dhaka coordinates
+            });
+        } else {
+            searchNearbyPlaces(23.8103, 90.4125, amenityName);
+        }
+    }
+});
+
+function searchNearbyPlaces(lat, lng, amenity) {
+    const location = new google.maps.LatLng(lat, lng);
+    const map = new google.maps.Map(document.createElement('div'));
+    const service = new google.maps.places.PlacesService(map);
+    
+    const request = {
+        location: location,
+        radius: 5000,
+        keyword: amenity
+    };
+    
+    service.nearbySearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            displayResults(results);
+            updateResultsCount(results.length);
+        } else {
+            showNoResults();
+        }
+    });
+}
+
+function displayResults(places) {
+    const container = document.getElementById('listingsContainer');
+    container.innerHTML = '';
+    
+    places.forEach(function(place, index) {
+        const photoUrl = place.photos && place.photos.length > 0 
+            ? place.photos[0].getUrl({maxWidth: 400})
+            : 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400';
+        
+        const rating = place.rating || 0;
+        const priceLevel = place.price_level || 0;
+        const priceRange = priceLevel === 0 ? '$60 - $85' : priceLevel === 1 ? '$50 - $80' : priceLevel === 2 ? '$80 - $120' : priceLevel === 3 ? '$100 - $150' : '$150+';
+        
+        const card = `
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card">
+                    <div class="position-relative">
+                        <img src="${photoUrl}" class="card-img-top" alt="${place.name}" style="height: 180px; object-fit: cover;">
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">${priceRange}</span>
+                        <span class="position-absolute bottom-0 start-0 m-2 badge text-white small px-2 py-1" style="background-color: #ff9800;">${rating.toFixed(1)}</span>
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2">
+                            <i class="bi bi-heart"></i> Save
+                        </button>
+                        <div class="position-absolute bottom-0 start-50 translate-middle-x" style="margin-bottom: -25px;">
+                            <img src="https://i.pravatar.cc/60?img=${index + 1}" alt="User" class="rounded-circle border border-3 border-white" style="width: 50px; height: 50px; object-fit: cover;">
+                        </div>
+                    </div>
+                    <div class="card-body text-center" style="padding-top: 2rem;">
+                        <h6 class="fw-bold mb-1">
+                            <a href="/place/google/${place.place_id}/" class="text-dark text-decoration-none">${place.name}</a>
+                        </h6>
+                        <p class="text-muted small mb-2">Villa, food for you</p>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-center align-items-center gap-2 small text-muted mb-1">
+                                <i class="bi bi-geo-alt" style="color: #dc3545;"></i>
+                                <span>${place.vicinity || 'New York, USA'}</span>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center gap-2 small text-muted">
+                                <i class="bi bi-telephone" style="color: #28a745;"></i>
+                                <span>+88-123-4***</span>
+                                <span class="badge small px-2 py-1" style="background-color: #ff431e; color: white;">show</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
+                            <div>
+                                <a href="#" class="text-secondary text-decoration-none">${place.types[0] || 'Category'}</a>
+                                <span class="text-muted ms-1">+1</span>
+                            </div>
+                            <span class="${place.opening_hours && place.opening_hours.open_now ? 'text-success' : 'text-danger'} fw-semibold">${place.opening_hours && place.opening_hours.open_now ? 'Open' : 'Closed'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML += card;
+    });
+}
+
+function generateStars(rating) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="bi bi-star-fill" style="color: #ffc107;"></i>';
+    }
+    
+    if (hasHalfStar) {
+        stars += '<i class="bi bi-star-half" style="color: #ffc107;"></i>';
+    }
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="bi bi-star" style="color: #ffc107;"></i>';
+    }
+    
+    return stars;
+}
+
+function updateResultsCount(count) {
+    document.getElementById('resultsCount').textContent = `${count} Results Found (Showing 1 - ${count})`;
+}
+
+function showNoResults() {
+    const container = document.getElementById('listingsContainer');
+    container.innerHTML = `
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle me-2"></i> No listings found for this amenity. Try selecting a different option.
+            </div>
+        </div>
+    `;
+}
+</script>
+{% endif %}
+
+</body>
+</html>

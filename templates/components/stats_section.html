@@ -1,0 +1,111 @@
+{% load static %}
+<section class="stats-section py-5">
+    <div class="container py-5">
+        <div class="row text-center text-white gy-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-icon-wrapper mb-3">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <h2 class="fw-bold stat-number" data-target="200" style="opacity: 0;">0 +</h2>
+                <p class="small text-uppercase">Awards Winning</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-icon-wrapper mb-3">
+                    <i class="bi bi-layers"></i>
+                </div>
+                <h2 class="fw-bold stat-number" data-target="307" style="opacity: 0;">0 +</h2>
+                <p class="small text-uppercase">Done Projects</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-icon-wrapper mb-3">
+                    <i class="bi bi-emoji-smile"></i>
+                </div>
+                <h2 class="fw-bold stat-number" data-target="700" style="opacity: 0;">0 +</h2>
+                <p class="small text-uppercase">Happy Clients</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-icon-wrapper mb-3">
+                    <i class="bi bi-cup-hot"></i>
+                </div>
+                <h2 class="fw-bold stat-number" data-target="770" style="opacity: 0;">0 +</h2>
+                <p class="small text-uppercase">Cups Of Coffee</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(function() {
+    const statsSection = document.querySelector('.stats-section');
+    if (!statsSection) return;
+
+    const statNumbers = statsSection.querySelectorAll('.stat-number');
+    let hasAnimated = false;
+
+    // Function to animate counter
+    function animateCounter(element, target) {
+        // Fade in the element
+        element.style.transition = 'opacity 0.5s ease';
+        element.style.opacity = '1';
+        
+        const duration = 2000; // 2 seconds
+        const frames = 60; // 60fps
+        const step = target / (duration / (1000 / frames));
+        let current = 0;
+
+        const timer = setInterval(function() {
+            current += step;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current) + ' +';
+        }, 1000 / frames);
+    }
+
+    // Function to start animation
+    function startAnimation() {
+        if (hasAnimated) return;
+        
+        // Check if section is in viewport
+        const rect = statsSection.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (!isVisible) return;
+
+        hasAnimated = true;
+        
+        statNumbers.forEach(function(element, index) {
+            const target = parseInt(element.getAttribute('data-target'));
+            
+            // Add small delay for each item for staggered effect
+            setTimeout(function() {
+                animateCounter(element, target);
+            }, index * 150);
+        });
+    }
+
+    // Use Intersection Observer API for better performance
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !hasAnimated) {
+                    startAnimation();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.3 // Trigger when 30% of element is visible
+        });
+
+        observer.observe(statsSection);
+    } else {
+        // Fallback for older browsers
+        window.addEventListener('scroll', function() {
+            if (!hasAnimated) {
+                startAnimation();
+            }
+        });
+    }
+})();
+</script>

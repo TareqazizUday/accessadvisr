@@ -1,0 +1,24 @@
+    .custom-input {
+        border: 1px solid #dee2e6;
+        border-radius: 0; /* Squared edges like the image */
+        background-color: #f8f9fa;
+    }
+
+    .custom-input:focus {
+        background-color: #fff;
+        border-color: #d9534f;
+        box-shadow: none;
+    }
+
+    /* Ensures the map takes full height of the column on desktop */
+    .map-container {
+        position: relative;
+        min-height: 450px;
+    }
+
+    @media (max-width: 991px) {
+        .map-container {
+            min-height: 350px;
+            margin-top: 20px;
+        }
+    }

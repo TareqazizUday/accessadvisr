@@ -1,0 +1,45 @@
+/* --- Video Slider Styling --- */
+.video-slider-section {
+    background-color: #ffffff;
+}
+
+.video-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 1px solid #eee;
+}
+
+/* Custom Navigation Circles */
+.custom-video-nav {
+    width: 50px;
+    opacity: 1;
+}
+
+.nav-circle {
+    background-color: rgba(0, 0, 0, 0.4); /* Dark translucent circles like the screenshot */
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: 0.3s;
+}
+
+.custom-video-nav:hover .nav-circle {
+    background-color: #FF431E; /* Changes to brand orange on hover */
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .video-container {
+        max-width: 100%;
+    }
+    .nav-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+}

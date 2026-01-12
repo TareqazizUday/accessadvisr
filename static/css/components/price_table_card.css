@@ -1,0 +1,24 @@
+/* Unique prefix for all styles */
+.price_table_header {
+    background-color: #FF431F !important; /* Your specific color */
+    border-radius: 8px 8px 0 0;
+}
+
+
+.price_table_btn:hover {
+    background-color: #e03a1a !important;
+    transform: translateY(-2px);
+    transition: 0.3s;
+}
+
+.price_table_card {
+    transition: 0.3s ease-in-out;
+}
+
+.price_table_card:hover {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+}
+
+.price_table_currency {
+    vertical-align: super;
+}

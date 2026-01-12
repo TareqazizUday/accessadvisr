@@ -1,0 +1,232 @@
+<section class="pb-5" style="padding-bottom: 5rem !important;">
+    <div class="container">
+        <div class="row gy-4" id="most-rated-places-container">
+            <!-- Places will be loaded dynamically here -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm place-card">
+                    <div class="position-relative">
+                        <img src="https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&q=80&w=400" class="card-img-top" alt="Loading...">
+                        <span class="badge-heart"><i class="bi bi-heart-fill"></i></span>
+                        <span class="badge-verified"><i class="bi bi-check-circle-fill"></i></span>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?u=1" alt="User">
+                        </div>
+                    </div>
+                    <div class="card-body pt-4">
+                        <h5 class="card-title fw-bold mb-1">Loading places...</h5>
+                        <p class="text-muted small mb-3">Please allow location access</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if GOOGLE_MAPS_API_KEY %}
+<script>
+// Load most rated places by category
+function loadMostRatedPlaces() {
+    const container = document.getElementById('most-rated-places-container');
+    if (!container) return;
+
+    // Check if Google Maps API is loaded
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+        console.log('Google Maps API not loaded yet, waiting...');
+        setTimeout(loadMostRatedPlaces, 500);
+        return;
+    }
+
+    // Get user's current location
+    if (!navigator.geolocation) {
+        container.innerHTML = '<div class="col-12 text-center text-muted"><p>Geolocation is not supported by your browser.</p></div>';
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            fetchMostRatedPlaces(userLocation, container);
+        },
+        function(error) {
+            console.log('Geolocation error:', error.message);
+            container.innerHTML = '<div class="col-12 text-center text-muted"><p>Unable to get your location. Please allow location access.</p></div>';
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Fetch most rated places by category
+function fetchMostRatedPlaces(location, container) {
+    // 6 main categories to search
+    const categories = [
+        { type: 'hospital', name: 'Healthcare', icon: '🏥', color: '#E91E63' },
+        { type: 'lodging', name: 'Hotels', icon: '🏨', color: '#2196F3' },
+        { type: 'restaurant', name: 'Food & Restaurants', icon: '🍽️', color: '#EA4335' },
+        { type: 'school', name: 'Education', icon: '🎓', color: '#4285F4' },
+        { type: 'shopping_mall', name: 'Shopping', icon: '🛍️', color: '#34A853' },
+        { type: 'gym', name: 'Sport', icon: '⚽', color: '#FF6D00' }
+    ];
+
+    const RADIUS = 5000; // 5km radius
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
+    const categoryPlaces = {};
+    let completedSearches = 0;
+
+    container.innerHTML = '<div class="col-12 text-center text-muted"><p>Loading nearby places...</p></div>';
+
+    // Search for each category
+    categories.forEach(function(category) {
+        const request = {
+            location: new google.maps.LatLng(location.lat, location.lng),
+            radius: RADIUS,
+            type: category.type,
+            rankBy: google.maps.places.RankBy.PROMINENCE
+        };
+
+        service.nearbySearch(request, function(results, status) {
+            completedSearches++;
+
+            if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+                // Sort by rating (highest first) and take the top one
+                const sortedResults = results
+                    .filter(place => place.rating && place.rating >= 0)
+                    .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+                if (sortedResults.length > 0) {
+                    categoryPlaces[category.type] = {
+                        place: sortedResults[0],
+                        category: category
+                    };
+                }
+            }
+
+            // When all searches are complete, display the places
+            if (completedSearches === categories.length) {
+                displayMostRatedPlaces(categoryPlaces, container);
+            }
+        });
+    });
+}
+
+// Display most rated places
+function displayMostRatedPlaces(categoryPlaces, container) {
+    const placesToShow = [];
+    
+    // Collect one place from each category
+    Object.keys(categoryPlaces).forEach(function(type) {
+        if (categoryPlaces[type]) {
+            placesToShow.push(categoryPlaces[type]);
+        }
+    });
+
+    if (placesToShow.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center text-muted"><p>No places found nearby. Please try again later.</p></div>';
+        return;
+    }
+
+    // Sort by rating (highest first) and limit to 6
+    placesToShow.sort((a, b) => (b.place.rating || 0) - (a.place.rating || 0));
+    const topPlaces = placesToShow.slice(0, 6);
+
+    let html = '';
+    topPlaces.forEach(function(item, index) {
+        const place = item.place;
+        const category = item.category;
+        const photoUrl = place.photos && place.photos.length > 0 
+            ? place.photos[0].getUrl({ maxWidth: 400, maxHeight: 250 })
+            : 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&q=80&w=400';
+        
+        const rating = place.rating || 0;
+        const userRatings = place.user_ratings_total || 0;
+        const address = place.vicinity || place.formatted_address || 'Address not available';
+        const phone = place.formatted_phone_number || place.international_phone_number || '';
+        const phoneDisplay = phone ? (phone.length > 10 ? phone.substring(0, 10) + '***' : phone) : 'N/A';
+        
+        // Generate stars HTML
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        let starsHTML = '';
+        for (let i = 0; i < 5; i++) {
+            if (i < fullStars) {
+                starsHTML += '<i class="bi bi-star-fill"></i>';
+            } else if (i === fullStars && hasHalfStar) {
+                starsHTML += '<i class="bi bi-star-half"></i>';
+            } else {
+                starsHTML += '<i class="bi bi-star text-muted"></i>';
+            }
+        }
+
+        // Generate place detail URL
+        const detailUrl = place.place_id ? `/place/google/${place.place_id}/` : '#';
+
+        html += `
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm place-card">
+                    <div class="position-relative">
+                        <img src="${photoUrl}" class="card-img-top" alt="${place.name}" style="height: 200px; object-fit: cover;">
+                        <span class="badge-heart"><i class="bi bi-heart-fill"></i></span>
+                        <span class="badge-verified"><i class="bi bi-check-circle-fill"></i></span>
+                        <div class="user-avatar">
+                            <img src="https://i.pravatar.cc/150?u=${index + 1}" alt="User">
+                        </div>
+                    </div>
+                    <div class="card-body pt-4">
+                        <h5 class="card-title fw-bold mb-1">
+                            <a href="${detailUrl}" style="text-decoration: none; color: inherit;">${place.name}</a>
+                        </h5>
+                        <p class="text-muted small mb-3">
+                            <span style="background: ${category.color}; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem;">${category.icon} ${category.name}</span>
+                        </p>
+                        <div class="d-flex align-items-center mb-2 text-secondary small">
+                            <i class="bi bi-geo-alt me-2 text-muted"></i> ${address.length > 40 ? address.substring(0, 40) + '...' : address}
+                        </div>
+                        ${phone ? `
+                        <div class="d-flex align-items-center text-secondary small mb-3">
+                            <i class="bi bi-telephone me-2 text-muted"></i> ${phoneDisplay} <span class="badge-show ms-2">show</span>
+                        </div>
+                        ` : ''}
+                        <hr class="my-3 opacity-10">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="stars text-warning small">
+                                ${starsHTML}
+                                <span class="ms-1 text-muted small">${rating.toFixed(1)} (${userRatings})</span>
+                            </div>
+                            <span class="text-success small fw-bold">Open</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Load places when page is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for Google Maps API to load
+        if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+            loadMostRatedPlaces();
+        } else {
+            // Wait for map section to load Google Maps API
+            setTimeout(loadMostRatedPlaces, 2000);
+        }
+    });
+} else {
+    // DOM already loaded
+    if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+        loadMostRatedPlaces();
+    } else {
+        setTimeout(loadMostRatedPlaces, 2000);
+    }
+}
+</script>
+{% endif %}

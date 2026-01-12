@@ -1,0 +1,50 @@
+/* Unique Prefixed Styles */
+.tip_card_main {
+    transition: transform 0.3s ease-in-out;
+}
+
+.tip_card_main:hover {
+    transform: translateY(-8px);
+}
+
+.tip_card_img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Floating Avatar Position */
+.tip_card_avatar_wrap {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.tip_card_avatar {
+    width: 55px;
+    height: 55px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+}
+
+.tip_card_title {
+    font-size: 1.15rem;
+    color: #333;
+    line-height: 1.4;
+}
+
+.tip_card_link {
+    color: #444; /* Darker link as shown in image */
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.tip_card_link:hover {
+    color: #FF431F; /* Brand color on hover */
+}
+
+/* Hover effect on images */
+.tip_card_main:hover .tip_card_img {
+    filter: brightness(0.9);
+}

@@ -1,0 +1,105 @@
+{% load static %}
+<nav class="navbar navbar-expand-xl navbar-light bg-white border-bottom py-3">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'images/accessAdvisr_logo.jpeg' %}" alt="AccessAdvisr Logo" height="50">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            
+            <ul class="navbar-nav mx-auto align-items-center">
+                <li class="nav-item"><a class="nav-link active-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="{% url 'browse' %}" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Browse</a>
+                    <ul class="dropdown-menu animate slideIn">
+                        <li><a class="dropdown-item" href="{% url 'accommodation' %}">Accommodation</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=entertainment">Entertainment</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=food">Food & Drink</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=shopping">Shopping</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=sport">Sports & Recreational</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=education">Education</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'partners' %}">Partners</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'packages' %}">Packages</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'blogs' %}">Blogs</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'donate' %}">Donate</a></li>
+            </ul>
+
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item py-2 py-xl-0 me-xl-4">
+                    <a class="nav-link p-0 text-dark" href="#">
+                        <i class="bi bi-person"></i> Sign in <span class="text-muted small">or</span> Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-orange px-4" href="#">
+                        <i class="bi bi-plus-lg me-1"></i> Add Reviews
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Dropdown hover animation */
+    .dropdown:hover .dropdown-menu {
+        display: block;
+        animation: slideDown 0.3s ease-in-out;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .dropdown-menu {
+        margin-top: 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .dropdown-item {
+        transition: all 0.2s ease;
+        padding: 10px 20px;
+    }
+    
+    .dropdown-item:hover {
+        background-color: var(--primary-orange);
+        color: white;
+        transform: translateX(5px);
+    }
+</style>
+
+<script>
+    // Dropdown hover functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdowns = document.querySelectorAll('.navbar .dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('mouseenter', function() {
+                const menu = this.querySelector('.dropdown-menu');
+                if (menu) menu.classList.add('show');
+            });
+            
+            dropdown.addEventListener('mouseleave', function() {
+                const menu = this.querySelector('.dropdown-menu');
+                if (menu) menu.classList.remove('show');
+            });
+        });
+    });
+</script>

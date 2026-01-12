@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Packages - AccessAdvisr</title>
+	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+	
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!----- inner hder section ------>
+<section class="partners-header-section">
+    <div class="container text-center py-5">
+        <h1 class="text-white fw-bold mb-2">Packages</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item active text-orange" aria-current="page">PACKAGES</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+
+<!----- video-slider-section ------>
+{% include 'components/video_slider.html' %}
+
+<!---- sponsor heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">AccessAdvisr Sponsorship Packages</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+
+<!----- sponsor description section ------>
+<div class="container text-center mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <p class="text-muted medium mb-4 lh-lg">
+                AccessAdvisr offers a range of sponsorship packages designed to support our mission of improving 
+                accessibility worldwide. By becoming a sponsor, your organisation can help empower disabled 
+                people to share their experiences and promote more inclusive communities, while also gaining meaningful 
+                brand visibility and social impact recognition.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-------------- price_table_card section -------------->
+{% include 'components/price_table_card.html' %}
+
+
+
+<!---- sponsor heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">Our Sponsors</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+<!------------- sponsor slider section ---------->
+{% include 'components/sponsor_slide.html' %}
+
+
+<!----- sponsor description section ------>
+<div class="container text-center mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <p class="text-muted medium mb-4 lh-lg">
+                Thanks to the generous support of our sponsors, AccessAdvisr can continue delivering trusted accessibility reviews and resources for the benefit of the community. Their contribution helps us power the movement of #DisabledPeopleGoingPlaces, making it easier for disabled people to explore, review, and enjoy inclusive spaces with confidence.
+            </p>
+            <p class="text-muted medium mb-4 lh-lg">
+                Click on the sponsor logos below to learn more about their role in promoting accessibility and inclusion.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-------- sponsor card section ------------------>
+{% include 'components/sponsor_card.html' %}
+
+
+<div class="container text-center">
+    <a href="#" class="btn btn-orange btn-fixed">Load More</a>
+</div>
+
+
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>	
+</body>
+</html>
+

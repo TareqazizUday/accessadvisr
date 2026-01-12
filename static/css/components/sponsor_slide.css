@@ -1,0 +1,55 @@
+.slider-section {
+        padding: 60px 0;
+        
+    }
+    .carousel-item img {
+        max-width: 150px; /* Adjust based on your logo size */
+        height: auto;
+        margin: 0 auto;
+        filter: grayscale(0%); /* Optional: set to 100% for B&W look */
+        transition: 0.3s;
+    }
+    .carousel-item img:hover {
+        filter: grayscale(0%);
+    }
+    .logo-caption {
+        margin-top: 15px;
+        font-weight: 600;
+        color: #6c757d;
+    }
+    /* Custom Control Colors */
+    .carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-image: none !important; /* Forces the removal of the default icon */
+    color: #d9534f;
+    font-size: 3rem; /* Reduced from 5rem for better fit */
+    /* font-weight: bold; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Remove 'line-height' and use 'content' for the icons */
+.carousel-control-prev-icon::after { content: '‹'; }
+.carousel-control-next-icon::after { content: '›'; }
+
+
+/* Add these responsive rules */
+
+
+/* Mobile - Show 1 logo per slide */
+ @media (max-width: 767px) {
+    .sponsor_slider .col-4{
+        /* border:3px solid #24f311 !important;
+        background-color: aqua; */
+        height: 150px !important;
+
+
+    }
+    .sponsor_slider img{
+        width: 70% !important;
+        /* border:1px solid #FF431E !important; */
+
+    }
+}
+

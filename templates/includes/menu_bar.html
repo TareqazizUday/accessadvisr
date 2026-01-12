@@ -1,0 +1,49 @@
+{% load static %}
+<!-- Top Menu Bar -->
+<nav class="top-menu-bar">
+    <div class="menu-container">
+        <div class="menu-logo-section">
+            <a href="{% url 'home' %}" class="menu-logo-link">
+                <img src="{% static 'img/accessAdvisr__logo.png' %}" alt="AccessAdvisr" class="menu-logo-img" onerror="this.style.display='none';">
+            </a>
+        </div>
+        <div class="menu-items">
+            <a href="{% url 'home' %}" class="menu-link">Home</a>
+            <div class="menu-dropdown">
+                <button type="button" class="menu-link menu-browse-btn">Browse <span class="dropdown-arrow">▼</span></button>
+                <div class="dropdown-menu">
+                    <a href="{% url 'accommodation' %}">Accommodation</a>
+                    <a href="{% url 'browse' %}?category=entertainment">Entertainment</a>
+                    <a href="{% url 'browse' %}?category=food">Food & Drink</a>
+                    <a href="{% url 'browse' %}?category=shopping">Shopping</a>
+                    <a href="{% url 'browse' %}?category=sport">Sports & Recreational</a>
+                    <a href="{% url 'browse' %}?category=education">Education</a>
+                </div>
+            </div>
+            <a href="{% url 'partners' %}" class="menu-link">Partners</a>
+            <a href="{% url 'packages' %}" class="menu-link">Packages</a>
+            <a href="{% url 'blogs' %}" class="menu-link">Blogs</a>
+            <a href="{% url 'contact' %}" class="menu-link">Contact</a>
+            <a href="{% url 'about' %}" class="menu-link">About Us</a>
+            <a href="{% url 'donate' %}" class="menu-link">Donate</a>
+        </div>
+        <div class="menu-actions">
+            <a href="#" class="menu-signin">
+                <span class="user-icon">👤</span>
+                <span>Sign in or Register</span>
+            </a>
+            <a href="#" class="btn-add-reviews">
+                <span class="plus-icon">+</span> Add Reviews
+            </a>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .menu-browse-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+</style>

@@ -1,0 +1,77 @@
+/* Unique Prefixed CSS for About Section */
+.about_section_img {
+    height: 220px; /* Uniform height for all images */
+    object-fit: cover; /* Ensures images are not stretched */
+    width: 100%;
+}
+
+.about_section_title {
+    color: #1a2b48; /* Dark navy brand color */
+    line-height: 1.4;
+    font-size: 1.15rem;
+}
+
+.about_section_text {
+    line-height: 1.6;
+    text-align: justify; /* Matches the clean text block look */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .about_section_img {
+        height: 200px;
+    }
+    .about_section_title {
+        font-size: 1.1rem;
+    }
+}
+
+/* About section contact hero */
+/* Unique Prefixed CSS for Contact Hero */
+.about_section_contact_hero {
+    position: relative;
+    min-height: 500px;
+    background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsSCTH_UaxzCfx9B-6CCvfKkbq8fTj1OBUsA&s'); /* Replace with your actual BG image */
+    background-size: cover;
+    background-position: center;
+}
+
+/* Dark Blue Overlay as seen in screenshot */
+.about_section_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 43, 72, 0.85); /* Deep Navy with transparency */
+    z-index: 1;
+}
+
+.about_section_pin_icon {
+    width: 150px;
+    height: auto;
+}
+
+
+
+.about_section_subtext {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* Ensure text is above overlay */
+.z-index-1 {
+    z-index: 2;
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+    .about_section_contact_hero {
+        min-height: 400px;
+        padding: 60px 0;
+    }
+    .display-4 {
+        font-size: 2.5rem;
+    }
+}

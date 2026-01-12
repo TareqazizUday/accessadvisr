@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AccessAdvisr - Accessibility Reviews</title>
+	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+	
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!---- hero map seciton ---->
+{% include 'components/map_section.html' with GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY %}
+
+
+
+<section class="explore-section py-3 bg-white">
+    <div class="container py-2">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="section-title mb-4">
+                    Explore Most Rated <span class="text-orange">Places</span>
+                </h2>
+                <p class="section-subtitle text-muted px-md-5 px-lg-5">
+                    Discover The Most Rated Places Reviewed By Our Community. From Dining To Shopping, Explore Top-Rated Spots Where Accessibility Comes First.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-------- card------>
+{% include 'components/card.html' %}
+<!-------- stats-section ---------->
+{% include 'components/stats_section.html' %}
+
+<section class="explore-section py-5 bg-white" style="padding-bottom: 1rem !important;">
+    <div class="container py-4" style="padding-bottom: 0.5rem !important;">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="section-title mb-4">
+                    Most Recent <span class="text-orange">Contributions</span>
+                </h2>
+                <p class="section-subtitle text-muted px-md-5 mb-0">
+                    Check out the most recent contributions from our members. Discover the latest accessibility insights and help others by sharing your own reviews.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-------- recent-contributions ---------->
+{% include 'components/recent-contributions.html' %}
+
+<!-------- testimonial section ---------->
+{% include 'components/testimonialCarousel.html' %}
+
+
+
+
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>	
+</body>
+</html>
+

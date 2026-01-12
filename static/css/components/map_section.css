@@ -1,0 +1,97 @@
+/* --- Hero Section Styling --- */
+.hero-map-section {
+    height: 500px; /* Base height for the map */
+    width: 100%;
+    position: relative;
+}
+
+#homeMap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.map-bg {
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* --- Floating Search Bar --- */
+.search-container {
+    position: absolute;
+    bottom: -40px; /* Pulls the bar halfway down past the map edge */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.search-bar-wrapper {
+    overflow: hidden; /* Keeps corners rounded */
+    border: 1px solid #eee;
+}
+
+/* Vertical Divider logic */
+@media (min-width: 768px) {
+    .border-end-custom {
+        border-right: 1px solid #e0e0e0;
+    }
+}
+
+/* Removing Bootstrap defaults to keep icons "inside" */
+.search-bar-wrapper .form-control,
+.search-bar-wrapper .form-select {
+    padding: 12px 10px;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Icon specific styling */
+.search-bar-wrapper i {
+    font-size: 1.1rem;
+    color: #adb5bd !important;
+}
+
+/* --- Custom Orange Button --- */
+.btn-orange {
+    background-color: #FF431E !important; 
+    color: white !important;
+    border: none;
+    border-radius: 4px;
+    transition: 0.3s ease;
+}
+
+.btn-orange:hover {
+    background-color: #e63d1b !important;
+    filter: brightness(90%);
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 767.98px) {
+    .hero-map-section {
+        height: 350px;
+    }
+
+    .search-container {
+        position: relative;
+        bottom: 0;
+        transform: none;
+        left: 0;
+        margin-top: -50px; /* Slight overlap on mobile */
+        padding: 0 20px;
+    }
+
+    .search-bar-wrapper {
+        padding: 10px;
+    }
+
+    .border-end-custom {
+        border-right: none;
+        border-bottom: 1px solid #eee; /* Stacked separators */
+    }
+}

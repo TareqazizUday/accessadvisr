@@ -1,0 +1,10 @@
+.sponsor-heading {
+    color: #232a34;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+.orange-divider {
+    width: 60px;
+    height: 2px;
+    background-color: #FF431E; /* AccessAdvisr Orange */
+}

@@ -1,0 +1,78 @@
+{% load static %}
+<footer class="footer-section pt-5 mt-5">
+    <div class="container pb-4">
+        <div class="row gy-4">
+            
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-heading">About Us</h5>
+                <p class="footer-text mt-4">
+                    AccessAdvisr Is An Accessibility Review Website That Allows Disabled People To Review The Accessibility Of A Place – Anywhere In The World! And, We Need Your Help.
+                </p>
+                <a href="{% url 'donate' %}" class="btn btn-outline-light donate-footer-btn mt-3">
+                    <i class="bi bi-currency-dollar"></i> Donate
+                </a>
+            </div>
+
+            <div class="col-lg-2 col-md-6 ms-lg-auto">
+                <h5 class="footer-heading">Usefull Links</h5>
+                <ul class="list-unstyled mt-4 footer-links">
+                    <li><a href="{% url 'blogs' %}">Blogs</a></li>
+                    <li><a href="{% url 'search_results' %}">Browse</a></li>
+                    <li><a href="{% url 'donate' %}">Donate</a></li>
+                    <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="#">Cookie Policy (UK)</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-heading">Get In Touch</h5>
+                <ul class="list-unstyled mt-4 footer-contact">
+                    <li>Hedge End, Southampton, UK</li>
+                    <li>Contactus@accessadvisr.net</li>
+                    <li>www.accessadvisr.com</li>
+                </ul>
+                <div class="social-icons mt-3">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-heading">Subscribe to Our Newsletter</h5>
+                <p class="footer-text mt-4">
+                    Stay updated with the latest accessibility reviews, travel tips, and inclusive guides by joining the AccessAdvisr newsletter.
+                </p>
+                <p class="text-danger small mt-2">
+                    You need to configure your Mailchimp API key for this form to work properly.
+                </p>
+                <div class="newsletter-form position-relative mt-3">
+                    <input type="email" class="form-control footer-input" placeholder="Your email address">
+                    <button class="btn newsletter-btn"><i class="bi bi-send-fill text-white"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-bottom py-4 mt-4">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-10 text-start">
+                    <p class="mb-0 text-secondary small text-center">
+                        Copyright@ 2025 AccessAdvisr. Design and Development by 
+                        <a href="https://timerni.com/" target="_blank" class="text-white text-decoration-none">
+                            Timerni <img src="{% static 'images/icons/tri-icon.png' %}" alt="Timerni Icon" class="ms-1" style="height: 18px;">
+                        </a>
+                    </p>
+                </div>
+                <div class="col-12 col-md-2 text-end mt-3 mt-md-0">
+                    <button class="scroll-top-btn ms-auto"><i class="bi bi-arrow-up"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+

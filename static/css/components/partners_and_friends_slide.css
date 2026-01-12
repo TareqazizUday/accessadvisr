@@ -1,0 +1,37 @@
+    .partners_friends_section {
+        padding: 80px 0;
+    }
+    .partners_friends_card {
+        padding: 15px;
+        transition: transform 0.3s ease;
+    }
+    .partners_friends_card:hover {
+        transform: translateY(-5px);
+    }
+    .partners_friends_card img {
+        max-width: 140px;
+        height: auto;
+        margin-bottom: 15px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .partners_friends_caption {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #797979;
+        min-height: 40px; /* Keeps text aligned even if long */
+    }
+    
+    /* Control Styling */
+    .partners_friends_prev_icon,
+    .partners_friends_next_icon {
+        color: #d9534f;
+        font-size: 4rem;
+        /* font-weight: bold; */
+        cursor: pointer;
+        user-select: none;
+    }
+    .carousel-control-prev, .carousel-control-next {
+        width: 5%; /* Thinner hit area so it doesn't cover logos */
+    }

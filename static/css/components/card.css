@@ -1,0 +1,90 @@
+/* GLOBAL COLORS */
+:root {
+    --primary-orange: #FF431E;
+    --dark-text: #232a34;
+}
+
+.text-orange { color: var(--primary-orange) !important; }
+
+/* EXPLORE HEADER */
+.section-title { font-size: 2.5rem; color: var(--dark-text); }
+
+/* PLACE CARDS */
+.place-card {
+    border-radius: 12px;
+    overflow: visible; /* Required for avatar to overlap */
+    transition: 0.3s;
+}
+
+.place-card:hover { transform: translateY(-5px); }
+
+.place-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+/* BADGES */
+.badge-heart {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #FF431E;
+    color: white;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.9rem;
+}
+
+.badge-verified {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #28a745;
+    background: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* OVERLAPPING AVATAR */
+.user-avatar {
+    position: absolute;
+    bottom: -25px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    border: 4px solid white;
+    border-radius: 50%;
+    z-index: 10;
+}
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* PHONE SHOW BUTTON */
+.badge-show {
+    background: #FF431E;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px) {
+    .section-title { font-size: 1.8rem; }
+    .explore-section { text-align: left !important; }
+}

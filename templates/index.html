@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Search - Google Maps</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/place-detail.css' %}">
+</head>
+<body>
+    {% include 'includes/menu_bar.html' %}
+    <div class="container">
+        <header>
+            <div class="search-controls">
+                <div class="search-box">
+                    <label for="locationNameInput">Location Name:</label>
+                    <input type="text" id="locationNameInput" placeholder="Enter location name...">
+                    <button id="clearLocationName" class="btn-clear">✕</button>
+                </div>
+                <div class="search-box">
+                    <label for="categoryNameInput">Category Name:</label>
+                    <input type="text" id="categoryNameInput" placeholder="Enter category name...">
+                    <button id="clearCategoryName" class="btn-clear">✕</button>
+                </div>
+                <div class="search-box">
+                    <label for="searchInput">Keywords:</label>
+                    <input type="text" id="searchInput" placeholder="Search by keywords...">
+                    <button id="clearSearch" class="btn-clear">✕</button>
+                </div>
+                <button id="searchBtn" class="btn-search" title="Click to search immediately (or wait for auto-search)">
+                    <span class="search-icon">🔍</span>
+                    <span>Search</span>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Add Location Modal -->
+        <div id="addLocationModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Add New Location</h2>
+                <form id="locationForm">
+                    <div class="form-group">
+                        <label for="locationName">Location Name *</label>
+                        <input type="text" id="locationName" required placeholder="Enter location name">
+                    </div>
+                    <div class="form-group">
+                        <label for="locationCategory">Category</label>
+                        <select id="locationCategory">
+                            <option value="">Select Category</option>
+                        </select>
+                        <button type="button" id="addCategoryBtn" class="btn-small">➕ Add New Category</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="locationLat">Latitude *</label>
+                        <input type="number" id="locationLat" step="0.000001" required placeholder="23.8103">
+                    </div>
+                    <div class="form-group">
+                        <label for="locationLng">Longitude *</label>
+                        <input type="number" id="locationLng" step="0.000001" required placeholder="90.4125">
+                    </div>
+                    <div class="form-group">
+                        <label for="locationKeywords">Keywords (comma-separated)</label>
+                        <input type="text" id="locationKeywords" placeholder="restaurant, food, dining">
+                    </div>
+                    <div class="form-group">
+                        <button type="button" id="getMapLocation" class="btn-small">📍 Get from Map Click</button>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Save Location</button>
+                        <button type="button" class="btn-cancel" id="cancelLocationForm">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Add Category Modal -->
+        <div id="addCategoryModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Add New Category</h2>
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label for="categoryName">Category Name *</label>
+                        <input type="text" id="categoryName" required placeholder="e.g., Restaurant, Hotel">
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryIcon">Icon (Optional)</label>
+                        <input type="text" id="categoryIcon" placeholder="🍽️ or icon name">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Save Category</button>
+                        <button type="button" class="btn-cancel" id="cancelCategoryForm">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading locations...</p>
+            </div>
+            <div id="error" class="error hidden"></div>
+        </div>
+        
+        <div class="info-and-details">
+            <div class="info-panel">
+                <h3>Results: <span id="resultCount">0</span></h3>
+                <div id="locationList"></div>
+            </div>
+
+            <div id="detailsPanel" class="details-panel hidden">
+                <button id="detailsCloseBtn" class="details-close">&times;</button>
+                <div id="detailsContent" class="details-content">
+                    <!-- Filled dynamically from JS when a location is clicked -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Maps API with Places and Marker Libraries -->
+    {% if GOOGLE_MAPS_API_KEY %}
+    <script>
+        // Fallback if Google Maps fails to load
+        window.gm_authFailure = function() {
+            console.error('Google Maps authentication failed');
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                mapElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;"><h3>⚠️ Google Maps API Error</h3><p>API key authentication failed. Please check your GOOGLE_MAPS_API_KEY.</p></div>';
+            }
+        };
+    </script>
+    <!-- Load map.js synchronously first to ensure initMap is available -->
+    <script src="{% static 'js/map.js' %}"></script>
+    <!-- Verify and load Google Maps API -->
+    <script>
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadGoogleMaps);
+        } else {
+            loadGoogleMaps();
+        }
+        
+        function loadGoogleMaps() {
+            // Verify initMap is available
+            if (typeof window.initMap === 'function') {
+                console.log('✅ initMap function is available, loading Google Maps API...');
+                // Load Google Maps API
+                const script = document.createElement('script');
+                script.src = 'https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,marker&callback=initMap&loading=async';
+                script.async = true;
+                script.defer = true;
+                script.onerror = function() {
+                    console.error('Failed to load Google Maps API');
+                };
+                document.head.appendChild(script);
+            } else {
+                console.error('❌ initMap function not found! Retrying in 100ms...');
+                setTimeout(loadGoogleMaps, 100);
+            }
+        }
+    </script>
+    {% else %}
+    <script>
+        window.initMap = function initMap() {
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                mapElement.innerHTML = '<div style="padding: 2rem; text-align: center; color: red;"><h3>⚠️ Google Maps API Key Required</h3><p>Please set GOOGLE_MAPS_API_KEY in your .env file</p></div>';
+            }
+        };
+    </script>
+    {% endif %}
+</body>
+</html>
+

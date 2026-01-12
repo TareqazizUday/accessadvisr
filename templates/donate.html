@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Donate - AccessAdvisr</title>
+	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+	
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!----- inner header section ------>
+<section class="partners-header-section">
+    <div class="container text-center py-5">
+        <h1 class="text-white fw-bold mb-2">Donate</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item active text-orange" aria-current="page">Donate</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!----- video-slider-section ------>
+{% include 'components/video_slider.html' %}
+
+
+<!---- sub heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">Why You Should Donate</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+
+<!----- sub header description section ------>
+<div class="container text-center mt-4 mb-5">
+    <div class="row justify-content-left">
+        <div class="col-lg-10">
+            <p class="text-muted medium mb-4 lh-lg text-start">
+                AccessAdvisr is dedicated to making the world more accessible for disabled people everywhere. Our platform allows users to share honest reviews about the accessibility of places, 
+                helping others make informed decisions before visiting. With over 2,600 reviews worldwide, we provide a free, reliable resource that empowers the disabled community.
+            </p>
+
+            <p class="text-muted medium mb-4 lh-lg text-start">
+                Running and improving this website comes with costs. Your donation helps us enhance features, 
+                introduce new tools, and ensure the site meets the latest accessibility standards. It allows us to expand our reach, improve user experience, and 
+                continue offering free, accurate information to those who need it most.
+            </p>
+
+            <p class="text-muted medium mb-4 lh-lg text-start">
+                By donating, you become part of a movement that values inclusion and accessibility. Your support not only funds website upgrades and maintenance 
+                but also strengthens a community dedicated to making travel and everyday experiences easier and more enjoyable for everyone. Every contribution, 
+                big or small, helps us grow and make a real difference.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!---- sub heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">All Donation Types</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+<!----- donate card section ------>
+{% include 'components/donate_card_section.html' %}
+
+<!---- sub heading ------>
+<div class="container text-center mt-5 mb-4">
+    <h2 class="fw-bold sponsor-heading">Frequently Asked Questions</h2>
+    <div class="orange-divider mx-auto"></div>
+</div>
+
+
+<!------- donate accordion section ------>
+{% include 'components/donate_accordion.html' %}
+
+<section class="spacer">
+</section>
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>	
+</body>
+</html>
+

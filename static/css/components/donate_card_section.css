@@ -1,0 +1,28 @@
+/* Unique Prefixed Styles for Donate Card */
+.donate_card_img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.donate_card_title {
+    color: #1a2b48; /* Dark navy from your theme */
+    font-size: 0.95rem;
+}
+
+.donate_card_read_more {
+    color: #FF431F !important; /* Brand Orange */
+    letter-spacing: 0.5px;
+}
+
+
+
+/* Card typography adjustments */
+.donate_card_section h5 {
+    color: #232A34;
+    font-size: 1.25rem;
+}
+
+/* For the Heart Pulse Icon */
+.donate_card_btn i {
+    font-size: 1.1rem;
+}

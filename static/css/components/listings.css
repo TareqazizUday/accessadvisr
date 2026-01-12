@@ -1,0 +1,164 @@
+.text-orange {
+    color: var(--primary-orange) !important;
+}
+
+.bg-orange {
+    background-color: var(--primary-orange) !important;
+    color: white !important;
+}
+
+.btn-orange {
+    background-color: var(--primary-orange) !important;
+    border-color: var(--primary-orange) !important;
+    color: white !important;
+}
+
+.btn-orange:hover {
+    background-color: #e03a1a !important;
+    border-color: #e03a1a !important;
+    color: white !important;
+}
+
+/* Hero breadcrumb override */
+.listings-hero .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.7) !important;
+    content: ">" !important;
+}
+
+/* Listing card hover */
+.listing-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Form control focus */
+.form-select{
+  color: rgb(146, 147, 148);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 67, 30, 0.15) !important;
+}
+
+/* Checkbox orange when checked */
+.form-check-input:checked {
+    background-color: var(--primary-orange) !important;
+    border-color: var(--primary-orange) !important;
+}
+
+/* Range slider */
+.form-range::-webkit-slider-thumb {
+    background: var(--primary-orange) !important;
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--primary-orange) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .listings-hero {
+        min-height: 150px !important;
+    }
+    
+    .listings-hero h1 {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .listings-hero {
+        min-height: 120px !important;
+    }
+    
+    .listings-hero h1 {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Card specific styles */
+.listing-card .card-img-top {
+    height: 180px !important;
+    object-fit: cover !important;
+}
+
+.listing-card .position-relative {
+    overflow: visible !important;
+}
+
+.listing-card .card-body {
+    padding-top: 2.5rem !important;
+}
+
+/* Badge positioning */
+.listing-card .badge.bg-white {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+
+.listing-card .badge.bg-success,
+.listing-card .badge.bg-warning {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+
+.listing-card .badge.bg-orange {
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    z-index: 10 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Save button styling */
+.listing-card .btn-light {
+    border: none !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.listing-card .btn-light:hover {
+    background-color: white !important;
+}
+
+/* Card title link */
+.listing-card .card-body h6 a {
+    transition: color 0.3s ease !important;
+}
+
+.listing-card .card-body h6 a:hover {
+    color: var(--primary-orange) !important;
+}
+
+/* Star rating */
+.listing-card .bi-star-fill,
+.listing-card .bi-star-half,
+.listing-card .bi-star {
+    font-size: 0.85rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .listings-hero {
+        min-height: 150px !important;
+    }
+    
+    .listings-hero h1 {
+        font-size: 1.75rem !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .listings-hero {
+        min-height: 120px !important;
+    }
+    
+    .listings-hero h1 {
+        font-size: 1.5rem !important;
+    }
+}

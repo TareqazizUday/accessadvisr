@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ place.name|default:"Place details" }}</title>
+    {% load static %}
+    {% load place_photos %}
+    {% load category_videos %}
+    <link rel="stylesheet" href="{% static 'css/place-detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Override main CSS for detail page */
+        body {
+            overflow: visible !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        html {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        /* Ensure menu bar is visible */
+        .top-menu-bar {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+<body>
+        {% include 'includes/menu_bar.html' %}
+        
+        {% if place.error %}
+        <div class="error-container">
+            <h2>⚠️ Error Loading Place Details</h2>
+            <p>Status: {{ place.error }}</p>
+            <p>Please try again later or check if the place ID is valid.</p>
+            </div>
+        {% elif not place.name %}
+        <div class="error-container">
+            <h2>⚠️ Place Not Found</h2>
+            <p>The requested place could not be found.</p>
+            </div>
+        {% else %}
+        {% with place.photos.0 as hero_photo %}
+        <!-- Banner Section -->
+        <div class="detail-banner" {% if hero_photo %}style="background-image:url('{{ hero_photo|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}');"{% endif %}>
+            <div class="banner-overlay"></div>
+            <div class="banner-content">
+                <!-- Main content in bottom-left -->
+                <div class="banner-main-content">
+                    <div class="profile-avatar-large">
+                        {% if place.photos.1 %}
+                            <img src="{{ place.photos.1|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}" alt="{{ place.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="avatar-fallback" style="display:none;">{{ place.name|first|upper }}</div>
+                        {% else %}
+                            <div class="avatar-fallback">{{ place.name|first|upper }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="banner-text-content">
+                        <h1 class="banner-title">{{ place.name }}</h1>
+                        <div class="banner-tagline">
+                            {% if location.description %}
+                                {{ location.description|truncatewords:10 }}
+                            {% elif place.editorial_summary and place.editorial_summary.overview %}
+                                {{ place.editorial_summary.overview|truncatewords:10 }}
+                            {% elif place.types %}
+                                {{ place.types.0|title }}{% if place.types.1 %}, {{ place.types.1|title }}{% endif %}
+                            {% else %}
+                                Villa, food for you
+                {% endif %}
+                        </div>
+                        <div class="banner-categories">
+                            {% if place.types %}
+                                {% for type in place.types|slice:":5" %}
+                                    <span>{{ type|title }}</span>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Contact info below categories -->
+                        <div class="banner-contact-inline">
+                            {% if place.international_phone_number or place.formatted_phone_number %}
+                            <div class="contact-phone">
+                                <span class="contact-icon">📞</span>
+                                <span class="phone-masked">+88-123-4***</span>
+                                <button class="btn-show-phone" onclick="showPhone()">show</button>
+                                <span class="phone-full" style="display:none;">{{ place.international_phone_number|default:place.formatted_phone_number }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="contact-address">
+                                <span class="contact-icon">📍</span>
+                                <span>
+                {% if place.formatted_address %}
+                                        {{ place.formatted_address }}
+                                    {% elif place.vicinity %}
+                                        {{ place.vicinity }}
+                {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rating and buttons in bottom-right -->
+                <div class="banner-right-section">
+                    <div class="banner-rating">
+                        <div class="rating-value-large">{{ place.rating|default:"4.0" }}</div>
+                    </div>
+                    <div class="banner-actions">
+                        <button class="btn-banner-action btn-save">
+                            <span class="btn-icon">❤️</span>
+                            <span>Save</span>
+                        </button>
+                        <button class="btn-banner-action btn-review">
+                            <span class="btn-icon">💬</span>
+                            <span>Submit Review</span>
+                        </button>
+                        <button class="btn-banner-action btn-share">
+                            <span class="btn-icon">🔗</span>
+                            <span>Share</span>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- Main Content -->
+        <div class="detail-wrapper">
+            <div class="detail-container">
+        <div class="detail-body">
+                    <!-- Main Content Column -->
+            <div class="detail-main">
+                        <!-- Description Section -->
+                <div class="detail-section">
+                            <h3>Description</h3>
+                            <p>
+                                {% if location.description %}
+                                    {{ location.description }}
+                                {% elif place.editorial_summary and place.editorial_summary.overview %}
+                                    {{ place.editorial_summary.overview }}
+                                {% elif place.types %}
+                                    {{ place.name }} is a {{ place.types.0|title }} located at {{ place.formatted_address|default:place.vicinity }}. {% if place.rating %}It has a rating of {{ place.rating }} out of 5{% if place.user_ratings_total %} based on {{ place.user_ratings_total }} reviews{% endif %}.{% endif %}
+                                {% else %}
+                                    {{ place.name }} is located at {{ place.formatted_address|default:place.vicinity }}.
+                    {% endif %}
+                            </p>
+                        </div>
+
+                        <!-- What We're Looking For -->
+                        <div class="detail-section">
+                            <h3>What We're Looking For</h3>
+                            {% if location.what_we_looking_for %}
+                                <div class="what-we-looking-for">
+                                    {{ location.what_we_looking_for|linebreaks }}
+                                </div>
+                            {% else %}
+                                <ul class="bullet-list">
+                                    <li>A composer with experience or interest in creating music for dance, particularly in environments where accessibility matters.</li>
+                                    <li>Someone who can collaborate with performers to integrate visual, spatial, and sensory considerations.</li>
+                                    <li>An ability to adapt compositions so they work well for both trained dancers and audience members with sensory or mobility differences.</li>
+                                </ul>
+                    {% endif %}
+                </div>
+
+                        <!-- Why This Matters -->
+                        <div class="detail-section">
+                            <h3>Why This Matters</h3>
+                            <p>
+                                {% if location.why_this_matters %}
+                                    {{ location.why_this_matters }}
+                                {% else %}
+                                    Art and performance should be for everyone. This project aims to set a higher standard for genuine accessibility. We believe that everyone should have the opportunity to experience and participate in the arts, regardless of their abilities or circumstances.
+                    {% endif %}
+                            </p>
+                        </div>
+
+                        <!-- How to Apply -->
+                        <div class="detail-section">
+                            <h3>How to Apply</h3>
+                            <p>
+                                {% if location.how_to_apply %}
+                                    {{ location.how_to_apply }}
+                                {% else %}
+                                    If you're ready to compose something meaningful, share your portfolio and approach to accessible composition. We're looking for creative minds who understand that great art is inclusive art. Please send your application with examples of your work and a brief statement about your approach to accessible performance.
+                    {% endif %}
+                            </p>
+                </div>
+
+                        <!-- Maps Section -->
+                <div class="detail-section">
+                            <div class="maps-header">
+                                <h3>Maps</h3>
+                                <div class="map-tabs">
+                                    <button class="map-tab active" data-tab="map">
+                                        <span class="map-icon map-icon-map">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M9 1L2 4V15L9 12L16 15V4L9 1Z" stroke="#dc3545" stroke-width="1.5" fill="none"/>
+                                                <path d="M9 1V12M2 4L16 4" stroke="#dc3545" stroke-width="1.5"/>
+                                            </svg>
+                                        </span>
+                                        <span>Map</span>
+                                    </button>
+                                    <button class="map-tab" data-tab="streetview">
+                                        <span class="map-icon map-icon-streetview">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="9" cy="12" r="4" fill="#dc3545"/>
+                                                <circle cx="9" cy="6" r="2.5" fill="#dc3545"/>
+                                            </svg>
+                                        </span>
+                                        <span>Street View</span>
+                                    </button>
+                                    <button class="map-tab" data-tab="directions">
+                                        <span class="map-icon map-icon-directions">
+                                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 9L16 2L13 9L16 16L2 9Z" fill="#dc3545"/>
+                                            </svg>
+                                        </span>
+                                        <span>Get Directions</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="map-container-wrapper">
+                                <div id="detail-map" class="detail-map">
+                                    <div class="map-controls-overlay">
+                                        <div class="map-zoom-control">+</div>
+                                        <div class="map-zoom-control">−</div>
+                                    </div>
+                                    <div class="map-error">
+                                        <div class="map-error-icon">!</div>
+                                        <div class="map-error-title">Oops! Something went wrong.</div>
+                                        <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                    </div>
+                                </div>
+                                <div id="street-view" class="detail-map" style="display:none;">
+                                    <div class="map-controls-overlay">
+                                        <div class="map-zoom-control">+</div>
+                                        <div class="map-zoom-control">−</div>
+                                    </div>
+                                    <div class="map-error">
+                                        <div class="map-error-icon">!</div>
+                                        <div class="map-error-title">Oops! Something went wrong.</div>
+                                        <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                    </div>
+                                </div>
+                                <div id="directions-panel" class="directions-panel" style="display:none;">
+                                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ lng }}" target="_blank" class="btn-directions">
+                                        Open in Google Maps
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Listing Amenities -->
+                <div class="detail-section">
+                            <h3>Listing Amenities</h3>
+                            <div class="amenities-grid">
+                                {% for amenity in all_amenities %}
+                                    <a href="{% url 'listings' %}?amenity={{ amenity.name|urlencode }}" class="amenity-item amenity-link">
+                                        <input type="checkbox" 
+                                               {% if location and amenity in location.amenities.all %}checked{% endif %}
+                                               disabled>
+                                        <span>{{ amenity.icon|default:"" }} {{ amenity.name }}</span>
+                                    </a>
+                                {% empty %}
+                                    <!-- Default amenities from image - 3 columns layout -->
+                                    <a href="{% url 'listings' %}?amenity={{ 'Accepts Credit Cards'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Accepts Credit Cards</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Alarm System'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Alarm System</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Bike Parking'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Bike Parking</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Coupons'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Coupons</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Elevator'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Elevator</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Outdoor Seating'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Outdoor Seating</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Parking Street'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Parking Street</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Reservations'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Reservations</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Security Cameras'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Security Cameras</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Smoking Allowed'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Smoking Allowed</span></a>
+                                    <a href="{% url 'listings' %}?amenity={{ 'Wheelchair Accessible'|urlencode }}" class="amenity-item amenity-link"><input type="checkbox" checked disabled><span>Wheelchair Accessible</span></a>
+                        {% endfor %}
+                </div>
+                </div>
+
+                        <!-- Photos Section -->
+                {% if place.photos %}
+                <div class="detail-section">
+                    <h3>Photos</h3>
+                            <div class="photo-gallery">
+                                <div class="photo-main">
+                                    <img id="main-photo" 
+                                         src="" 
+                                         alt="{{ place.name }}"
+                                         style="display: none;">
+                                    <div id="photo-placeholder" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 400px; background: #f5f5f5; color: #999; font-size: 1.1rem;">
+                                        Click on a thumbnail to view image
+                                    </div>
+                                    <button class="photo-nav photo-prev" onclick="changePhoto(-1)" style="display: none;">‹</button>
+                                    <button class="photo-nav photo-next" onclick="changePhoto(1)" style="display: none;">›</button>
+                                </div>
+                                <div class="photo-thumbnails">
+                                    {% for p in place.photos|slice:":10" %}
+                                        <img src="{{ p|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}" 
+                                             alt="{{ place.name }}"
+                                             data-photo-index="{{ forloop.counter0 }}"
+                                             class="thumbnail-img"
+                                             loading="lazy"
+                                             style="display: block; width: 120px; height: 80px; object-fit: cover; border-radius: 6px; cursor: pointer;">
+                                    {% endfor %}
+                                </div>
+                    </div>
+                </div>
+                        {% endif %}
+
+                        <!-- Video Section -->
+                        <div class="detail-section">
+                            <h3>Video</h3>
+                            <div class="video-container">
+                                {% get_video_embed_url location place.types request as video_url %}
+                                <iframe src="{{ video_url }}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        referrerpolicy="strict-origin-when-cross-origin" 
+                                        allowfullscreen></iframe>
+                            </div>
+            </div>
+
+                        <!-- Reviews Section -->
+                <div class="detail-section">
+                            <h3 id="reviews-count">{% if reviews|length > 0 %}{{ reviews|length }} Review{{ reviews|length|pluralize }}{% elif place.reviews and place.reviews|length > 0 %}{{ place.reviews|length }} Review{{ place.reviews|length|pluralize }}{% else %}1 Review{% endif %}</h3>
+                            <div class="reviews-list" id="reviews-list">
+                                {% if reviews|length > 0 %}
+                                    {% for r in reviews %}
+                                    <div class="review-item" data-review-id="{{ r.id }}">
+                                        <div class="review-avatar">
+                                            <span>{{ r.author_name|first|upper }}</span>
+                                        </div>
+                                        <div class="review-content">
+                                            <div class="review-header">
+                                                <div class="review-author-info">
+                                                    <strong>{{ r.author_name }}</strong>
+                                                    <span class="review-date">{{ r.created_at|date:"F d, Y" }}</span>
+                                                </div>
+                                                <span class="review-rating-top">{{ r.get_average_rating }}</span>
+                                            </div>
+                                            <div class="review-text">{{ r.review_text }}</div>
+                                            <div class="review-actions">
+                                                <button class="review-btn review-like" data-review-id="{{ r.id }}">👍 {{ r.likes }}</button>
+                                                <button class="review-btn review-dislike" data-review-id="{{ r.id }}">👎 {{ r.dislikes }}</button>
+                                                <button class="review-btn review-heart" data-review-id="{{ r.id }}">❤️ {{ r.hearts }}</button>
+                                                <a href="#" class="review-link review-reply" data-review-id="{{ r.id }}">💬 Reply</a>
+                                                <a href="#" class="review-link review-edit">✏️ Edit</a>
+                                            </div>
+                                            <!-- Replies Section -->
+                                            {% if r.replies.all %}
+                                                <div class="replies-list" style="margin-top: 1rem; padding-left: 1.5rem; border-left: 2px solid #e0e0e0;">
+                                                    {% for reply in r.replies.all %}
+                                                        {% if reply.is_active %}
+                                                        <div class="reply-item" data-reply-id="{{ reply.id }}" data-review-id="{{ r.id }}" style="margin-bottom: 0.75rem; padding: 0.75rem; background: #f9f9f9; border-radius: 6px;">
+                                                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                                                <strong style="font-size: 0.9rem; color: #333;">{{ reply.author_name }}</strong>
+                                                                <span style="color: #777; font-size: 0.85rem;">{{ reply.created_at|date:"F d, Y" }}</span>
+                                                            </div>
+                                                            <div style="color: #555; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem;">{{ reply.reply_text }}</div>
+                                                            <div class="review-actions">
+                                                                <button class="review-btn review-like" data-reply-id="{{ reply.id }}" data-type="reply">👍 {{ reply.likes }}</button>
+                                                                <button class="review-btn review-dislike" data-reply-id="{{ reply.id }}" data-type="reply">👎 {{ reply.dislikes }}</button>
+                                                                <button class="review-btn review-heart" data-reply-id="{{ reply.id }}" data-type="reply">❤️ {{ reply.hearts }}</button>
+                                                                <a href="#" class="review-link review-reply" data-reply-id="{{ reply.id }}" data-review-id="{{ r.id }}" data-type="reply">💬 Reply</a>
+                                                                <a href="#" class="review-link review-edit" data-reply-id="{{ reply.id }}" data-type="reply">✏️ Edit</a>
+                                                            </div>
+                                                            <!-- Nested Replies (replies to this reply) -->
+                                                            {% if reply.child_replies.all %}
+                                                                <div class="nested-replies-list" style="margin-top: 0.75rem; padding-left: 1.5rem; border-left: 2px solid #e0e0e0;">
+                                                                    {% for nested_reply in reply.child_replies.all %}
+                                                                        {% if nested_reply.is_active %}
+                                                                        <div class="reply-item nested-reply" data-reply-id="{{ nested_reply.id }}" data-review-id="{{ r.id }}" style="margin-bottom: 0.5rem; padding: 0.75rem; background: #f0f0f0; border-radius: 6px;">
+                                                                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                                                                <strong style="font-size: 0.85rem; color: #333;">{{ nested_reply.author_name }}</strong>
+                                                                                <span style="color: #777; font-size: 0.8rem;">{{ nested_reply.created_at|date:"F d, Y" }}</span>
+                                                                            </div>
+                                                                            <div style="color: #555; font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.5rem;">{{ nested_reply.reply_text }}</div>
+                                                                            <div class="review-actions">
+                                                                                <button class="review-btn review-like" data-reply-id="{{ nested_reply.id }}" data-type="reply">👍 {{ nested_reply.likes }}</button>
+                                                                                <button class="review-btn review-dislike" data-reply-id="{{ nested_reply.id }}" data-type="reply">👎 {{ nested_reply.dislikes }}</button>
+                                                                                <button class="review-btn review-heart" data-reply-id="{{ nested_reply.id }}" data-type="reply">❤️ {{ nested_reply.hearts }}</button>
+                                                                                <a href="#" class="review-link review-reply" data-reply-id="{{ nested_reply.id }}" data-review-id="{{ r.id }}" data-type="reply">💬 Reply</a>
+                                                                                <a href="#" class="review-link review-edit" data-reply-id="{{ nested_reply.id }}" data-type="reply">✏️ Edit</a>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% elif place.reviews and place.reviews|length > 0 %}
+                                    {% for r in place.reviews %}
+                                    <div class="review-item">
+                                        <div class="review-avatar">
+                                            <span>{{ r.author_name|first|upper|default:"A" }}</span>
+                                        </div>
+                                        <div class="review-content">
+                                            <div class="review-header">
+                                                <div class="review-author-info">
+                                                    <strong>{{ r.author_name|default:"admin" }}</strong>
+                                                    <span class="review-date">{{ r.relative_time_description|default:"January 21, 2020" }}</span>
+                                                </div>
+                                                <span class="review-rating-top">{{ r.rating|default:"4.5" }}</span>
+                                            </div>
+                                            <div class="review-text">{{ r.text|default:"At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias." }}</div>
+                                            <div class="review-actions">
+                                                <button class="review-btn review-like">👍 4</button>
+                                                <button class="review-btn review-dislike">👎 1</button>
+                                                <button class="review-btn review-heart">❤️ 1</button>
+                                                <a href="#" class="review-link review-reply">💬 Reply</a>
+                                                <a href="#" class="review-link review-edit">✏️ Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Default review if none available -->
+                                    <div class="review-item">
+                                        <div class="review-avatar">
+                                            <span>A</span>
+                                        </div>
+                                        <div class="review-content">
+                                            <div class="review-header">
+                                                <div class="review-author-info">
+                                                    <strong>admin</strong>
+                                                    <span class="review-date">January 21, 2020</span>
+                                                </div>
+                                                <span class="review-rating-top">4.5</span>
+                                            </div>
+                                            <div class="review-text">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias.</div>
+                                            <div class="review-actions">
+                                                <button class="review-btn review-like">👍 4</button>
+                                                <button class="review-btn review-dislike">👎 1</button>
+                                                <button class="review-btn review-heart">❤️ 1</button>
+                                                <a href="#" class="review-link review-reply">💬 Reply</a>
+                                                <a href="#" class="review-link review-edit">✏️ Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                </div>
+
+                        <!-- Add Review & Rate -->
+                <div class="detail-section">
+                            <h3>Add Review & Rate</h3>
+                            <form class="review-form" id="reviewForm" onsubmit="submitReview(event); return false;">
+                                <input type="hidden" id="place_id" value="{{ place_id }}">
+                                <input type="hidden" id="place_name" value="{{ place.name|default:'' }}">
+                                <div class="rating-sliders">
+                                    <div class="rating-item" data-category="quality">
+                                        <label class="rating-label-left">Quality</label>
+                                        <div class="star-rating" data-rating="5" data-color="green" id="quality-rating">
+                                            <span class="star" data-value="1">⭐</span>
+                                            <span class="star" data-value="2">⭐</span>
+                                            <span class="star" data-value="3">⭐</span>
+                                            <span class="star" data-value="4">⭐</span>
+                                            <span class="star" data-value="5">⭐</span>
+                                        </div>
+                                        <span class="rating-label-right">Excellent 😎</span>
+                                    </div>
+                                    <div class="rating-item" data-category="location">
+                                        <label class="rating-label-left">Location</label>
+                                        <div class="star-rating" data-rating="5" data-color="yellow" id="location-rating">
+                                            <span class="star" data-value="1">⭐</span>
+                                            <span class="star" data-value="2">⭐</span>
+                                            <span class="star" data-value="3">⭐</span>
+                                            <span class="star" data-value="4">⭐</span>
+                                            <span class="star" data-value="5">⭐</span>
+                                        </div>
+                                        <span class="rating-label-right">Excellent 😎</span>
+                                    </div>
+                                    <div class="rating-item" data-category="service">
+                                        <label class="rating-label-left">Service</label>
+                                        <div class="star-rating" data-rating="5" data-color="green" id="service-rating">
+                                            <span class="star" data-value="1">⭐</span>
+                                            <span class="star" data-value="2">⭐</span>
+                                            <span class="star" data-value="3">⭐</span>
+                                            <span class="star" data-value="4">⭐</span>
+                                            <span class="star" data-value="5">⭐</span>
+                                        </div>
+                                        <span class="rating-label-right">Excellent 😎</span>
+                                    </div>
+                                    <div class="rating-item" data-category="price">
+                                        <label class="rating-label-left">Price</label>
+                                        <div class="star-rating" data-rating="5" data-color="red" id="price-rating">
+                                            <span class="star" data-value="1">⭐</span>
+                                            <span class="star" data-value="2">⭐</span>
+                                            <span class="star" data-value="3">⭐</span>
+                                            <span class="star" data-value="4">⭐</span>
+                                            <span class="star" data-value="5">⭐</span>
+                                        </div>
+                                        <span class="rating-label-right">Excellent 😎</span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <input type="text" id="author_name" placeholder="Your Name" class="form-input" required>
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <input type="email" id="author_email" placeholder="your@mail.com" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="save_info"> Save my name, email, and website in this browser for the next time I comment.
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="review_text" placeholder="Your review" class="form-textarea" rows="5" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="image-upload" id="imageUploadArea">
+                                        <div class="upload-area">
+                                            <div class="upload-text">Drop images to upload</div>
+                                            <div class="upload-or">or</div>
+                                            <div class="upload-action">
+                                                <button type="button" class="btn-upload" id="galleryBtn">Gallery Images</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-submit-review">SUBMIT REVIEW</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Column -->
+                    <div class="detail-sidebar">
+                        <!-- Business Info -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Business Info</span>
+                                <a href="https://www.google.com/maps/dir/?api=1&destination={{ lat }},{{ lng }}" target="_blank" class="link-directions">Get Directions</a>
+                            </h3>
+                            <div id="sidebar-map" class="sidebar-map">
+                                <div class="map-controls-overlay">
+                                    <div class="map-zoom-control">+</div>
+                                    <div class="map-zoom-control">−</div>
+                                </div>
+                                <div class="map-error">
+                                    <div class="map-error-icon">!</div>
+                                    <div class="map-error-title">Oops! Something went wrong.</div>
+                                    <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <strong>Address:</strong><br>
+                                {% if place.formatted_address %}
+                                    {{ place.formatted_address }}
+                                {% elif place.vicinity %}
+                                    {{ place.vicinity }}
+                                {% endif %}
+                            </div>
+                            <div class="info-item">
+                                <strong>Phone:</strong>
+                    {% if place.international_phone_number %}
+                                    <span class="phone-masked">+89-456-8****</span>
+                                    <button class="btn-show-phone-small" onclick="showPhone()">show</button>
+                                    <span class="phone-full" style="display:none;">{{ place.international_phone_number }}</span>
+                    {% elif place.formatted_phone_number %}
+                                    <span class="phone-masked">+89-456-8****</span>
+                                    <button class="btn-show-phone-small" onclick="showPhone()">show</button>
+                                    <span class="phone-full" style="display:none;">{{ place.formatted_phone_number }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="info-item">
+                                <strong>Email:</strong>
+                                {% if location.email %}
+                                    <a href="mailto:{{ location.email }}">{{ location.email }}</a>
+                    {% else %}
+                                    <span>example@apus.com</span>
+                    {% endif %}
+                            </div>
+                            <div class="info-item">
+                                <strong>Website:</strong>
+                                {% if location.website %}
+                                    <a href="{{ location.website }}" target="_blank">{{ location.website|truncatechars:30 }}</a>
+                                {% elif place.website %}
+                                    <a href="{{ place.website }}" target="_blank">{{ place.website|truncatechars:30 }}</a>
+                                {% else %}
+                                    <a href="#" target="_blank">opusthemes.com</a>
+                    {% endif %}
+                </div>
+                
+                            <!-- Follow Us -->
+                            <div class="info-item follow-us-item">
+                                <strong>Follow Us</strong>
+                                <div class="social-links">
+                                    {% if location.social_facebook %}
+                                        <a href="{{ location.social_facebook }}" target="_blank" class="social-icon facebook">
+                                            <span class="social-text">f</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" target="_blank" class="social-icon facebook">
+                                            <span class="social-text">f</span>
+                                        </a>
+                        {% endif %}
+                                    {% if location.social_twitter %}
+                                        <a href="{{ location.social_twitter }}" target="_blank" class="social-icon twitter">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" fill="#dc3545"/>
+                                            </svg>
+                                        </a>
+                    {% else %}
+                                        <a href="#" target="_blank" class="social-icon twitter">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" fill="#dc3545"/>
+                                            </svg>
+                                        </a>
+                {% endif %}
+                                    {% if location.social_google_plus %}
+                                        <a href="{{ location.social_google_plus }}" target="_blank" class="social-icon google">
+                                            <span class="social-text">g+</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" target="_blank" class="social-icon google">
+                                            <span class="social-text">g+</span>
+                                        </a>
+                    {% endif %}
+                                    <a href="#" target="_blank" class="social-icon instagram">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="2" y="2" width="20" height="20" rx="5" stroke="#dc3545" stroke-width="2" fill="none"/>
+                                            <circle cx="12" cy="12" r="4" stroke="#dc3545" stroke-width="2" fill="none"/>
+                                            <circle cx="17.5" cy="6.5" r="1.5" fill="#dc3545"/>
+                                        </svg>
+                                    </a>
+                                    {% if location.social_pinterest %}
+                                        <a href="{{ location.social_pinterest }}" target="_blank" class="social-icon pinterest">
+                                            <span class="social-text">p</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#" target="_blank" class="social-icon pinterest">
+                                            <span class="social-text">p</span>
+                                        </a>
+                    {% endif %}
+                                </div>
+                            </div>
+                </div>
+                
+                        <!-- Operating Hours -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon today-header">
+                                <span class="section-icon">✓</span>
+                                <span>Today</span>
+                                <span class="hours-today">
+                                    {% if place.current_opening_hours and place.current_opening_hours.open_now %}
+                                        {% if place.current_opening_hours.weekday_text %}
+                                            {% with place.current_opening_hours.weekday_text.0 as today_line %}
+                                                {% if "Open" in today_line %}
+                                                    {{ today_line|slice:"6:" }}
+                                                {% else %}
+                                                    Open {{ today_line|slice:"9:" }}
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            Open Now
+                                        {% endif %}
+                                    {% elif place.opening_hours and place.opening_hours.weekday_text %}
+                                        {% with place.opening_hours.weekday_text.0 as today %}
+                                            {% if "Open" in today %}
+                                                {{ today|slice:"6:" }}
+                                            {% else %}
+                                                Open {{ today|slice:"9:" }}
+                        {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        Open 6:00 am - 11:00 pm
+                {% endif %}
+                                </span>
+                            </h3>
+                            <div class="hours-list">
+                                {% if place.current_opening_hours and place.current_opening_hours.weekday_text %}
+                                    {% for line in place.current_opening_hours.weekday_text %}
+                                        <div class="hours-item {% if 'Monday' in line %}hours-monday{% endif %} {% if 'Saturday' in line or 'Sunday' in line %}hours-all-day{% endif %}">{{ line }}</div>
+                                    {% endfor %}
+                                {% elif place.opening_hours and place.opening_hours.weekday_text %}
+                        {% for line in place.opening_hours.weekday_text %}
+                                        <div class="hours-item {% if 'Monday' in line %}hours-monday{% endif %} {% if 'Saturday' in line or 'Sunday' in line %}hours-all-day{% endif %}">{{ line }}</div>
+                        {% endfor %}
+                                {% else %}
+                                    <div class="hours-item hours-monday">Monday 6:00 AM - 11:00 PM</div>
+                                    <div class="hours-item">Tuesday 6:00 AM - 11:00 PM</div>
+                                    <div class="hours-item">Wednesday 6:00 AM - 11:00 PM</div>
+                                    <div class="hours-item">Thursday 6:00 AM - 11:00 PM</div>
+                                    <div class="hours-item">Friday 6:00 AM - 11:00 PM</div>
+                                    <div class="hours-item hours-all-day">Saturday Open All Day</div>
+                                    <div class="hours-item hours-all-day">Sunday Open All Day</div>
+                {% endif %}
+            </div>
+        </div>
+
+                        <!-- Nearby listings -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Nearby listings</span>
+                            </h3>
+                            <p class="nearby-text">Find more {% if place.types and place.types|length > 0 %}{{ place.types.0|title }}{% else %}Education{% endif %} near <strong>{{ place.name|default:"this location" }}</strong>.</p>
+                        </div>
+
+                        <!-- Browse Nearby -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Browse Nearby</span>
+                            </h3>
+                            <div class="browse-categories">
+                                <a href="#">Business</a>
+                                <a href="#">Food & Restaurants</a>
+                                <a href="#">Shopping</a>
+                                <a href="#">Travel & Tour</a>
+                                <a href="#">Show all</a>
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Price Range</span>
+                            </h3>
+                            <div class="price-range">
+                                {% if place.price_level %}
+                                    {% if place.price_level == 0 %}
+                                        Free
+                                    {% elif place.price_level == 1 %}
+                                        $ Price Range $10 - $30
+                                    {% elif place.price_level == 2 %}
+                                        $$ Price Range $30 - $60
+                                    {% elif place.price_level == 3 %}
+                                        $$$ Price Range $60 - $100
+                                    {% elif place.price_level == 4 %}
+                                        $$$$ Price Range $100 - $120
+                                    {% endif %}
+                                {% else %}
+                                    $$$$ Price Range $100 - $120
+        {% endif %}
+                            </div>
+    </div>
+
+                        <!-- Rating Average -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Rating Average</span>
+                            </h3>
+                            <div class="rating-average">
+                                <div class="avg-rating-value">
+                                    <span class="rating-number">{% if place.rating %}{{ place.rating }}{% else %}4.5{% endif %}</span>
+                                    <span class="rating-label-small">/5 Average</span>
+                                </div>
+                                <div class="rating-breakdown">
+                                    <div class="rating-category">
+                                        <span class="category-label">Quality</span>
+                                        <span class="category-score">{% if place.rating %}{{ place.rating|floatformat:0 }}{% else %}5{% endif %}</span>
+                                    </div>
+                                    <div class="rating-category">
+                                        <span class="category-label">Location</span>
+                                        <span class="category-score">{% if place.rating %}{{ place.rating|add:"-0.5"|floatformat:0|default:"4" }}{% else %}4{% endif %}</span>
+                                    </div>
+                                    <div class="rating-category">
+                                        <span class="category-label">Service</span>
+                                        <span class="category-score">{% if place.rating %}{{ place.rating|add:"-0.5"|floatformat:0|default:"4" }}{% else %}4{% endif %}</span>
+                                    </div>
+                                    <div class="rating-category">
+                                        <span class="category-label">Price</span>
+                                        <span class="category-score">{% if place.rating %}{{ place.rating|floatformat:0 }}{% else %}5{% endif %}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistic -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Statistic</span>
+                            </h3>
+                            <div class="statistics">
+                                <div class="stat-item">
+                                    <span class="stat-icon">👁️</span>
+                                    <span class="stat-text">{% if place.user_ratings_total %}{{ place.user_ratings_total|add:"10" }}{% else %}345{% endif %} Views</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">❤️</span>
+                                    <span class="stat-text">1 Favorite</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">⭐</span>
+                                    <span class="stat-text">{% if place.user_ratings_total %}{{ place.user_ratings_total }}{% else %}1{% endif %} Rating</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">📅</span>
+                                    <span class="stat-text">{% now "F d, Y" %}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Business -->
+                        <div class="sidebar-section">
+                            <h3 class="section-title-with-icon">
+                                <span class="section-icon">✓</span>
+                                <span>Contact Business</span>
+                            </h3>
+                            <div class="contact-business">
+                                <div class="contact-avatar">
+                                    <span>A</span>
+                                </div>
+                                <div class="contact-info">
+                                    <strong>accessadvisr</strong><br>
+                                    <span>example@apus.com</span>
+                                </div>
+                            </div>
+                            <form class="contact-form" onsubmit="return false;">
+                                <div class="form-group">
+                                    <label class="form-label">Subject</label>
+                                    <input type="text" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="email" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Message</label>
+                                    <textarea class="form-textarea" rows="4"></textarea>
+                                </div>
+                                <button type="submit" class="btn-send-message">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Pass data to JavaScript via JSON -->
+    {% if location.video_url or place.photos %}
+    <script type="application/json" id="place-data">
+    {
+        "videoUrl": {% if location.video_url %}"{{ location.video_url|escapejs }}"{% else %}null{% endif %},
+        "photoUrls": [
+            {% if place.photos %}
+            {% for p in place.photos %}
+            "{{ p|get_place_photo_url:GOOGLE_MAPS_API_KEY|escapejs }}"{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            {% endif %}
+        ]
+    }
+    </script>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script>
+        // Photo gallery functionality
+        let currentPhotoIndex = 0;
+        let photos = [];
+        
+        // Initialize data from JSON script tag
+        var placeDataScript = document.getElementById('place-data');
+        if (placeDataScript) {
+            var placeData = JSON.parse(placeDataScript.textContent);
+            
+            // Video is now handled server-side via template tag
+            // No need for JavaScript video URL manipulation
+            
+            // Initialize photos array
+            if (placeData.photoUrls && placeData.photoUrls.length > 0) {
+                photos = placeData.photoUrls;
+            }
+        }
+
+        function setMainPhoto(index) {
+            if (photos.length === 0) return;
+            
+            // Ensure index is within bounds
+            if (index < 0) index = 0;
+            if (index >= photos.length) index = photos.length - 1;
+            
+            currentPhotoIndex = index;
+            const mainPhoto = document.getElementById('main-photo');
+            const placeholder = document.getElementById('photo-placeholder');
+            const prevBtn = document.querySelector('.photo-prev');
+            const nextBtn = document.querySelector('.photo-next');
+            
+            if (mainPhoto && photos[index]) {
+                // Hide placeholder and show image
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+                
+                // Remove any error state classes
+                mainPhoto.classList.remove('error-state');
+                mainPhoto.closest('.photo-main')?.classList.remove('error-state');
+                
+                mainPhoto.style.display = 'block';
+                
+                // Show navigation buttons
+                if (prevBtn) prevBtn.style.display = 'block';
+                if (nextBtn) nextBtn.style.display = 'block';
+                
+                // Simple direct image change with fade effect
+                mainPhoto.style.opacity = '0';
+                mainPhoto.style.transition = 'opacity 0.3s ease';
+                
+                // Set new image source
+                const newSrc = photos[index];
+                
+                // Clear any previous error handlers
+                mainPhoto.onerror = null;
+                
+                // Decode HTML entities in URL (fix &amp; to &) - fixes 400 Bad Request error
+                const decodedSrc = newSrc.replace(/&amp;/g, '&');
+                
+                // Set the image source directly
+                mainPhoto.src = decodedSrc;
+                mainPhoto.alt = 'Photo ' + (index + 1);
+                
+                // Simple error handler that doesn't show error image
+                mainPhoto.onerror = function() {
+                    console.warn('Image failed to load:', decodedSrc);
+                    // If image fails, show placeholder text instead of error image
+                    if (placeholder) {
+                        placeholder.style.display = 'flex';
+                        placeholder.textContent = 'Image failed to load. Please try another image.';
+                    }
+                    mainPhoto.style.display = 'none';
+                    if (prevBtn) prevBtn.style.display = 'none';
+                    if (nextBtn) nextBtn.style.display = 'none';
+                    this.onerror = null; // Prevent infinite loop
+                };
+                
+                // Show image with fade effect
+                setTimeout(() => {
+                    mainPhoto.style.opacity = '1';
+                }, 50);
+            }
+            
+            // Update thumbnail active state
+            document.querySelectorAll('.photo-thumbnails img').forEach((img, i) => {
+                if (i === index) {
+                    img.classList.add('active');
+                    // Scroll thumbnail into view if needed
+                    img.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    img.classList.remove('active');
+                }
+            });
+        }
+
+        function changePhoto(direction) {
+            if (photos.length === 0) return;
+            
+            // Calculate new index with wrap-around
+            currentPhotoIndex = (currentPhotoIndex + direction + photos.length) % photos.length;
+            setMainPhoto(currentPhotoIndex);
+        }
+        
+        // Initialize: Don't show any image initially
+        // Only show when thumbnail is clicked
+        // Initialize all components when DOM is ready
+        function initializeComponents() {
+            // Photo gallery initialization
+            const mainPhoto = document.getElementById('main-photo');
+            const placeholder = document.getElementById('photo-placeholder');
+            const prevBtn = document.querySelector('.photo-prev');
+            const nextBtn = document.querySelector('.photo-next');
+            
+            if (mainPhoto) {
+                mainPhoto.style.display = 'none';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'flex';
+            }
+            if (prevBtn) {
+                prevBtn.style.display = 'none';
+            }
+            if (nextBtn) {
+                nextBtn.style.display = 'none';
+            }
+            
+            // Remove active class from first thumbnail initially
+            const firstThumbnail = document.querySelector('.photo-thumbnails img');
+            if (firstThumbnail) {
+                firstThumbnail.classList.remove('active');
+            }
+            
+            // Add click event delegation for photo thumbnails
+            const photoThumbnails = document.querySelector('.photo-thumbnails');
+            if (photoThumbnails) {
+                photoThumbnails.addEventListener('click', function(e) {
+                    var img = e.target.closest('img');
+                    if (img && img.dataset.photoIndex !== undefined) {
+                        var index = parseInt(img.dataset.photoIndex, 10);
+                        if (!isNaN(index)) {
+                            setMainPhoto(index);
+                        }
+                    }
+                });
+            }
+            
+            // Initialize photo gallery
+            if (photos.length > 0) {
+                setMainPhoto(0);
+                
+                // Add keyboard navigation
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowLeft') {
+                        changePhoto(-1);
+                    } else if (e.key === 'ArrowRight') {
+                        changePhoto(1);
+                    }
+                });
+            }
+            
+            // Initialize star ratings
+            initStarRatings();
+            
+            // Initialize image upload
+            initImageUpload();
+            
+            // Initialize review actions
+            initReviewActions();
+        }
+        
+        // Run initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeComponents();
+                // Scroll to top after page loads
+                window.scrollTo(0, 0);
+            });
+        } else {
+            initializeComponents();
+            // Scroll to top immediately if DOM already loaded
+            window.scrollTo(0, 0);
+        }
+        
+        // Ensure page starts at top on load
+        window.addEventListener('load', function() {
+            window.scrollTo(0, 0);
+        });
+        
+        // Prevent browser from restoring scroll position
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Define place coordinates once to avoid linter errors
+        const placeLatitude = parseFloat('{{ lat|default:0|floatformat:6 }}') || 0;
+        const placeLongitude = parseFloat('{{ lng|default:0|floatformat:6 }}') || 0;
+
+        function showPhone() {
+            document.querySelectorAll('.phone-masked').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.phone-full').forEach(el => el.style.display = 'inline');
+            document.querySelectorAll('.btn-show-phone, .btn-show-phone-small').forEach(el => el.style.display = 'none');
+        }
+
+        // Map tabs
+        document.querySelectorAll('.map-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // If it's the directions tab, open Google Maps directly in a new window
+                if (tabName === 'directions') {
+                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${placeLatitude},${placeLongitude}`;
+                    window.open(directionsUrl, '_blank');
+                    return;
+                }
+                
+                document.querySelectorAll('.map-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.getElementById('detail-map').style.display = tabName === 'map' ? 'block' : 'none';
+                document.getElementById('street-view').style.display = tabName === 'streetview' ? 'block' : 'none';
+                document.getElementById('directions-panel').style.display = tabName === 'directions' ? 'block' : 'none';
+                
+                if (tabName === 'streetview') {
+                    // Small delay to ensure the element is visible before initializing
+                    setTimeout(() => {
+                        initStreetView();
+                    }, 100);
+                }
+            });
+        });
+    </script>
+
+    {% if GOOGLE_MAPS_API_KEY and lat and lng and not place.error and place.name %}
+    <script>
+        async function createMarker(position, title, icon, mapInstance) {
+            if (typeof google.maps.marker === 'undefined' || !google.maps.marker.AdvancedMarkerElement) {
+                const markerOptions = {
+                    position: position,
+                    map: mapInstance,
+                    title: title,
+                    animation: google.maps.Animation.DROP
+                };
+                if (icon) {
+                    markerOptions.icon = icon;
+                }
+                return new google.maps.Marker(markerOptions);
+            }
+
+            const content = new google.maps.marker.PinElement({
+                background: '#4285F4',
+                borderColor: '#ffffff',
+                glyphColor: '#ffffff',
+                scale: 1.0
+            });
+
+            return new google.maps.marker.AdvancedMarkerElement({
+                map: mapInstance,
+                position: position,
+                title: title,
+                content: content
+            });
+        }
+        
+        async function initDetailMap() {
+            const detailMapElement = document.getElementById('detail-map');
+            if (!detailMapElement) {
+                console.error('Detail map element not found');
+                return;
+            }
+            
+            try {
+                // Hide error message
+                const detailErrorDiv = detailMapElement.querySelector('.map-error');
+                if (detailErrorDiv) {
+                    detailErrorDiv.style.display = 'none';
+                }
+                
+                const detailCenter = { lat: placeLatitude, lng: placeLongitude };
+                const detailMapOptions = {
+                zoom: 15,
+                    center: detailCenter
+                };
+                
+                // Only add mapId if AdvancedMarkerElement is available
+                if (typeof google.maps.marker !== 'undefined' && google.maps.marker.AdvancedMarkerElement) {
+                    detailMapOptions.mapId = 'DEMO_MAP_ID';
+                }
+                
+                const detailMap = new google.maps.Map(detailMapElement, detailMapOptions);
+                await createMarker(detailCenter, "{{ place.name|escapejs }}", null, detailMap);
+                
+                // Hide controls overlay when map loads successfully
+                const detailControlsOverlay = detailMapElement.querySelector('.map-controls-overlay');
+                if (detailControlsOverlay) {
+                    detailControlsOverlay.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error initializing detail map:', error);
+                // Show error message
+                const detailErrorDiv = detailMapElement.querySelector('.map-error');
+                if (detailErrorDiv) {
+                    detailErrorDiv.style.display = 'flex';
+                }
+            }
+        }
+
+        async function initSidebarMap() {
+            const sidebarMapElement = document.getElementById('sidebar-map');
+            if (!sidebarMapElement) {
+                console.error('Sidebar map element not found');
+                return;
+            }
+            
+            try {
+                // Hide error message
+                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
+                if (sidebarErrorDiv) {
+                    sidebarErrorDiv.style.display = 'none';
+                }
+                
+                const sidebarCenter = { lat: placeLatitude, lng: placeLongitude };
+                const sidebarMapOptions = {
+                    zoom: 15,
+                    center: sidebarCenter
+                };
+                
+                // Only add mapId if AdvancedMarkerElement is available
+                if (typeof google.maps.marker !== 'undefined' && google.maps.marker.AdvancedMarkerElement) {
+                    sidebarMapOptions.mapId = 'DEMO_MAP_ID';
+                }
+                
+                const sidebarMap = new google.maps.Map(sidebarMapElement, sidebarMapOptions);
+                await createMarker(sidebarCenter, "{{ place.name|escapejs }}", null, sidebarMap);
+                
+                // Hide controls overlay when map loads successfully
+                const sidebarControlsOverlay = sidebarMapElement.querySelector('.map-controls-overlay');
+                if (sidebarControlsOverlay) {
+                    sidebarControlsOverlay.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error initializing sidebar map:', error);
+                // Show error message
+                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
+                if (sidebarErrorDiv) {
+                    sidebarErrorDiv.style.display = 'flex';
+                }
+            }
+        }
+
+        let streetViewPanorama = null;
+
+        function initStreetView() {
+            const streetViewElement = document.getElementById('street-view');
+            if (!streetViewElement) {
+                console.error('Street View element not found');
+                return;
+            }
+
+            // Check if Google Maps API is loaded
+            if (typeof google === 'undefined' || !google.maps || !google.maps.StreetViewPanorama) {
+                console.error('Google Maps Street View API not loaded');
+                showStreetViewError('Google Maps Street View API not available');
+                return;
+            }
+
+            // Prevent multiple initializations
+            if (streetViewPanorama) {
+                return;
+            }
+
+            const streetViewCenter = { lat: placeLatitude, lng: placeLongitude };
+            
+            // Check if Street View is available for this location
+            const streetViewService = new google.maps.StreetViewService();
+            streetViewService.getPanorama({ location: streetViewCenter, radius: 50 }, function(data, status) {
+                if (status === 'OK') {
+                    // Street View is available, initialize panorama
+                    streetViewPanorama = new google.maps.StreetViewPanorama(
+                        streetViewElement,
+                        {
+                            position: streetViewCenter,
+                            pov: { heading: 0, pitch: 0 },
+                            zoom: 1,
+                            visible: true
+                        }
+                    );
+                    
+                    // Hide error message if visible
+                    const errorDiv = streetViewElement.querySelector('.map-error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
+                } else {
+                    // Street View not available for this location
+                    console.warn('Street View not available for this location:', status);
+                    showStreetViewError('Street View is not available for this location. Try a different location or use the Map view instead.');
+                }
+            });
+        }
+
+        function showStreetViewError(message) {
+            const streetViewElement = document.getElementById('street-view');
+            if (!streetViewElement) return;
+            
+            const errorDiv = streetViewElement.querySelector('.map-error');
+            if (errorDiv) {
+                errorDiv.style.display = 'flex';
+                const messageDiv = errorDiv.querySelector('.map-error-message');
+                if (messageDiv && message) {
+                    messageDiv.textContent = message;
+                }
+            }
+        }
+
+        // Global callback function for Google Maps API
+        window.initPlaceDetailMaps = function() {
+            if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
+                initDetailMap();
+                initSidebarMap();
+            } else {
+                // Show error if API didn't load
+                showMapErrors();
+            }
+        };
+
+        function showMapErrors() {
+            const maps = ['detail-map', 'sidebar-map'];
+            maps.forEach(mapId => {
+                const mapElement = document.getElementById(mapId);
+                if (mapElement) {
+                    const errorDiv = mapElement.querySelector('.map-error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'flex';
+                    }
+                }
+            });
+        }
+
+        // Try to initialize immediately if API is already loaded
+        if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
+            window.initPlaceDetailMaps();
+        } else {
+            // Show error messages initially
+            setTimeout(showMapErrors, 2000);
+        }
+
+        // Star rating labels and emojis
+        const ratingLabels = {
+            1: { text: 'Poor', emoji: '😞' },
+            2: { text: 'Fair', emoji: '😐' },
+            3: { text: 'Good', emoji: '🙂' },
+            4: { text: 'Very Good', emoji: '😊' },
+            5: { text: 'Excellent', emoji: '😎' }
+        };
+
+        // Color classes for stars
+        const starColors = {
+            green: '#4caf50',
+            yellow: '#ffc107',
+            red: '#dc3545'
+        };
+
+        // Initialize star ratings when DOM is ready
+        function initStarRatings() {
+            const ratingItems = document.querySelectorAll('.rating-item');
+            
+            ratingItems.forEach(item => {
+                const starRating = item.querySelector('.star-rating');
+                const stars = starRating.querySelectorAll('.star');
+                const labelRight = item.querySelector('.rating-label-right');
+                const color = starRating.getAttribute('data-color');
+                const currentRating = parseInt(starRating.getAttribute('data-rating')) || 5;
+                
+                // Set initial rating
+                updateStarRating(item, currentRating, color);
+                
+                // Add click handlers to each star
+                stars.forEach((star, index) => {
+                    star.style.cursor = 'pointer';
+                    star.addEventListener('click', function() {
+                        const value = parseInt(this.getAttribute('data-value'));
+                        updateStarRating(item, value, color);
+                    });
+                    
+                    star.addEventListener('mouseenter', function() {
+                        const value = parseInt(this.getAttribute('data-value'));
+                        highlightStars(starRating, value, color);
+                    });
+                });
+                
+                starRating.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(starRating.getAttribute('data-rating')) || 5;
+                    highlightStars(starRating, currentRating, color);
+                });
+            });
+        }
+
+        function updateStarRating(item, rating, color) {
+            const starRating = item.querySelector('.star-rating');
+            const labelRight = item.querySelector('.rating-label-right');
+            const stars = starRating.querySelectorAll('.star');
+            
+            starRating.setAttribute('data-rating', rating);
+            highlightStars(starRating, rating, color);
+            
+            // Update label
+            const labelData = ratingLabels[rating];
+            if (labelData) {
+                labelRight.textContent = `${labelData.text} ${labelData.emoji}`;
+            }
+        }
+
+        function highlightStars(starRating, rating, color) {
+            const stars = starRating.querySelectorAll('.star');
+            const colorValue = starColors[color] || starColors.green;
+            
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = colorValue;
+                    star.style.opacity = '1';
+                } else {
+                    star.style.color = '#ddd';
+                    star.style.opacity = '0.5';
+                }
+            });
+        }
+
+        // Image upload drag and drop functionality
+        function initImageUpload() {
+            const uploadArea = document.getElementById('imageUploadArea');
+            const galleryBtn = document.getElementById('galleryBtn');
+            
+            if (!uploadArea) return;
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                uploadArea.classList.add('drag-over');
+            }
+
+            function unhighlight(e) {
+                uploadArea.classList.remove('drag-over');
+            }
+
+            // Handle dropped files
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            function handleFiles(files) {
+                [...files].forEach(uploadFile);
+            }
+
+            function uploadFile(file) {
+                if (file.type.startsWith('image/')) {
+                    // Here you can add file upload logic
+                    console.log('File selected:', file.name);
+                    // You can show preview or upload to server
+                }
+            }
+
+            // Gallery button click
+            if (galleryBtn) {
+                galleryBtn.addEventListener('click', function() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.multiple = true;
+                    input.onchange = function(e) {
+                        handleFiles(e.target.files);
+                    };
+                    input.click();
+                });
+            }
+        }
+
+
+        // Submit review function
+        function submitReview(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('reviewForm');
+            const submitBtn = form.querySelector('.btn-submit-review');
+            const originalText = submitBtn.textContent;
+            
+            // Get form data
+            const placeId = document.getElementById('place_id').value;
+            const placeName = document.getElementById('place_name').value;
+            const authorName = document.getElementById('author_name').value.trim();
+            const authorEmail = document.getElementById('author_email').value.trim();
+            const reviewText = document.getElementById('review_text').value.trim();
+            const saveInfo = document.getElementById('save_info').checked;
+            
+            // Get ratings
+            const qualityRating = parseInt(document.getElementById('quality-rating').getAttribute('data-rating')) || 5;
+            const locationRating = parseInt(document.getElementById('location-rating').getAttribute('data-rating')) || 5;
+            const serviceRating = parseInt(document.getElementById('service-rating').getAttribute('data-rating')) || 5;
+            const priceRating = parseInt(document.getElementById('price-rating').getAttribute('data-rating')) || 5;
+            
+            // Validation
+            if (!authorName) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            if (!reviewText) {
+                alert('Please enter your review');
+                return;
+            }
+            
+            if (!placeId) {
+                alert('Place ID is missing');
+                return;
+            }
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'SUBMITTING...';
+            
+            // Prepare data
+            const data = {
+                place_id: placeId,
+                place_name: placeName,
+                author_name: authorName,
+                author_email: authorEmail,
+                review_text: reviewText,
+                quality_rating: qualityRating,
+                location_rating: locationRating,
+                service_rating: serviceRating,
+                price_rating: priceRating,
+                save_info: saveInfo
+            };
+            
+            // Submit review
+            fetch('/api/reviews/submit/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Show success message
+                    alert('Review submitted successfully!');
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Reset ratings to 5
+                    ['quality', 'location', 'service', 'price'].forEach(category => {
+                        const ratingEl = document.getElementById(category + '-rating');
+                        if (ratingEl) {
+                            updateStarRating(ratingEl.closest('.rating-item'), 5, ratingEl.getAttribute('data-color'));
+                        }
+                    });
+                    
+                    // Reload page to show new review
+                    location.reload();
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to submit review'));
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the review. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            });
+        }
+
+        // Initialize review action buttons
+        function initReviewActions() {
+            // Get or create user interaction storage
+            function getUserInteractions() {
+                const stored = localStorage.getItem('reviewInteractions');
+                return stored ? JSON.parse(stored) : {};
+            }
+            
+            function saveUserInteractions(interactions) {
+                localStorage.setItem('reviewInteractions', JSON.stringify(interactions));
+            }
+            
+            function hasUserInteracted(reviewId, actionType) {
+                const interactions = getUserInteractions();
+                const key = `${reviewId}_${actionType}`;
+                return interactions[key] === true;
+            }
+            
+            function setUserInteraction(reviewId, actionType, value) {
+                const interactions = getUserInteractions();
+                const key = `${reviewId}_${actionType}`;
+                interactions[key] = value;
+                saveUserInteractions(interactions);
+            }
+            
+            // Like, Dislike, Heart buttons (for both reviews and replies)
+            document.querySelectorAll('.review-like, .review-dislike, .review-heart').forEach(button => {
+                const reviewId = button.getAttribute('data-review-id');
+                const replyId = button.getAttribute('data-reply-id');
+                const itemId = reviewId || replyId;
+                
+                if (!itemId) return;
+                
+                const actionType = button.classList.contains('review-like') ? 'like' :
+                                  button.classList.contains('review-dislike') ? 'dislike' : 'heart';
+                
+                // Check if user already interacted and set initial state
+                if (hasUserInteracted(itemId, actionType)) {
+                    button.classList.add('active');
+                    button.style.opacity = '1';
+                }
+                
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (!itemId) return;
+                    
+                    // Check current state
+                    const isCurrentlyActive = hasUserInteracted(itemId, actionType);
+                    const willToggle = isCurrentlyActive; // If already active, toggle (unlike). If not active, like.
+                    
+                    // Disable button temporarily to prevent rapid clicks
+                    const originalText = this.textContent;
+                    this.disabled = true;
+                    
+                    // Prepare request data
+                    const requestData = {
+                        action: actionType,
+                        toggle: willToggle  // true = unlike, false = like
+                    };
+                    
+                    if (reviewId) {
+                        requestData.review_id = reviewId;
+                    } else if (replyId) {
+                        requestData.reply_id = replyId;
+                    }
+                    
+                    // Update engagement
+                    fetch('/api/reviews/engagement/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            // Update button text with new count
+                            const emoji = actionType === 'like' ? '👍' : actionType === 'dislike' ? '👎' : '❤️';
+                            const count = result[actionType + 's'];
+                            this.textContent = `${emoji} ${count}`;
+                            
+                            // Update interaction state
+                            if (result.is_active) {
+                                setUserInteraction(itemId, actionType, true);
+                                this.classList.add('active');
+                                this.style.opacity = '1';
+                            } else {
+                                setUserInteraction(itemId, actionType, false);
+                                this.classList.remove('active');
+                                this.style.opacity = '0.7';
+                            }
+                            
+                            // Add visual feedback
+                            this.style.transform = 'scale(1.2)';
+                            setTimeout(() => {
+                                this.style.transform = 'scale(1)';
+                            }, 200);
+                        } else {
+                            alert('Error: ' + (result.error || 'Failed to update'));
+                        }
+                        this.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                        this.disabled = false;
+                    });
+                });
+            });
+            
+            // Reply button (for both reviews and replies)
+            document.querySelectorAll('.review-reply').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const reviewItem = this.closest('.review-item');
+                    const replyItem = this.closest('.reply-item');
+                    let reviewId = this.getAttribute('data-review-id');
+                    const parentReplyId = this.getAttribute('data-reply-id'); // If replying to a reply
+                    
+                    // Determine if this is a nested reply (reply to a reply)
+                    const isNestedReply = !!parentReplyId;
+                    
+                    // If replying to a reply, get the parent review ID from the reply item
+                    if (!reviewId && replyItem) {
+                        reviewId = replyItem.getAttribute('data-review-id');
+                    }
+                    
+                    // If still no review ID, try to get from review item
+                    if (!reviewId && reviewItem) {
+                        reviewId = reviewItem.getAttribute('data-review-id');
+                    }
+                    
+                    // Determine target container - if nested reply, use reply item, otherwise use review item
+                    const targetContainer = isNestedReply ? replyItem : reviewItem;
+                    
+                    // Check if reply form already exists in the target container
+                    let replyForm = targetContainer ? targetContainer.querySelector('.reply-form') : null;
+                    
+                    if (replyForm) {
+                        // Toggle reply form
+                        replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+                    } else {
+                        // Create reply form
+                        const form = document.createElement('div');
+                        form.className = 'reply-form';
+                        form.style.marginTop = '1rem';
+                        form.style.padding = '1rem';
+                        form.style.background = '#f9f9f9';
+                        form.style.borderRadius = '8px';
+                        form.innerHTML = `
+                            <div style="margin-bottom: 0.5rem;">
+                                <input type="text" class="reply-author-name" placeholder="Your Name" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem;" required>
+                                <input type="email" class="reply-author-email" placeholder="your@mail.com" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem;">
+                            </div>
+                            <textarea class="reply-textarea" placeholder="Write your reply..." rows="3" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem; resize: vertical;" required></textarea>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-submit-reply" style="padding: 0.5rem 1rem; background: #1976d2; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Submit Reply</button>
+                                <button class="btn-cancel-reply" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Cancel</button>
+                            </div>
+                        `;
+                        
+                        // Find where to insert the form
+                        if (isNestedReply && replyItem) {
+                            // For nested replies, insert after the reply's actions
+                            const replyActions = replyItem.querySelector('.review-actions');
+                            const nestedRepliesList = replyItem.querySelector('.nested-replies-list');
+                            
+                            if (nestedRepliesList) {
+                                replyItem.insertBefore(form, nestedRepliesList);
+                            } else {
+                                // Insert after actions
+                                replyActions.parentNode.insertBefore(form, replyActions.nextSibling);
+                            }
+                        } else if (reviewItem) {
+                            // For top-level replies, insert before replies list
+                            const reviewContent = reviewItem.querySelector('.review-content');
+                            const repliesList = reviewItem.querySelector('.replies-list');
+                            
+                            if (repliesList) {
+                                reviewContent.insertBefore(form, repliesList);
+                            } else {
+                                reviewContent.appendChild(form);
+                            }
+                        }
+                        
+                        // Handle cancel
+                        form.querySelector('.btn-cancel-reply').addEventListener('click', function() {
+                            form.remove();
+                        });
+                        
+                        // Handle submit
+                        form.querySelector('.btn-submit-reply').addEventListener('click', function() {
+                            const authorName = form.querySelector('.reply-author-name').value.trim();
+                            const authorEmail = form.querySelector('.reply-author-email').value.trim();
+                            const replyText = form.querySelector('.reply-textarea').value.trim();
+                            
+                            if (!authorName) {
+                                alert('Please enter your name');
+                                return;
+                            }
+                            
+                            if (!replyText) {
+                                alert('Please enter your reply');
+                                return;
+                            }
+                            
+                            // Disable button
+                            this.disabled = true;
+                            this.textContent = 'Submitting...';
+                            
+                            // Prepare request data
+                            const requestData = {
+                                review_id: reviewId,
+                                author_name: authorName,
+                                author_email: authorEmail,
+                                reply_text: replyText
+                            };
+                            
+                            // If this is a nested reply, add parent_reply_id
+                            if (isNestedReply && parentReplyId) {
+                                requestData.parent_reply_id = parentReplyId;
+                            }
+                            
+                            // Submit reply
+                            fetch('/api/reviews/reply/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(requestData)
+                            })
+                            .then(response => response.json())
+                            .then(result => {
+                                if (result.success) {
+                                    // Remove form
+                                    form.remove();
+                                    
+                                    const date = new Date(result.reply.created_at);
+                                    const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                                    
+                                    // Create reply element
+                                    const replyDiv = document.createElement('div');
+                                    replyDiv.className = isNestedReply ? 'reply-item nested-reply' : 'reply-item';
+                                    replyDiv.setAttribute('data-reply-id', result.reply.id);
+                                    replyDiv.setAttribute('data-review-id', reviewId);
+                                    replyDiv.style.marginBottom = isNestedReply ? '0.5rem' : '0.75rem';
+                                    replyDiv.style.padding = '0.75rem';
+                                    replyDiv.style.background = isNestedReply ? '#f0f0f0' : '#f9f9f9';
+                                    replyDiv.style.borderRadius = '6px';
+                                    
+                                    replyDiv.innerHTML = `
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                            <strong style="font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; color: #333;">${result.reply.author_name}</strong>
+                                            <span style="color: #777; font-size: ${isNestedReply ? '0.8rem' : '0.85rem'};">${dateStr}</span>
+                                        </div>
+                                        <div style="color: #555; font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; line-height: 1.5; margin-bottom: 0.5rem;">${result.reply.reply_text}</div>
+                                        <div class="review-actions">
+                                            <button class="review-btn review-like" data-reply-id="${result.reply.id}" data-type="reply">👍 0</button>
+                                            <button class="review-btn review-dislike" data-reply-id="${result.reply.id}" data-type="reply">👎 0</button>
+                                            <button class="review-btn review-heart" data-reply-id="${result.reply.id}" data-type="reply">❤️ 0</button>
+                                            <a href="#" class="review-link review-reply" data-reply-id="${result.reply.id}" data-review-id="${reviewId}" data-type="reply">💬 Reply</a>
+                                            <a href="#" class="review-link review-edit" data-reply-id="${result.reply.id}" data-type="reply">✏️ Edit</a>
+                                        </div>
+                                    `;
+                                    
+                                    if (isNestedReply && replyItem) {
+                                        // Add to nested replies list
+                                        let nestedRepliesList = replyItem.querySelector('.nested-replies-list');
+                                        if (!nestedRepliesList) {
+                                            nestedRepliesList = document.createElement('div');
+                                            nestedRepliesList.className = 'nested-replies-list';
+                                            nestedRepliesList.style.marginTop = '0.75rem';
+                                            nestedRepliesList.style.paddingLeft = '1.5rem';
+                                            nestedRepliesList.style.borderLeft = '2px solid #e0e0e0';
+                                            replyItem.appendChild(nestedRepliesList);
+                                        }
+                                        nestedRepliesList.appendChild(replyDiv);
+                                    } else if (reviewItem) {
+                                        // Add to top-level replies list
+                                        const reviewContent = reviewItem.querySelector('.review-content');
+                                        let repliesList = reviewItem.querySelector('.replies-list');
+                                        if (!repliesList) {
+                                            repliesList = document.createElement('div');
+                                            repliesList.className = 'replies-list';
+                                            repliesList.style.marginTop = '1rem';
+                                            repliesList.style.paddingLeft = '1.5rem';
+                                            repliesList.style.borderLeft = '2px solid #e0e0e0';
+                                            reviewContent.appendChild(repliesList);
+                                        }
+                                        repliesList.appendChild(replyDiv);
+                                    }
+                                    
+                                    // Re-initialize actions for the new reply
+                                    setTimeout(() => {
+                                        initReviewActions();
+                                    }, 100);
+                                    
+                                    // Scroll to new reply
+                                    replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                } else {
+                                    alert('Error: ' + (result.error || 'Failed to submit reply'));
+                                    this.disabled = false;
+                                    this.textContent = 'Submit Reply';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('An error occurred. Please try again.');
+                                this.disabled = false;
+                                this.textContent = 'Submit Reply';
+                            });
+                        });
+                    }
+                });
+            });
+            
+            // Edit button
+            document.querySelectorAll('.review-edit').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const reviewItem = this.closest('.review-item');
+                    const reviewTextEl = reviewItem ? reviewItem.querySelector('.review-text') : null;
+                    
+                    if (!reviewTextEl) return;
+                    
+                    const currentText = reviewTextEl.textContent.trim();
+                    const reviewId = reviewItem ? reviewItem.getAttribute('data-review-id') : null;
+                    
+                    // Create edit form
+                    const editForm = document.createElement('div');
+                    editForm.className = 'edit-form';
+                    editForm.style.marginTop = '0.5rem';
+                    editForm.innerHTML = `
+                        <textarea class="form-textarea" style="width: 100%; margin-bottom: 0.5rem;">${currentText}</textarea>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-save-edit" style="padding: 0.5rem 1rem; background: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer;">Save</button>
+                            <button class="btn-cancel-edit" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer;">Cancel</button>
+                        </div>
+                    `;
+                    
+                    // Hide original text
+                    reviewTextEl.style.display = 'none';
+                    reviewTextEl.parentNode.insertBefore(editForm, reviewTextEl.nextSibling);
+                    
+                    // Handle cancel
+                    editForm.querySelector('.btn-cancel-edit').addEventListener('click', function() {
+                        reviewTextEl.style.display = 'block';
+                        editForm.remove();
+                    });
+                    
+                    // Handle save (you can implement edit submission later)
+                    editForm.querySelector('.btn-save-edit').addEventListener('click', function() {
+                        const newText = editForm.querySelector('textarea').value.trim();
+                        if (newText && newText !== currentText) {
+                            alert('Edit functionality will be implemented. New text: ' + newText);
+                            reviewTextEl.textContent = newText;
+                        }
+                        reviewTextEl.style.display = 'block';
+                        editForm.remove();
+                    });
+                });
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=marker&callback=initPlaceDetailMaps&loading=async" async defer></script>
+    {% endif %}
+</body>
+</html>

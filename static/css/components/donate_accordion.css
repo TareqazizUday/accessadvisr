@@ -1,0 +1,37 @@
+/* Unique Prefixed Styles for FAQ Accordion */
+.donate_card_accordion {
+    border-color: #dee2e6 !important;
+}
+
+.donate_card_btn {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    font-size: 1.1rem;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Removes the blue focus ring and background color from Bootstrap */
+.donate_card_btn:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.donate_card_btn:not(.collapsed) {
+    box-shadow: none;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.donate_card_body {
+    padding: 1.5rem;
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+/* Bullet styling for the "What funds will be used for" section */
+.donate_card_body ul {
+    padding-left: 1.2rem;
+}
+
+.donate_card_body ul li {
+    margin-bottom: 8px;
+}

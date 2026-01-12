@@ -1,0 +1,49 @@
+@import url("components/navbar.css");
+@import url("components/map_section.css");
+@import url("components/explore_section.css");
+@import url("components/card.css");
+@import url("components/contribution_card.css");
+@import url("components/status.css");
+@import url("components/testimonialCarousel.css");
+@import url("components/inner_header.css");
+@import url("components/video_slider.css");
+@import url("components/sponsor-heading.css");
+@import url("components/sponsor_card.css");
+@import url("components/sponsor_slide.css");
+@import url("components/partners_and_friends_slide.css");
+@import url("components/price_table_card.css");
+@import url("components/blogs_card.css");
+@import url("components/location_card.css");
+@import url("components/contact_form_section.css");
+@import url("components/about_section.css");
+@import url("components/donate_card_section.css");
+@import url("components/donate_accordion.css");
+@import url("components/listing_half_map.css");
+
+
+@import url("components/footer.css");
+
+/* global styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Update your btn-orange to ensure it doesn't break alignment */
+.btn-orange {
+    background-color: #FF431E !important; 
+    color: white !important;
+    border: none;
+    padding: 10px 20px !important; /* Slightly adjusted for better vertical centering */
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+        display: inline-block !important;
+    width: auto !important;
+}
+
+.spacer{
+    height: 100px;
+}
+
+/*--------------------------------------------------------------------*/

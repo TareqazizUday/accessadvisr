@@ -1,0 +1,1518 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listing Half Map - AccessAdvisr</title>
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+            /* Additional inline styles only for map-specific adjustments */
+            #resultsMap, #mobileMap {
+            width: 100%;
+                height: 100%;
+                min-height: 600px;
+            }
+            
+            /* Ensure no extra space below map */
+            body, html {
+                overflow-x: hidden;
+            }
+            
+            .listing-half-map-section {
+                height: calc(100vh - 120px) !important;
+                overflow: hidden !important;
+            }
+            
+            .listing-half-map-section .row {
+                height: 100%;
+                margin: 0 !important;
+            }
+            
+            .loading {
+            text-align: center;
+                padding: 3rem;
+            color: #666;
+            }
+            
+            .no-results {
+                text-align: center;
+                padding: 3rem;
+                color: #999;
+            }
+            
+            /* Full Page Loader Overlay */
+            .full-page-loader {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.95);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            }
+            
+            .full-page-loader.hidden {
+                display: none;
+            }
+            
+            .loader-spinner {
+            width: 60px;
+            height: 60px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #FF431E;
+            border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 1.5rem;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .loader-text {
+            color: #333;
+                font-size: 1.1rem;
+            font-weight: 600;
+            }
+        </style>
+</head>
+<body>
+    
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!-- Full Page Loader -->
+<div class="full-page-loader" id="fullPageLoader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading results...</div>
+</div>
+
+<!----- inner header section ------>
+    <section class="partners-header-section">
+        <div class="container text-center py-2">
+            <h1 class="text-white fw-bold mb-1">Listing Half Map</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                    <li class="breadcrumb-item active text-orange" aria-current="page">LISTING HALF MAP</li>
+                </ol>
+            </nav>
+        </div>
+    </section>
+
+<!-- Main Listing Half Map Section -->
+<section class="listing-half-map-section">
+    <div class="row g-0">
+        
+        <!-- Left Side - Listings -->
+        <div class="col-lg-6 listings-panel">
+            <!-- Mobile Filter Toggle -->
+            <div class="filter-toggle-bar d-md-none p-3 bg-white border-bottom">
+                <button class="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
+                    <i class="bi bi-funnel me-2"></i> Show Filters
+                </button>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section p-4 bg-white border-bottom collapse show" id="filterSection">
+                <div class="row g-3">
+                    
+                    <!-- Row 1: Keywords & Category -->
+                    <div class="col-12 col-md-6">
+                        <input type="text" id="filterKeywords" class="form-control filter-input" placeholder="Keywords...">
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <select id="filterType" class="form-select">
+                            <option value="" selected disabled>Filter by category</option>
+                            <option value="education">Education</option>
+                            <option value="food">Food & Restaurants</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="sport">Sport</option>
+                            <option value="travel">Travel & Tour</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Type -->
+                    <div class="mb-3">
+                        <select id="filterJobType" class="form-select">
+                            <option value="" selected disabled>Filter by type</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="fulltime">Full Time</option>
+                            <option value="internship">Internship</option>
+                            <option value="parttime">Part Time</option>
+                            <option value="temporary">Temporary</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Country -->
+                    <div class="mb-3">
+                        <select id="filterCountry" class="form-select">
+                            <option value="" selected disabled>Filter by country</option>
+                            <option value="usa">USA</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="canada">Canada</option>
+                            <option value="australia">Australia</option>
+                            <option value="germany">Germany</option>
+                            <option value="france">France</option>
+                            <option value="india">India</option>
+                            <option value="china">China</option>
+                            <option value="japan">Japan</option>
+                            <option value="brazil">Brazil</option>
+                            <option value="mexico">Mexico</option>
+                            <option value="spain">Spain</option>
+                            <option value="italy">Italy</option>
+                            <option value="netherlands">Netherlands</option>
+                            <option value="switzerland">Switzerland</option>
+                            <option value="singapore">Singapore</option>
+                            <option value="uae">UAE</option>
+                            <option value="new-zealand">New Zealand</option>
+                            <option value="south-korea">South Korea</option>
+                            <option value="thailand">Thailand</option>
+                        </select>
+                    </div>
+                    
+                    <!-- City -->
+                    <div class="mb-3">
+                        <input type="text" id="filterCity" class="form-control" placeholder="City">
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <input type="text" id="filterLocation" class="form-control" placeholder="Location">
+                    </div>
+                    
+                    <!-- Price Range Dropdown -->
+                    <div class="mb-4">
+                        <select id="priceRangeSelect" class="form-select">
+                            <option value="" selected disabled>Price Range</option>
+                            <option value="0-100">$0 - $100</option>
+                            <option value="100-500">$100 - $500</option>
+                            <option value="500-1000">$500 - $1,000</option>
+                            <option value="1000+">$1,000+</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Price Slider -->
+                    <div class="mb-4">
+                        <label class="form-label small text-muted">Price: <span class="fw-semibold text-dark">$<span id="priceMinValue">0</span> - $<span id="priceMaxValue">1,000,000</span></span></label>
+                        <div class="dual-range-slider">
+                            <div class="slider-track"></div>
+                            <div class="slider-range" id="sliderRange"></div>
+                            <input type="range" min="0" max="1000000" value="0" id="minRange" class="thumb thumb-left">
+                            <input type="range" min="0" max="1000000" value="1000000" id="maxRange" class="thumb thumb-right">
+                        </div>
+                    </div>
+                
+                    <!-- Filter by Features -->
+                    <div class="col-12 mt-3">
+                        <h6 class="fw-bold text-dark mb-3">Filter by Features</h6>
+                    </div>
+                    
+                    <!-- Filter Button -->
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <button class="btn btn-orange px-4 py-2 fw-semibold" onclick="applyFilters()">FILTER</button>
+                </div>
+                
+                    </div>
+                </div>
+                
+            <!-- Results Bar -->
+            <div class="results-bar p-3 bg-light border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <span class="results-count text-muted">
+                            <strong id="resultCount">0</strong> Results Found <span class="d-none d-md-inline">(Showing <span id="showingRange">0-0</span>)</span>
+                        </span>
+                        </div>
+                    <div class="col-6">
+                        <select id="sortOrder" class="form-select form-select-sm float-end" style="width: auto;">
+                            <option selected>Default Order</option>
+                            <option value="newest">Newest First</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                        </div>
+                        </div>
+                        </div>
+
+            <!-- Listings Grid -->
+            <div class="listings-container p-3">
+                <div class="row g-3" id="resultsList">
+                    <!-- Results will be loaded here -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-orange px-5 py-2 btn-orange" id="loadMoreBtn" style="display: none;">
+                        <i class="bi bi-arrow-repeat me-2"></i> Load More Listings
+                    </button>
+                        </div>
+                        </div>
+
+                        </div>
+
+        <!-- Right Side - Map -->
+        <div class="col-lg-6 map-panel d-none d-lg-block">
+            <div class="map-container" id="resultsMap">
+                    </div>
+                </div>
+                
+            </div>
+</section>
+
+<!-- Mobile Map Toggle Button (Fixed) -->
+<button class="mobile-map-btn d-lg-none" id="mobileMapToggle" style="display: none;">
+    <i class="bi bi-map-fill"></i>
+</button>
+
+<!-- Mobile Map Modal -->
+<div class="modal fade" id="mobileMapModal" tabindex="-1">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Map View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="mobileMap" style="width: 100%; height: 100%;"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    {% if GOOGLE_MAPS_API_KEY %}
+    <script>
+        let placesService = null;
+        let map = null;
+        let markers = [];
+        let allResults = [];
+        
+        // Full page loader functions
+        function showFullPageLoader(text = 'Loading results...') {
+            const loader = document.getElementById('fullPageLoader');
+            if (loader) {
+                const loaderText = loader.querySelector('.loader-text');
+                if (loaderText) {
+                    loaderText.textContent = text;
+                }
+                loader.classList.remove('hidden');
+            }
+        }
+        
+        function hideFullPageLoader() {
+            const loader = document.getElementById('fullPageLoader');
+            if (loader) {
+                loader.classList.add('hidden');
+            }
+        }
+        
+        // Helper function to create marker using AdvancedMarkerElement
+        async function createMarker(position, title, icon, mapInstance) {
+            // Wait for marker library to load if not immediately available
+            let retries = 0;
+            while (retries < 10 && (typeof google.maps.marker === 'undefined' || !google.maps.marker.AdvancedMarkerElement)) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                retries++;
+            }
+            
+            // Check if AdvancedMarkerElement is available
+            if (typeof google.maps.marker !== 'undefined' && google.maps.marker.AdvancedMarkerElement) {
+                // Use AdvancedMarkerElement
+                let content = null;
+                if (icon && icon.url) {
+                    const img = document.createElement('img');
+                    img.src = icon.url;
+                    img.style.width = icon.scaledSize ? icon.scaledSize.width + 'px' : '32px';
+                    img.style.height = icon.scaledSize ? icon.scaledSize.height + 'px' : '32px';
+                    img.style.objectFit = 'contain';
+                    img.style.display = 'block';
+                    content = img;
+                } else {
+                    content = new google.maps.marker.PinElement({
+                        background: '#4285F4',
+                        borderColor: '#ffffff',
+                        glyphColor: '#ffffff',
+                        scale: 1.0
+                    });
+                }
+
+                return new google.maps.marker.AdvancedMarkerElement({
+                    map: mapInstance,
+                    position: position,
+                    title: title,
+                    content: content
+                });
+            }
+            
+            // Fallback to traditional Marker only if AdvancedMarkerElement is truly unavailable
+            console.warn('AdvancedMarkerElement not available, using traditional Marker as fallback');
+            const markerOptions = {
+                position: position,
+                map: mapInstance,
+                title: title,
+                animation: google.maps.Animation.DROP
+            };
+            if (icon) {
+                markerOptions.icon = icon;
+            }
+            return new google.maps.Marker(markerOptions);
+        }
+        
+        function initMap() {
+            const mapElement = document.getElementById('resultsMap');
+            if (!mapElement) {
+                console.error('Map element not found');
+                return;
+            }
+            
+            const defaultCenter = { lat: 23.8103, lng: 90.4125 };
+            
+            map = new google.maps.Map(mapElement, {
+                zoom: 12,
+                center: defaultCenter,
+                mapId: 'DEMO_MAP_ID', // Required for Advanced Markers
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_LEFT,
+                    mapTypeIds: ['roadmap', 'satellite']
+                },
+                streetViewControl: false,
+                fullscreenControl: true,
+            });
+            
+            placesService = new google.maps.places.PlacesService(map);
+            showFullPageLoader('Loading results...');
+            loadSearchResults();
+        }
+        
+        function loadGoogleMaps() {
+            const script = document.createElement('script');
+            script.src = 'https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places,marker&callback=initMap&loading=async';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+        
+        loadGoogleMaps();
+        
+        // Color mapping for different place types (must match map_section.html)
+        const typeColors = {
+            'hospital': '#E91E63',    // Pink/Red for Healthcare
+            'school': '#4285F4',      // Blue
+            'university': '#4285F4',  // Blue
+            'restaurant': '#EA4335',  // Red
+            'food': '#EA4335',        // Red
+            'meal_takeaway': '#EA4335', // Red
+            'meal_delivery': '#EA4335', // Red
+            'cafe': '#EA4335',        // Red
+            'bar': '#EA4335',         // Red
+            'movie_theater': '#FBBC04', // Yellow
+            'amusement_park': '#FBBC04', // Yellow
+            'zoo': '#FBBC04',         // Yellow
+            'night_club': '#FBBC04',  // Yellow
+            'shopping_mall': '#34A853', // Green
+            'store': '#34A853',       // Green
+            'supermarket': '#34A853', // Green
+            'gym': '#FF6D00',         // Orange
+            'stadium': '#FF6D00',     // Orange
+            'travel_agency': '#9C27B0', // Purple
+            'lodging': '#2196F3',     // Blue for Hotels
+            'tourist_attraction': '#9C27B0', // Purple
+            'establishment': '#757575' // Gray
+        };
+
+        // Get category name from place types (must match map_section.html)
+        function getCategoryName(types) {
+            if (types.some(t => ['hospital'].includes(t))) return 'Healthcare';
+            if (types.some(t => ['lodging'].includes(t))) return 'Hotels';
+            if (types.some(t => ['school', 'university'].includes(t))) return 'Education';
+            if (types.some(t => ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'cafe', 'bar'].includes(t))) return 'Food & Restaurants';
+            if (types.some(t => ['movie_theater', 'amusement_park', 'zoo', 'night_club'].includes(t))) return 'Entertainment';
+            if (types.some(t => ['shopping_mall', 'store', 'supermarket'].includes(t))) return 'Shopping';
+            if (types.some(t => ['gym', 'stadium'].includes(t))) return 'Sport';
+            if (types.some(t => ['travel_agency', 'tourist_attraction'].includes(t))) return 'Travel & Tour';
+            return 'Business';
+        }
+
+        // Get icon symbol for category (must match map_section.html)
+        function getCategorySymbol(category) {
+            const symbols = {
+                'Healthcare': '🏥',
+                'Hotels': '🏨',
+                'Education': '🎓',
+                'Food & Restaurants': '🍽️',
+                'Entertainment': '🎬',
+                'Shopping': '🛍️',
+                'Sport': '⚽',
+                'Travel & Tour': '✈️',
+                'Business': '🏢'
+            };
+            return symbols[category] || '📍';
+        }
+
+        // Function to create custom marker icon with emoji/symbol (must match map_section.html)
+        function createMarkerIcon(category, typeColor) {
+            const symbol = getCategorySymbol(category);
+            
+            // Create a canvas to draw the icon
+            const canvas = document.createElement('canvas');
+            canvas.width = 50;
+            canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw white circle background with border
+            ctx.beginPath();
+            ctx.arc(25, 25, 22, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = typeColor;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Draw shadow effect
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+
+            // Draw emoji/symbol in center
+            ctx.font = '24px Arial'; // Larger font for better visibility
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#333'; // Dark color for emoji
+            ctx.fillText(symbol, 25, 25);
+            
+            return {
+                url: canvas.toDataURL(),
+                scaledSize: new google.maps.Size(50, 50), // Larger icon size
+                anchor: new google.maps.Point(25, 25) // Center the anchor
+            };
+        }
+        
+        // Common place types for Google Places API
+        const commonPlaceTypes = [
+            { name: 'Education', value: 'education', searchTerms: 'school university college academy institute', googleTypes: ['school', 'university'] },
+            { name: 'Food & Restaurants', value: 'food', searchTerms: 'restaurant cafe bar food meal dining', googleTypes: ['restaurant', 'cafe', 'bar', 'meal_takeaway', 'meal_delivery', 'food'] },
+            { name: 'Entertainment', value: 'entertainment', searchTerms: 'movie theater cinema park amusement zoo nightclub entertainment', googleTypes: ['movie_theater', 'amusement_park', 'zoo', 'night_club', 'bowling_alley', 'casino'] },
+            { name: 'Shopping', value: 'shopping', searchTerms: 'shopping mall store shop market supermarket', googleTypes: ['shopping_mall', 'store', 'supermarket', 'department_store', 'clothing_store'] },
+            { name: 'Sport', value: 'sport', searchTerms: 'gym fitness stadium sport', googleTypes: ['gym', 'stadium', 'sports_club'] },
+            { name: 'Travel & Tour', value: 'travel', searchTerms: 'travel tour agency hotel tourist attraction', googleTypes: ['travel_agency', 'tourist_attraction', 'lodging', 'airport', 'bus_station', 'train_station'] }
+        ];
+        
+        // Load categories from API
+        async function loadCategories() {
+            try {
+                console.log('Loading categories...');
+                const filterTypeSelect = document.getElementById('filterType');
+                
+                if (!filterTypeSelect) {
+                    console.error('Filter type select element not found');
+                    return;
+                }
+                
+                // Clear existing options
+                filterTypeSelect.innerHTML = '<option value="" selected disabled>Filter by category</option>';
+                
+                // First, add common place types
+                commonPlaceTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.value;
+                    option.textContent = type.name;
+                    filterTypeSelect.appendChild(option);
+                });
+                
+                // Then try to load categories from database
+                try {
+                    const response = await fetch('/api/categories/');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Categories API response:', data);
+                        
+                        // Handle both array and paginated response
+                        let categories = [];
+                        if (data.results && Array.isArray(data.results)) {
+                            categories = data.results;
+                        } else if (Array.isArray(data)) {
+                            categories = data;
+                        }
+                        
+                        console.log('Processing categories:', categories);
+                        
+                        if (categories.length > 0) {
+                            // Add database categories (avoid duplicates)
+                            const existingValues = new Set(commonPlaceTypes.map(t => t.value));
+                            categories.forEach(category => {
+                                const categoryValue = category.name ? category.name.toLowerCase() : '';
+                                // Only add if not already in common types
+                                if (categoryValue && !existingValues.has(categoryValue)) {
+                                    const option = document.createElement('option');
+                                    option.value = categoryValue;
+                                    option.textContent = category.name || 'Unknown';
+                                    filterTypeSelect.appendChild(option);
+                                }
+                            });
+                            console.log('Successfully loaded', categories.length, 'categories from database');
+                        }
+                    } else {
+                        console.log('Could not load categories from API, using default types only');
+                    }
+                } catch (apiError) {
+                    console.log('Error loading categories from API:', apiError);
+                    console.log('Using default place types only');
+                }
+                
+                console.log('Total options in dropdown:', filterTypeSelect.options.length);
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+        
+        // Load categories when page is ready
+        window.addEventListener('load', function() {
+            setTimeout(loadCategories, 100); // Small delay to ensure DOM is ready
+            setTimeout(initializeAmenityFilter, 200); // Initialize amenity filter after DOM is ready
+        });
+        
+        function applyFilters() {
+            // Show full page loader
+            showFullPageLoader('Applying filters...');
+            const resultCount = document.getElementById('resultCount');
+            if (resultCount) resultCount.textContent = 'Loading...';
+            
+            // Clear existing results and markers
+            allResults = [];
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            
+            // Reload results with filters
+            loadSearchResults();
+        }
+        
+        function getFilterValues() {
+            return {
+                keywords: document.getElementById('filterKeywords')?.value || '',
+                type: document.getElementById('filterType')?.value || '',
+                jobType: document.getElementById('filterJobType')?.value || '',
+                country: document.getElementById('filterCountry')?.value || '',
+                city: document.getElementById('filterCity')?.value || '',
+                location: document.getElementById('filterLocation')?.value || '',
+                priceMin: document.getElementById('minRange')?.value || '0',
+                priceMax: document.getElementById('maxRange')?.value || '1000000',
+                features: [] // No feature checkboxes in PHP template
+            };
+        }
+        
+        // Map amenity names to feature values
+        function getAmenityToFeatureMap() {
+            return {
+                'Accepts Credit Cards': 'accepts_credit_cards',
+                'Alarm System': 'alarm_system',
+                'Bike Parking': 'bike_parking',
+                'Coupons': 'coupons',
+                'Elevator': 'elevator',
+                'Outdoor Seating': 'outdoor_seating',
+                'Parking Street': 'parking_street',
+                'Reservations': 'reservations',
+                'Security Cameras': 'security_cameras',
+                'Smoking Allowed': 'smoking_allowed',
+                'Wheelchair Accessible': 'wheelchair_accessible',
+                'Wireless Internet': 'wireless_internet'
+            };
+        }
+        
+        // Map feature values to search keywords
+        function getFeatureKeywords(features) {
+            const featureMap = {
+                'accepts_credit_cards': 'credit card payment',
+                'alarm_system': 'alarm security',
+                'bike_parking': 'bike parking bicycle',
+                'coupons': 'coupons discount',
+                'elevator': 'elevator',
+                'outdoor_seating': 'outdoor seating patio',
+                'parking_street': 'street parking',
+                'reservations': 'reservations booking',
+                'security_cameras': 'security cameras cctv',
+                'smoking_allowed': 'smoking allowed',
+                'wheelchair_accessible': 'wheelchair accessible disabled access',
+                'wireless_internet': 'wifi wireless internet'
+            };
+            
+            return features.map(f => featureMap[f] || f.replace(/_/g, ' ')).join(' ');
+        }
+        
+        // Initialize amenity filter from URL parameter
+        function initializeAmenityFilter() {
+            const amenityName = '{{ amenity|escapejs }}';
+            if (amenityName) {
+                const amenityMap = getAmenityToFeatureMap();
+                const featureValue = amenityMap[amenityName];
+                
+                if (featureValue) {
+                    // Find and check the corresponding checkbox
+                    const checkbox = document.querySelector(`.features-checkboxes input[value="${featureValue}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        
+                        // Show message below filter button
+                        const filterContainer = document.querySelector('.filter-section');
+                        let messageDiv = filterContainer.querySelector('.amenity-filter-message');
+                        if (!messageDiv) {
+                            messageDiv = document.createElement('div');
+                            messageDiv.className = 'amenity-filter-message';
+                            messageDiv.style.cssText = 'margin-top: 1rem; padding: 0.75rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404; font-size: 0.9rem;';
+                            filterContainer.appendChild(messageDiv);
+                        }
+                        messageDiv.textContent = `Showing results for Amenity: ${amenityName}`;
+                        
+                        // Automatically apply filter after a short delay to ensure map is initialized
+                        setTimeout(() => {
+                            applyFilters();
+                        }, 500);
+                    }
+                }
+            }
+        }
+        
+        async function loadSearchResults() {
+            // Get filter values
+            const filters = getFilterValues();
+            
+            // Get initial search params from URL
+            let locationName = '{{ location_name|escapejs }}';
+            let categoryName = '{{ category_name|escapejs }}';
+            let keywords = '{{ keywords|escapejs }}';
+            
+            // Override with filter values if provided
+            if (filters.location) locationName = filters.location;
+            if (filters.type) categoryName = filters.type;
+            if (filters.city) {
+                if (locationName) locationName = `${filters.city}, ${locationName}`;
+                else locationName = filters.city;
+            }
+            if (filters.country) {
+                if (locationName) locationName = `${locationName}, ${filters.country}`;
+                else locationName = filters.country;
+            }
+            
+            const resultsList = document.getElementById('resultsList');
+            const resultCount = document.getElementById('resultCount');
+            
+            // Build query from filters
+            let searchQuery = '';
+            
+            // Add keywords to query
+            if (keywords || filters.keywords) {
+                searchQuery = keywords || filters.keywords;
+            }
+            
+            // Add type/category to query
+            if (categoryName) {
+                // Find the category object from commonPlaceTypes
+                const typeObj = commonPlaceTypes.find(t => t.value === categoryName);
+                if (typeObj) {
+                    // Use search terms for better results
+                    const searchTerm = typeObj.searchTerms ? typeObj.searchTerms.split(' ')[0] : typeObj.name;
+                    if (searchQuery) {
+                        searchQuery = `${searchQuery} ${searchTerm}`;
+                    } else {
+                        searchQuery = searchTerm;
+                    }
+                } else {
+                    if (searchQuery) {
+                        searchQuery = `${searchQuery} ${categoryName}`;
+                    } else {
+                        searchQuery = categoryName;
+                    }
+                }
+            }
+            
+            // Add features to query
+            if (filters.features && filters.features.length > 0) {
+                const featureKeywords = getFeatureKeywords(filters.features);
+                if (searchQuery) {
+                    searchQuery = `${searchQuery} ${featureKeywords}`;
+                } else {
+                    searchQuery = featureKeywords;
+                }
+            }
+            
+            // Add location to query
+            if (locationName) {
+                if (searchQuery) {
+                    searchQuery = `${searchQuery} in ${locationName}`;
+                } else {
+                    searchQuery = locationName;
+                }
+            }
+            
+            if (!placesService) {
+                resultsList.innerHTML = '<div class="no-results">Google Places service not available</div>';
+                resultCount.textContent = '0 Results Found (Showing 0-0)';
+                return;
+            }
+            
+            // Function to perform nearby search (for default searches)
+            function performNearbySearch(centerLocation) {
+                showFullPageLoader('Searching nearby places...');
+                allResults = [];
+                let completedSearches = 0;
+                const searchTypes = ['restaurant', 'lodging', 'cafe', 'shopping_mall', 'hospital', 'school'];
+                
+                searchTypes.forEach(function(type) {
+                    const request = {
+                        location: new google.maps.LatLng(centerLocation.lat, centerLocation.lng),
+                        radius: 2000,
+                        type: type
+                    };
+                    
+                    placesService.nearbySearch(request, function(results, status) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                            results.forEach(function(place) {
+                                if (!allResults.find(p => p.place_id === place.place_id)) {
+                                    allResults.push(place);
+                                }
+                            });
+                        }
+                        
+                        completedSearches++;
+                        if (completedSearches === searchTypes.length) {
+                            console.log(`Total results found: ${allResults.length}`);
+                            fetchPhoneNumbersForPlaces(allResults).then(() => {
+                                fetchAccessibilityInfoForPlaces(allResults).then(() => {
+                                    displayResults(allResults);
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+            
+            // If no search query, try to get user location or use default
+            if (!searchQuery.trim() && !locationName) {
+                // Try to get user's current location for default search
+                if (navigator.geolocation) {
+                    showFullPageLoader('Getting your location...');
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            map.setCenter(userLocation);
+                            performNearbySearch(userLocation);
+                        },
+                        function(error) {
+                            // Use default location (Dhaka, Bangladesh)
+                            const defaultLocation = { lat: 23.8103, lng: 90.4125 };
+                            map.setCenter(defaultLocation);
+                            performNearbySearch(defaultLocation);
+                        },
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
+                    return;
+                } else {
+                    // No geolocation, use default location
+                    const defaultLocation = { lat: 23.8103, lng: 90.4125 };
+                    map.setCenter(defaultLocation);
+                    performNearbySearch(defaultLocation);
+                return;
+                }
+            }
+            
+            showFullPageLoader('Loading results...');
+            
+            allResults = [];
+            let isResolved = false;
+            
+            // Update map center if location is provided
+            let mapCenter = map.getCenter();
+            
+            // Function to perform search after geocoding (if needed)
+            const performSearch = (centerLocation) => {
+            const request = {
+                query: searchQuery,
+                    location: centerLocation,
+                    radius: 2000  // 2000 meters = 2km radius
+            };
+            
+            console.log('Searching with query:', searchQuery);
+                console.log('Search location:', centerLocation);
+                console.log('Search radius: 2000 meters');
+            
+            const handlePage = async (results, status, pagination) => {
+                if (isResolved) return;
+                
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    allResults.push(...results);
+                        console.log(`Received ${results.length} results, total: ${allResults.length}`);
+                        
+                    if (pagination && pagination.hasNextPage) {
+                        setTimeout(() => {
+                            pagination.nextPage();
+                        }, 2000);
+                    } else {
+                        isResolved = true;
+                            console.log(`Total results found: ${allResults.length}`);
+                        // Fetch phone numbers for all places
+                        await fetchPhoneNumbersForPlaces(allResults);
+                        // Fetch accessibility info for all places (to filter non-accessible places)
+                        await fetchAccessibilityInfoForPlaces(allResults);
+                        await displayResults(allResults);
+                    }
+                } else {
+                    isResolved = true;
+                        console.log('Search status:', status);
+                        if (status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                            console.error('Places API error:', status);
+                        }
+                    await displayResults(allResults);
+                }
+            };
+            
+            placesService.textSearch(request, handlePage);
+            };
+            
+            // Geocode location if provided, then perform search
+            if (locationName) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: locationName }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        mapCenter = results[0].geometry.location;
+                        map.setCenter(mapCenter);
+                        console.log('Geocoded location:', locationName, 'to', mapCenter.lat(), mapCenter.lng());
+                        performSearch(mapCenter);
+                    } else {
+                        console.warn('Geocoding failed, using current map center');
+                        performSearch(mapCenter);
+                    }
+                });
+            } else if (searchQuery.trim()) {
+                // No location but have search query, use current map center
+                performSearch(mapCenter);
+            }
+        }
+        
+        async function displayResults(results) {
+            // Hide full page loader
+            hideFullPageLoader();
+            
+            const resultsList = document.getElementById('resultsList');
+            const resultCount = document.getElementById('resultCount');
+            
+            // Apply additional filters (price range, features)
+            const filters = getFilterValues();
+            let filteredResults = results;
+            
+            // Filter out places that are explicitly restricted (wheelchairAccessibleEntrance === false)
+            // Show all places that are accessible (true) or have no restriction info (undefined/null)
+            filteredResults = filteredResults.filter(place => {
+                const placeId = place.place_id;
+                const accessibilityOptions = place.accessibilityOptions || placeAccessibilityInfo[placeId];
+                
+                // If no accessibility info is available, include the place (no restriction = show)
+                if (!accessibilityOptions) {
+                    return true;
+                }
+                
+                // Only filter out if explicitly marked as NOT accessible (false)
+                // Show if true (accessible) or undefined/null (no restriction info)
+                const isRestricted = accessibilityOptions.wheelchairAccessibleEntrance === false;
+                
+                return !isRestricted; // Show if not restricted
+            });
+            
+            // Filter by category type (if specified)
+            if (filters.type) {
+                const typeValue = filters.type.toLowerCase();
+                const categoryObj = commonPlaceTypes.find(t => t.value === typeValue);
+                
+                filteredResults = filteredResults.filter(place => {
+                    const placeTypes = (place.types || []).map(t => t.toLowerCase());
+                    const placeName = (place.name || '').toLowerCase();
+                    
+                    // If we have a category with specific Google types, check against those
+                    if (categoryObj && categoryObj.googleTypes) {
+                        // Check if place has any of the expected Google types
+                        const hasMatchingType = categoryObj.googleTypes.some(googleType => 
+                            placeTypes.some(type => type === googleType || type.includes(googleType))
+                        );
+                        
+                        // Also check search terms in place name
+                        const searchTerms = categoryObj.searchTerms.split(' ');
+                        const matchesSearchTerm = searchTerms.some(term => placeName.includes(term));
+                        
+                        return hasMatchingType || matchesSearchTerm;
+                    }
+                    
+                    // Fallback to simple type matching
+                    return placeTypes.some(type => type.includes(typeValue) || type === typeValue);
+                });
+            }
+            
+            // Filter by job type (if specified)
+            if (filters.jobType) {
+                const jobTypeValue = filters.jobType.toLowerCase();
+                filteredResults = filteredResults.filter(place => {
+                    const placeName = (place.name || '').toLowerCase();
+                    const placeAddress = (place.formatted_address || '').toLowerCase();
+                    const placeTypes = (place.types || []).map(t => t.toLowerCase());
+                    
+                    // Check if job type appears in name, address, or types
+                    return placeName.includes(jobTypeValue) || 
+                           placeAddress.includes(jobTypeValue) ||
+                           placeTypes.some(type => type.includes(jobTypeValue));
+                });
+            }
+            
+            // Filter by features - check if place types match selected features
+            if (filters.features && filters.features.length > 0) {
+                const featureTypeMap = {
+                    'accepts_credit_cards': ['credit', 'card', 'payment', 'visa', 'mastercard'],
+                    'alarm_system': ['alarm', 'security', 'monitored'],
+                    'bike_parking': ['bike', 'bicycle', 'cycling', 'parking'],
+                    'coupons': ['coupon', 'discount', 'promotion', 'deal'],
+                    'elevator': ['elevator', 'lift'],
+                    'outdoor_seating': ['outdoor', 'patio', 'terrace', 'seating'],
+                    'parking_street': ['parking', 'street', 'car'],
+                    'reservations': ['reservation', 'booking', 'appointment'],
+                    'security_cameras': ['security', 'camera', 'cctv', 'surveillance'],
+                    'smoking_allowed': ['smoking', 'cigarette'],
+                    'wheelchair_accessible': ['wheelchair', 'accessible', 'disabled', 'ada'],
+                    'wireless_internet': ['wifi', 'wireless', 'internet', 'wi-fi']
+                };
+                
+                filteredResults = filteredResults.filter(place => {
+                    const placeTypes = (place.types || []).map(t => t.toLowerCase());
+                    const placeName = (place.name || '').toLowerCase();
+                    const placeAddress = (place.formatted_address || '').toLowerCase();
+                    
+                    // Check if any selected feature matches place types or name/address
+                    return filters.features.some(feature => {
+                        const featureKeywords = featureTypeMap[feature] || [feature.replace(/_/g, ' ')];
+                        return featureKeywords.some(keyword => 
+                            placeTypes.some(type => type.includes(keyword)) ||
+                            placeName.includes(keyword) ||
+                            placeAddress.includes(keyword)
+                        );
+                    });
+                });
+            }
+            
+            // Filter by price range (if specified - note: Google Places doesn't provide price directly)
+            // This would need to be stored separately or estimated based on place type
+            // For now, we'll skip price filtering as it requires additional data
+            
+            if (filteredResults.length === 0) {
+                resultsList.innerHTML = '<div class="no-results">No results found matching your filters</div>';
+                resultCount.textContent = '0 Results Found (Showing 0-0)';
+                return;
+            }
+
+            // Sort by rating (top rating first)
+            filteredResults.sort((a, b) => {
+                const ratingA = typeof a.rating === 'number' ? a.rating : (parseFloat(a.rating) || 0);
+                const ratingB = typeof b.rating === 'number' ? b.rating : (parseFloat(b.rating) || 0);
+                return ratingB - ratingA;
+            });
+            
+            // Clear existing markers
+            markers.forEach(marker => {
+                // AdvancedMarkerElement uses map property, traditional Marker uses setMap
+                if (marker.map !== undefined) {
+                    marker.map = null;
+                } else {
+                    marker.setMap(null);
+                }
+            });
+            markers = [];
+            
+            // Create markers and listing cards
+            const bounds = new google.maps.LatLngBounds();
+            const cards = [];
+            
+            // Process each place
+            for (let index = 0; index < filteredResults.length; index++) {
+                const place = filteredResults[index];
+                const placeId = place.place_id;
+                const name = place.name || 'Unknown';
+                const address = place.formatted_address || '';
+                const rating = typeof place.rating === 'number' ? place.rating : (parseFloat(place.rating) || 0);
+                const userRatings = place.user_ratings_total || 0;
+                const types = place.types || [];
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                const detailUrl = `/place/google/${placeId}/`;
+                
+                // Add marker to map
+                const position = { lat, lng };
+                bounds.extend(position);
+                
+                // Get category and color for custom icon
+                const category = getCategoryName(types);
+                const typeColor = types.find(t => typeColors[t]) ? typeColors[types.find(t => typeColors[t])] : '#757575';
+                const markerIconData = createMarkerIcon(category, typeColor);
+                
+                // Use helper function to create marker (async)
+                const marker = await createMarker(
+                    position,
+                    name,
+                    markerIconData,
+                    map
+                );
+                
+                // Build rich info window content (similar to example popup)
+                const starsFull = Math.round(parseFloat(rating) || 0);
+                const starsEmpty = 5 - starsFull;
+                const starsHtml = '★'.repeat(starsFull) + '☆'.repeat(starsEmpty);
+                const reviewsText = userRatings > 0
+                    ? `Reviews (${userRatings})`
+                    : 'No reviews yet';
+                
+                const infoContent = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 260px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <div style="font-weight:600; font-size:14px; color:#333;">${name}</div>
+                            ${rating ? `<div style="background:#ff9800; color:#fff; padding:2px 6px; border-radius:4px; font-size:12px; font-weight:600;">${rating}</div>` : ''}
+                        </div>
+                        <div style="font-size:12px; margin-bottom:6px;">
+                            <a href="javascript:void(0)" style="color:#1976d2; text-decoration:underline;">${reviewsText}</a>
+                        </div>
+                        <div style="font-size:12px; color:#666; margin-bottom:8px;">
+                            <strong>Location:</strong><br/>
+                            ${address || 'Address not available'}
+                        </div>
+                        <div style="display:flex; gap:12px; font-size:11px; margin-bottom:8px;">
+                            <div>
+                                <div style="margin-bottom:2px; color:#444;"><strong>Ratings:</strong></div>
+                                <div style="color:#ff9800; font-size:12px;">${starsHtml}</div>
+                                <div style="color:#666; margin-top:2px;">Staff helpfulness</div>
+                            </div>
+                            <div>
+                                <div style="margin-bottom:2px; color:#444; visibility:hidden;"><strong>Ratings:</strong></div>
+                                <div style="color:#ff9800; font-size:12px;">${starsHtml}</div>
+                                <div style="color:#666; margin-top:2px;">Ease of access</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:6px;">
+                            <button style="background:#e0f2f1; border:1px solid #80cbc4; color:#00695c; padding:4px 8px; border-radius:3px; font-size:11px; cursor:pointer;"
+                                onclick="alert('Advice form will be implemented here.')">
+                                add your advice
+                            </button>
+                            <a href="${detailUrl}" style="background:#1976d2; color:#fff; padding:4px 10px; border-radius:3px; font-size:11px; text-decoration:none;">
+                                view place
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                const infoWindow = new google.maps.InfoWindow({
+                    content: infoContent
+                });
+                
+                // Add click listener (works for both AdvancedMarkerElement and traditional Marker)
+                const clickHandler = () => {
+                    if (marker.addEventListener) {
+                        infoWindow.open({
+                            anchor: marker,
+                            map: map
+                        });
+                    } else {
+                        infoWindow.open(map, marker);
+                    }
+                    // Highlight card
+                    document.querySelectorAll('.listing-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    const card = document.getElementById(`listing-${index}`);
+                    if (card) {
+                        card.classList.add('active');
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                };
+                
+                if (marker.addEventListener) {
+                    marker.addEventListener('click', clickHandler);
+                } else {
+                    marker.addListener('click', clickHandler);
+                }
+                
+                markers.push(marker);
+                
+                // Get photo URL if available
+                let photoUrl = '';
+                let profilePhotoUrl = '';
+                if (place.photos && place.photos.length > 0) {
+                    photoUrl = place.photos[0].getUrl({ maxWidth: 400, maxHeight: 250 });
+                    // Use a smaller photo for profile picture (circular, 60x60)
+                    profilePhotoUrl = place.photos[0].getUrl({ maxWidth: 120, maxHeight: 120 });
+                }
+                
+                // Generate price range
+                const priceMin = Math.floor(Math.random() * 50) + 20;
+                const priceMax = priceMin + Math.floor(Math.random() * 50) + 20;
+                
+                // Get phone number from stored data (fetched via Place Details API) or place object
+                let realPhoneNumber = placePhoneNumbers[placeId] || place.international_phone_number || place.formatted_phone_number || '';
+                
+                // Check if place is open
+                // Note: open_now is deprecated, so we avoid accessing it directly
+                // For search results, we don't have isOpen() method, so we'll show a default status
+                let isOpen = true; // Default to open (better UX)
+                if (place.opening_hours && typeof place.isOpen === 'function') {
+                    // Only use isOpen() if available (from getDetails result)
+                    try {
+                        isOpen = place.isOpen();
+                    } catch (e) {
+                        // If isOpen() fails, keep default
+                        isOpen = true;
+                    }
+                }
+                // Note: We intentionally avoid accessing place.opening_hours.open_now
+                // to prevent deprecation warnings
+                
+                // Generate description (short text like in image)
+                const descriptions = [
+                    "Outdoor, luxury for you.",
+                    "Active for you, my friend.",
+                    "Luxury Salon in New Zealand.",
+                    "Explore this amazing location.",
+                    "Premium experience awaits.",
+                    "Best in class service."
+                ];
+                const description = descriptions[Math.floor(Math.random() * descriptions.length)];
+                
+                // Extract city and country from address
+                const addressParts = address.split(',');
+                const locationText = addressParts.length >= 2 
+                    ? `${addressParts[addressParts.length - 2].trim()}, ${addressParts[addressParts.length - 1].trim()}`
+                    : address || 'Location not available';
+                
+                // Profile picture (use real image from Google Places or fallback to initial)
+                let profilePictureHtml = '';
+                if (profilePhotoUrl) {
+                    // Use real photo from Google Places API
+                    profilePictureHtml = `<img src="${profilePhotoUrl}" alt="User" onerror="this.onerror=null; this.src='https://i.pravatar.cc/100?u=${placeId.substring(0, 5)}';" />`;
+                } else {
+                    // Fallback to avatar
+                    profilePictureHtml = `<img src="https://i.pravatar.cc/100?u=${placeId.substring(0, 5)}" alt="User" />`;
+                }
+                
+                // Phone display - mask phone number initially
+                let phoneDisplay = 'N/A';
+                if (realPhoneNumber) {
+                    // Mask phone number (show only last 4 digits)
+                    const maskedPhone = realPhoneNumber.replace(/\d(?=\d{4})/g, '*');
+                    phoneDisplay = maskedPhone;
+                }
+                
+                const cardHtml = `
+                    <div class="col-12 col-sm-6">
+                        <div class="listing-card card h-100 border-0 shadow-sm" id="listing-${index}">
+                            <div class="card-image-wrapper position-relative">
+                                ${photoUrl ? `<img src="${photoUrl}" class="card-img-top" alt="${name}">` : '<div class="card-img-top" style="height: 180px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #999;">No Image Available</div>'}
+                                <div class="price-badge">$${priceMin} - $${priceMax}</div>
+                                <div class="rating-badge">${rating > 0 ? rating.toFixed(1) : 'N/A'}</div>
+                                <button class="save-btn" onclick="event.stopPropagation(); this.classList.toggle('saved')">
+                                    <i class="bi bi-heart"></i> Save
+                                </button>
+                                <div class="user-avatar">
+                        ${profilePictureHtml}
+                            </div>
+                            </div>
+                            <div class="card-body text-center">
+                                <h6 class="card-title fw-bold mb-2">
+                                    <a href="/place/google/${placeId}/" class="text-decoration-none text-dark">${name}</a>
+                                </h6>
+                                <p class="text-muted small mb-3">${description}</p>
+                                <div class="location-phone-row mb-3">
+                                    <span class="location-info">
+                                        <i class="bi bi-geo-alt text-danger"></i> ${locationText}
+                                    </span>
+                                    <span class="phone-info">
+                                        <i class="bi bi-telephone text-success"></i> ${phoneDisplay}
+                                        ${realPhoneNumber ? '<span class="badge-show" onclick="event.stopPropagation(); showPhoneNumber(' + index + ', \'' + placeId + '\')">show</span>' : ''}
+                                    </span>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="category-section">
+                                        <a href="#" class="category-tag">${category}</a>
+                                        <span class="extra-cats">+${Math.floor(Math.random() * 3)}</span>
+                                    </div>
+                                    <span class="status-badge ${isOpen ? 'status-open' : 'status-closed'}">${isOpen ? 'Open' : 'Closed'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cards.push(cardHtml);
+            }
+            
+            // Update results list with cards
+            if (cards.length > 0) {
+            resultsList.innerHTML = cards.join('');
+            } else {
+                resultsList.innerHTML = '<div class="col-12 text-center no-results">No results found matching your filters</div>';
+            }
+            
+            // Update result count
+            const totalResults = filteredResults.length;
+            const showingEnd = totalResults > 0 ? totalResults : 0;
+            if (resultCount) {
+                resultCount.textContent = totalResults;
+            }
+            const showingRangeEl = document.getElementById('showingRange');
+            if (showingRangeEl) {
+                showingRangeEl.textContent = totalResults > 0 ? `1-${showingEnd}` : '0-0';
+            }
+            
+            // Fit map to show all markers
+            if (markers.length > 0) {
+                map.fitBounds(bounds);
+                if (markers.length === 1) {
+                    map.setZoom(14);
+                }
+            }
+            
+            // Add click handler to cards
+            document.querySelectorAll('.listing-card').forEach((card, index) => {
+                card.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('show-phone-btn') || 
+                        e.target.classList.contains('save-icon') ||
+                        e.target.closest('.show-phone-btn') ||
+                        e.target.closest('.listing-save-icon')) {
+                        return;
+                    }
+                    const place = filteredResults[index];
+                    if (place) {
+                        window.location.href = `/place/google/${place.place_id}/`;
+                    }
+                });
+            });
+        }
+        
+        // Store phone numbers for each place
+        const placePhoneNumbers = {};
+        
+        // Store accessibility info for each place
+        const placeAccessibilityInfo = {};
+        
+        // Fetch phone numbers for multiple places
+        async function fetchPhoneNumbersForPlaces(places) {
+            if (!placesService) return;
+            
+            // Fetch phone numbers in batches to avoid rate limiting
+            const batchSize = 5;
+            for (let i = 0; i < places.length; i += batchSize) {
+                const batch = places.slice(i, i + batchSize);
+                await Promise.all(batch.map(place => fetchPhoneNumberForPlace(place.place_id)));
+                // Small delay between batches
+                if (i + batchSize < places.length) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+        
+        // Fetch phone number for a single place
+        function fetchPhoneNumberForPlace(placeId) {
+            return new Promise((resolve) => {
+                if (placePhoneNumbers[placeId]) {
+                    resolve(placePhoneNumbers[placeId]);
+                    return;
+                }
+                
+                const request = {
+                    placeId: placeId,
+                    fields: ['international_phone_number', 'formatted_phone_number']
+                };
+                
+                placesService.getDetails(request, (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                        const phone = place.international_phone_number || place.formatted_phone_number || '';
+                        if (phone) {
+                            placePhoneNumbers[placeId] = phone;
+                        }
+                    }
+                    resolve();
+                });
+            });
+        }
+        
+        // Fetch accessibility info for multiple places
+        async function fetchAccessibilityInfoForPlaces(places) {
+            if (!placesService) return;
+            
+            // Fetch accessibility info in batches to avoid rate limiting
+            const batchSize = 5;
+            for (let i = 0; i < places.length; i += batchSize) {
+                const batch = places.slice(i, i + batchSize);
+                await Promise.all(batch.map(place => fetchAccessibilityForPlace(place.place_id, place)));
+                // Small delay between batches
+                if (i + batchSize < places.length) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+        
+        // Fetch accessibility info for a single place
+        function fetchAccessibilityForPlace(placeId, placeObject) {
+            return new Promise((resolve) => {
+                // If already fetched, return stored info
+                if (placeAccessibilityInfo[placeId] !== undefined) {
+                    resolve();
+                    return;
+                }
+                
+                // Note: accessibilityOptions field is not supported in all Places API versions
+                // Request basic fields and check if accessibilityOptions exists in response
+                const request = {
+                    placeId: placeId,
+                    fields: ['name', 'formatted_address']
+                };
+                
+                placesService.getDetails(request, (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                        // Check if accessibilityOptions exists (might not be available)
+                        const accessibilityOptions = place.accessibilityOptions || null;
+                        // Store accessibility info
+                        placeAccessibilityInfo[placeId] = accessibilityOptions;
+                        // Also attach to place object for direct access
+                        if (placeObject) {
+                            placeObject.accessibilityOptions = accessibilityOptions;
+                        }
+                    } else {
+                        // If error or no accessibility info available, mark as null (will be included by default)
+                        placeAccessibilityInfo[placeId] = null;
+                        if (placeObject) {
+                            placeObject.accessibilityOptions = null;
+                        }
+                    }
+                    resolve();
+                });
+            });
+        }
+        
+        // Function to show real phone number
+        function showPhoneNumber(index, placeId) {
+            const phoneInfo = document.querySelector(`#listing-${index} .phone-info`);
+            const showBtn = document.querySelector(`#listing-${index} .badge-show`);
+            
+            if (!phoneInfo || !showBtn) return;
+            
+            // If phone number is already shown, return
+            if (showBtn.style.display === 'none') return;
+            
+            // Check if we already have the phone number stored
+            if (placePhoneNumbers[placeId]) {
+                const realPhone = placePhoneNumbers[placeId];
+                const cleanPhone = realPhone.replace(/\D/g, '');
+                phoneInfo.innerHTML = `<i class="bi bi-telephone text-success"></i> <a href="tel:${cleanPhone}" style="color: #1976d2; text-decoration: none;">${realPhone}</a>`;
+                showBtn.style.display = 'none';
+                return;
+            }
+            
+            // Fetch place details to get real phone number
+            if (!placesService) {
+                alert('Places service not available');
+                return;
+            }
+            
+            const request = {
+                placeId: placeId,
+                fields: ['international_phone_number', 'formatted_phone_number']
+            };
+            
+            placesService.getDetails(request, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                    const realPhone = place.international_phone_number || place.formatted_phone_number || '';
+                    
+                    if (realPhone) {
+                        // Store phone number for future use
+                        placePhoneNumbers[placeId] = realPhone;
+                        const cleanPhone = realPhone.replace(/\D/g, '');
+                        phoneInfo.innerHTML = `<i class="bi bi-telephone text-success"></i> <a href="tel:${cleanPhone}" style="color: #1976d2; text-decoration: none;">${realPhone}</a>`;
+                        showBtn.style.display = 'none';
+                    } else {
+                        alert('Phone number not available for this place.');
+                    }
+                } else {
+                    alert('Could not fetch phone number. Please try again.');
+                }
+            });
+        }
+        
+        // Price range slider functionality
+        const minRange = document.getElementById('minRange');
+        const maxRange = document.getElementById('maxRange');
+        const priceMinValue = document.getElementById('priceMinValue');
+        const priceMaxValue = document.getElementById('priceMaxValue');
+        const sliderRange = document.getElementById('sliderRange');
+        
+        function updateSlider() {
+            if (!minRange || !maxRange || !priceMinValue || !priceMaxValue || !sliderRange) return;
+            
+            const minVal = parseInt(minRange.value);
+            const maxVal = parseInt(maxRange.value);
+            
+            // Prevent sliders from crossing
+            if (minVal >= maxVal) {
+                if (this.id === 'minRange') {
+                    minRange.value = maxVal - 1000;
+                } else {
+                    maxRange.value = minVal + 1000;
+                }
+            }
+            
+            // Update display values with formatting
+            const minDisplay = parseInt(minRange.value);
+            const maxDisplay = parseInt(maxRange.value);
+            priceMinValue.textContent = minDisplay.toLocaleString();
+            priceMaxValue.textContent = maxDisplay.toLocaleString();
+            
+            // Update slider track color
+            const percent1 = (minDisplay / parseInt(minRange.max)) * 100;
+            const percent2 = (maxDisplay / parseInt(maxRange.max)) * 100;
+            sliderRange.style.left = percent1 + '%';
+            sliderRange.style.width = (percent2 - percent1) + '%';
+        }
+        
+        // Initialize price slider when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                if (minRange && maxRange) {
+                    minRange.addEventListener('input', updateSlider);
+                    maxRange.addEventListener('input', updateSlider);
+                    updateSlider(); // Initialize
+                }
+            });
+        } else {
+            // DOM already loaded
+            if (minRange && maxRange) {
+                minRange.addEventListener('input', updateSlider);
+                maxRange.addEventListener('input', updateSlider);
+                updateSlider(); // Initialize
+            }
+        }
+    </script>
+    {% else %}
+    <script>
+        document.getElementById('resultsList').innerHTML = '<div class="no-results">Google Maps API Key is not configured</div>';
+    </script>
+    {% endif %}
+</body>
+</html>

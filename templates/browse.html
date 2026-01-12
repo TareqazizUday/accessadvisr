@@ -1,0 +1,827 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Listings - AccessAdvisr</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/browse.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/listings.css' %}">
+</head>
+<body>
+    
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!-- Hero Section with Breadcrumb -->
+<section class="listings-hero position-relative d-flex align-items-center justify-content-center text-center text-white" style="min-height: 240px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="font-size: 3.5rem; letter-spacing: 0.5px;">Browse</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item text-orange active" aria-current="page">BROWSE</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Sidebar - Filters -->
+            <div class="col-lg-3">
+                <div class="bg-white rounded-3 shadow-sm p-4">
+                    
+                    <form method="get" action="{% url 'browse' %}" id="filterForm">
+                    
+                    <!-- Keywords -->
+                    <div class="mb-3">
+                        <input type="text" name="keywords" class="form-control" placeholder="Keywords..." value="{{ keywords }}">
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <select name="category" class="form-select">
+                            <option value="" {% if not selected_category %}selected{% endif %}>Filter by category</option>
+                            <option value="food" {% if selected_category == 'food' %}selected{% endif %}>Food & Restaurants</option>
+                            <option value="education" {% if selected_category == 'education' %}selected{% endif %}>Education</option>
+                            <option value="sport" {% if selected_category == 'sport' %}selected{% endif %}>Sport</option>
+                            <option value="entertainment" {% if selected_category == 'entertainment' %}selected{% endif %}>Entertainment</option>
+                            <option value="shopping" {% if selected_category == 'shopping' %}selected{% endif %}>Shopping</option>
+                            <option value="travel" {% if selected_category == 'travel' %}selected{% endif %}>Travel & Tour</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <input type="text" name="location" class="form-control" placeholder="Location" value="{{ location_search }}">
+                    </div>
+                    
+                    <!-- City -->
+                    <div class="mb-3">
+                        <input type="text" name="city" class="form-control" placeholder="City" value="{{ city }}">
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <select class="form-select">
+                            <option selected disabled>Price Range</option>
+                            <option value="0-50">$0 - $50</option>
+                            <option value="50-100">$50 - $100</option>
+                            <option value="100-200">$100 - $200</option>
+                            <option value="200+">$200+</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Price Slider -->
+                    <div class="mb-4">
+                        <label class="form-label small text-muted">Price: <span class="fw-semibold text-dark">$0 - $1,000,000</span></label>
+                        <input type="range" class="form-range" min="0" max="1000000" value="1000000" id="priceRange">
+                    </div>
+                    
+                    <!-- Filter by Features -->
+                    <div class="mb-4">
+                        <h6 class="fw-semibold mb-3">Filter by Features</h6>
+                        
+                        {% for amenity in amenities %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="amenities" value="{{ amenity.id }}" id="amenity{{ amenity.id }}">
+                            <label class="form-check-label small text-secondary" for="amenity{{ amenity.id }}">
+                                {{ amenity.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Filter Button -->
+                    <button type="button" class="btn btn-orange w-100 py-2 fw-semibold" onclick="applyFilters()">FILTER</button>
+                    
+                    </form>
+                    
+                    <!-- Active Filters -->
+                    <div id="activeFilters" class="mt-4 small" style="display: none;">
+                        <span class="text-muted">Active filters:</span>
+                        <div id="filterBadges" class="mt-2"></div>
+                        <button class="btn btn-sm btn-secondary mt-2" onclick="resetFilters()">Reset All</button>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Right Side - Listings -->
+            <div class="col-lg-9">
+                
+                <!-- Results Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-muted" id="resultsCount">Loading...</span>
+                    <div class="listing-orderby">
+                        <select id="sortOrder" name="filter_order" class="form-select form-select-sm w-auto" onchange="sortPlaces(this.value)">
+                            <option value="default" selected>Default Order</option>
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="rating-desc">Highest Rating</option>
+                            <option value="rating-asc">Lowest Rating</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Listings Grid -->
+                <div class="row g-4" id="listingsContainer">
+                    
+                    <!-- Loading indicator -->
+                    <div class="col-12 text-center py-5" id="loadingIndicator">
+                        <div class="spinner-border text-orange" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Finding nearby places...</p>
+                    </div>
+                    
+                    <!-- Results will be loaded here dynamically -->
+                    
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+<script>
+let map;
+let placesService;
+let currentUserLocation = null;
+
+// Initialize map for browse page - MUST be defined before Google Maps API loads
+window.initBrowseMap = function() {
+    console.log('🗺️ Browse page initializing...');
+    
+    // Check if Google Maps API is loaded
+    if (typeof google === 'undefined' || !google.maps) {
+        console.error('❌ Google Maps API not loaded!');
+        showError('Google Maps API could not be loaded.');
+        return;
+    }
+    
+    // Create a hidden map element for Places service
+    const mapDiv = document.createElement('div');
+    mapDiv.style.display = 'none';
+    document.body.appendChild(mapDiv);
+    
+    map = new google.maps.Map(mapDiv, {
+        center: { lat: 23.8103, lng: 90.4125 },
+        zoom: 12
+    });
+    
+    placesService = new google.maps.places.PlacesService(map);
+    console.log('✅ Places service initialized');
+    
+    // Get location and load places
+    getUserLocationAndLoadPlaces();
+}
+
+// Get user's current location and load nearby places
+function getUserLocationAndLoadPlaces() {
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                currentUserLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                
+                console.log('✅ Current location:', currentUserLocation);
+                
+                // Hide location loading, show results
+                hideLocationLoading();
+                
+                // Update info banner
+                updateLocationBanner(true);
+                
+                // Load Google Places
+                loadGooglePlaces(currentUserLocation);
+            },
+            function(error) {
+                console.log('Location error:', error.message);
+                hideLocationLoading();
+                showLocationError();
+                
+                // Load with default location
+                currentUserLocation = { lat: 23.8103, lng: 90.4125 };
+                loadGooglePlaces(currentUserLocation);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            }
+        );
+    } else {
+        console.log('Geolocation not supported');
+        currentUserLocation = { lat: 23.8103, lng: 90.4125 };
+        loadGooglePlaces(currentUserLocation);
+    }
+}
+
+// Load Google Places based on location
+function loadGooglePlaces(location) {
+    if (!placesService) {
+        console.error('Places service not initialized');
+        return;
+    }
+    
+    const container = document.getElementById('listingsContainer');
+    const resultsCount = document.getElementById('resultsCount');
+    
+    // Show loading
+    container.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-orange" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Searching nearby places...</p>
+        </div>
+    `;
+    
+    // Define search queries for different categories within 1km
+    const searchQueries = [
+        'restaurant',
+        'cafe coffee',
+        'hotel accommodation',
+        'school education',
+        'university college',
+        'shopping mall store',
+        'cinema movie theater',
+        'gym fitness',
+        'stadium sports',
+        'tourist attraction',
+        'park',
+        'museum'
+    ];
+    
+    let allResults = [];
+    let completedSearches = 0;
+    const totalSearches = searchQueries.length;
+    
+    // Search each category using textSearch with location
+    searchQueries.forEach(query => {
+        const request = {
+            query: query,
+            location: new google.maps.LatLng(location.lat, location.lng),
+            radius: 1000 // 1km radius (1000 meters)
+        };
+        
+        placesService.textSearch(request, function(results, status) {
+            completedSearches++;
+            
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                console.log(`✅ Found ${results.length} results for "${query}"`);
+                // Filter results within 1km
+                const nearbyResults = results.filter(place => {
+                    const distance = calculateDistance(
+                        location.lat, 
+                        location.lng,
+                        place.geometry.location.lat(),
+                        place.geometry.location.lng()
+                    );
+                    return distance <= 1; // Within 1km
+                });
+                allResults = allResults.concat(nearbyResults);
+            } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                console.log(`No results for "${query}"`);
+            } else {
+                console.warn(`Search failed for "${query}":`, status);
+            }
+            
+            // When all searches complete
+            if (completedSearches === totalSearches) {
+                // Remove duplicates based on place_id
+                const uniqueResults = [];
+                const seenIds = new Set();
+                
+                allResults.forEach(place => {
+                    if (!seenIds.has(place.place_id)) {
+                        seenIds.add(place.place_id);
+                        uniqueResults.push(place);
+                    }
+                });
+                
+                console.log(`✅ Total unique places found: ${uniqueResults.length}`);
+                
+                if (uniqueResults.length > 0) {
+                    // Sort by rating (highest first)
+                    uniqueResults.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                    
+                    // Store all results globally
+                    window.allPlaces = uniqueResults;
+                    window.currentUserLocation = location;
+                    
+                    // Update results count
+                    if (resultsCount) {
+                        resultsCount.textContent = `${uniqueResults.length} Results Found (Showing 1 - ${Math.min(20, uniqueResults.length)})`;
+                    }
+                    
+                    // Display first 20 results
+                    displayPlaces(uniqueResults.slice(0, 20), location, uniqueResults.length);
+                } else {
+                    container.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info text-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                No places found nearby. Try adjusting your location.
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+    });
+}
+
+// Global variables for pagination
+let currentDisplayCount = 20;
+
+// Display places in cards
+function displayPlaces(places, userLocation, totalCount) {
+    const container = document.getElementById('listingsContainer');
+    container.innerHTML = '';
+    
+    const limitedPlaces = places;
+    
+    limitedPlaces.forEach(place => {
+        // Calculate distance
+        const distance = calculateDistance(
+            userLocation.lat, userLocation.lng,
+            place.geometry.location.lat(), place.geometry.location.lng()
+        );
+        
+        const photoUrl = place.photos && place.photos.length > 0 
+            ? place.photos[0].getUrl({ maxWidth: 400 })
+            : 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400';
+        
+        const rating = place.rating || 4.0;
+        const totalReviews = place.user_ratings_total || 2;
+        const priceLevel = place.price_level ? '$'.repeat(place.price_level) : '$60 - $85';
+        
+        // Check if place is open - use available opening_hours data
+        let isOpen = 'Unknown';
+        let openClass = 'text-muted';
+        
+        if (place.opening_hours) {
+            // Try different methods to determine if open
+            if (place.opening_hours.isOpen !== undefined) {
+                // Try calling as function first
+                try {
+                    if (typeof place.opening_hours.isOpen === 'function') {
+                        const openNow = place.opening_hours.isOpen();
+                        isOpen = openNow ? 'Open' : 'Closed';
+                        openClass = openNow ? 'text-success' : 'text-danger';
+                    } else {
+                        // It's a property, not a function
+                        isOpen = place.opening_hours.isOpen ? 'Open' : 'Closed';
+                        openClass = place.opening_hours.isOpen ? 'text-success' : 'text-danger';
+                    }
+                } catch (e) {
+                    // Fallback to property
+                    if (place.opening_hours.open_now !== undefined) {
+                        isOpen = place.opening_hours.open_now ? 'Open' : 'Closed';
+                        openClass = place.opening_hours.open_now ? 'text-success' : 'text-danger';
+                    }
+                }
+            } else if (place.opening_hours.open_now !== undefined) {
+                // Use deprecated but still working open_now property as fallback
+                isOpen = place.opening_hours.open_now ? 'Open' : 'Closed';
+                openClass = place.opening_hours.open_now ? 'text-success' : 'text-danger';
+            } else if (place.business_status === 'OPERATIONAL') {
+                isOpen = 'Open';
+                openClass = 'text-success';
+            }
+        } else if (place.business_status === 'OPERATIONAL') {
+            // No opening hours data, but business is operational
+            isOpen = 'Open';
+            openClass = 'text-success';
+        }
+        
+        // Format category/type
+        const category = place.types && place.types.length > 0 
+            ? place.types[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+            : 'Villa,food for you';
+        
+        const cardHtml = `
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card">
+                    <div class="position-relative">
+                        <img src="${photoUrl}" class="card-img-top" alt="${place.name}" 
+                             style="height: 180px; object-fit: cover;" 
+                             onerror="this.src='https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400'">
+                        <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">${priceLevel}</span>
+                        <span class="position-absolute bottom-0 start-0 m-2 badge text-white small px-2 py-1" 
+                              style="background-color: #ff9800;">${rating}</span>
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2" 
+                                style="border-radius: 50%; width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-heart" style="font-size: 16px;"></i>
+                        </button>
+                    </div>
+                    <div class="card-body" style="padding: 1rem;">
+                        <h6 class="fw-bold mb-1">
+                            <a href="/place/google/${place.place_id}/" class="text-dark text-decoration-none">
+                                ${place.name}
+                            </a>
+                        </h6>
+                        <p class="text-muted small mb-2">${category}</p>
+                        
+                        <div class="mb-2">
+                            <div class="d-flex align-items-start gap-2 small text-muted mb-2">
+                                <i class="bi bi-geo-alt mt-1" style="color: #dc3545; font-size: 14px;"></i>
+                                <span style="line-height: 1.4;">${place.vicinity || place.formatted_address || 'Address not available'}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-2 small text-muted mb-2">
+                                <i class="bi bi-telephone" style="color: #28a745; font-size: 14px;"></i>
+                                <span>+88-123-4***</span>
+                                <button class="btn btn-sm px-2 py-0" 
+                                        style="background-color: #ff431e; color: white; font-size: 11px; border-radius: 3px;"
+                                        onclick="alert('Phone: Contact via Google Maps')">
+                                    show
+                                </button>
+                            </div>
+                            
+                            ${place.website ? `
+                            <div class="d-flex align-items-center gap-2 small text-muted mb-2">
+                                <i class="bi bi-globe" style="color: #007bff; font-size: 14px;"></i>
+                                <a href="${place.website}" target="_blank" class="text-decoration-none" style="color: #007bff;">
+                                    ${new URL(place.website).hostname}
+                                </a>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="text-warning">
+                                    ${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5 - Math.floor(rating))}
+                                </div>
+                                <span class="text-muted">(${totalReviews} Reviews)</span>
+                            </div>
+                            <span class="${openClass} fw-semibold">${isOpen}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', cardHtml);
+    });
+    
+    // Add Load More button if there are more results
+    if (totalCount && limitedPlaces.length < totalCount) {
+        const loadMoreHtml = `
+            <div class="col-12 text-center mt-4" id="loadMoreContainer">
+                <button class="btn btn-orange btn-lg px-5" onclick="loadMorePlaces()">
+                    <i class="bi bi-arrow-down-circle me-2"></i>Load More Listings
+                </button>
+                <p class="text-muted small mt-2">Showing ${limitedPlaces.length} of ${totalCount} results</p>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', loadMoreHtml);
+    }
+    
+    // If no places, show message
+    if (limitedPlaces.length === 0) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle me-2"></i> No places found nearby.
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Load more places function
+function loadMorePlaces() {
+    if (!window.allPlaces || !window.currentUserLocation) return;
+    
+    currentDisplayCount += 20;
+    // Use filtered places if filters are active
+    const placesSource = window.filteredPlaces || window.allPlaces;
+    const placesToShow = placesSource.slice(0, currentDisplayCount);
+    
+    // Update results count
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = `${placesSource.length} Results Found (Showing 1 - ${Math.min(currentDisplayCount, placesSource.length)})`;
+    }
+    
+    // Re-display with more places
+    displayPlaces(placesToShow, window.currentUserLocation, placesSource.length);
+}
+
+// Sort places based on selected option
+function sortPlaces(sortBy) {
+    // Use filtered places if filters are active, otherwise use all places
+    const placesSource = window.filteredPlaces || window.allPlaces;
+    if (!placesSource || placesSource.length === 0) return;
+    
+    let sortedPlaces = [...placesSource];
+    
+    switch(sortBy) {
+        case 'date-desc':
+            // Newest First - Google Places doesn't provide date, sort by ID/name
+            sortedPlaces.sort((a, b) => b.place_id.localeCompare(a.place_id));
+            break;
+        case 'date-asc':
+            // Oldest First
+            sortedPlaces.sort((a, b) => a.place_id.localeCompare(b.place_id));
+            break;
+        case 'rating-desc':
+            // Highest Rating
+            sortedPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            break;
+        case 'rating-asc':
+            // Lowest Rating
+            sortedPlaces.sort((a, b) => (a.rating || 0) - (b.rating || 0));
+            break;
+        case 'random':
+            // Random order
+            sortedPlaces = sortedPlaces.sort(() => Math.random() - 0.5);
+            break;
+        case 'default':
+        default:
+            // Default: Sort by rating (highest first)
+            sortedPlaces.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            break;
+    }
+    
+    // Update the appropriate places array (filtered or all)
+    if (window.filteredPlaces) {
+        window.filteredPlaces = sortedPlaces;
+    } else {
+        window.allPlaces = sortedPlaces;
+    }
+    
+    // Reset display count
+    currentDisplayCount = 20;
+    
+    // Update results count
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = `${sortedPlaces.length} Results Found (Showing 1 - ${Math.min(20, sortedPlaces.length)})`;
+    }
+    
+    // Re-display first 20 with new sort
+    displayPlaces(sortedPlaces.slice(0, 20), window.currentUserLocation, sortedPlaces.length);
+}
+
+// Calculate distance between two points (Haversine formula)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of Earth in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// Apply filters to results
+function applyFilters() {
+    if (!window.allPlaces || window.allPlaces.length === 0) {
+        alert('Please wait for places to load first');
+        return;
+    }
+    
+    // Get filter values
+    const keywords = document.querySelector('input[name="keywords"]').value.toLowerCase().trim();
+    const category = document.querySelector('select[name="category"]').value;
+    const locationFilter = document.querySelector('input[name="location"]').value.toLowerCase().trim();
+    const city = document.querySelector('input[name="city"]').value.toLowerCase().trim();
+    const priceRange = document.querySelector('select.form-select').value;
+    
+    let filteredPlaces = [...window.allPlaces];
+    
+    console.log('Starting filter with', filteredPlaces.length, 'places');
+    console.log('Filters:', { keywords, category, locationFilter, city, priceRange });
+    
+    // Apply keyword filter
+    if (keywords) {
+        filteredPlaces = filteredPlaces.filter(place => 
+            place.name.toLowerCase().includes(keywords) ||
+            (place.vicinity && place.vicinity.toLowerCase().includes(keywords)) ||
+            (place.formatted_address && place.formatted_address.toLowerCase().includes(keywords)) ||
+            (place.types && place.types.some(type => type.toLowerCase().includes(keywords)))
+        );
+        console.log('After keywords filter:', filteredPlaces.length);
+    }
+    
+    // Apply category filter
+    if (category) {
+        const categoryMap = {
+            'food': ['restaurant', 'cafe', 'food', 'bar', 'meal', 'bakery'],
+            'education': ['school', 'university', 'college', 'library', 'education'],
+            'sport': ['gym', 'stadium', 'sports', 'fitness'],
+            'entertainment': ['movie_theater', 'cinema', 'amusement', 'entertainment', 'theater'],
+            'shopping': ['shopping_mall', 'store', 'market', 'shopping', 'supermarket'],
+            'travel': ['hotel', 'lodging', 'travel', 'tourist', 'accommodation']
+        };
+        
+        const categoryTypes = categoryMap[category] || [];
+        const beforeCategoryCount = filteredPlaces.length;
+        filteredPlaces = filteredPlaces.filter(place =>
+            place.types && place.types.some(type => 
+                categoryTypes.some(catType => type.toLowerCase().includes(catType))
+            )
+        );
+        console.log(`After category filter (${category}):`, filteredPlaces.length, 'from', beforeCategoryCount);
+    }
+    
+    // Apply location filter (more lenient - split by comma and check each part)
+    if (locationFilter) {
+        const locationParts = locationFilter.split(',').map(p => p.trim()).filter(p => p);
+        filteredPlaces = filteredPlaces.filter(place => {
+            const address = ((place.vicinity || '') + ' ' + (place.formatted_address || '')).toLowerCase();
+            // Check if any part of the location filter matches
+            return locationParts.some(part => address.includes(part));
+        });
+        console.log('After location filter:', filteredPlaces.length);
+    }
+    
+    // Apply city filter (more lenient)
+    if (city) {
+        filteredPlaces = filteredPlaces.filter(place => {
+            const address = ((place.vicinity || '') + ' ' + (place.formatted_address || '')).toLowerCase();
+            return address.includes(city);
+        });
+        console.log('After city filter:', filteredPlaces.length);
+    }
+    
+    // Apply price range filter (skip if place has no price data)
+    if (priceRange && priceRange !== 'Price Range' && !priceRange.toLowerCase().includes('price')) {
+        const [min, max] = priceRange.split('-').map(v => v.replace('+', '').replace('$', '').trim());
+        filteredPlaces = filteredPlaces.filter(place => {
+            // If place has no price_level, include it (don't filter out)
+            if (!place.price_level) return true;
+            const price = place.price_level * 25; // Estimate: 1=$25, 2=$50, 3=$75, 4=$100
+            if (max) {
+                return price >= parseInt(min) && price <= parseInt(max);
+            } else {
+                return price >= parseInt(min);
+            }
+        });
+        console.log('After price filter:', filteredPlaces.length);
+    }
+    
+    console.log(`✅ Filtered: ${filteredPlaces.length} places from ${window.allPlaces.length}`);
+    
+    // Update display
+    currentDisplayCount = 20;
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = `${filteredPlaces.length} Results Found (Showing 1 - ${Math.min(20, filteredPlaces.length)})`;
+    }
+    
+    // Update active filters display
+    updateActiveFilters(keywords, category, locationFilter, city, priceRange);
+    
+    // Store filtered results and display
+    window.filteredPlaces = filteredPlaces;
+    displayPlaces(filteredPlaces.slice(0, 20), window.currentUserLocation, filteredPlaces.length);
+}
+
+// Update active filters badges
+function updateActiveFilters(keywords, category, location, city, priceRange) {
+    const activeFiltersDiv = document.getElementById('activeFilters');
+    const filterBadges = document.getElementById('filterBadges');
+    
+    let badges = [];
+    if (keywords) badges.push(`<span class="badge bg-orange me-2 mb-2">Keywords: ${keywords}</span>`);
+    if (category) badges.push(`<span class="badge bg-orange me-2 mb-2">Category: ${category}</span>`);
+    if (location) badges.push(`<span class="badge bg-orange me-2 mb-2">Location: ${location}</span>`);
+    if (city) badges.push(`<span class="badge bg-orange me-2 mb-2">City: ${city}</span>`);
+    if (priceRange && priceRange !== 'Price Range') badges.push(`<span class="badge bg-orange me-2 mb-2">Price: ${priceRange}</span>`);
+    
+    if (badges.length > 0) {
+        filterBadges.innerHTML = badges.join('');
+        activeFiltersDiv.style.display = 'block';
+    } else {
+        activeFiltersDiv.style.display = 'none';
+    }
+}
+
+// Reset all filters
+function resetFilters() {
+    // Clear form fields
+    document.querySelector('input[name="keywords"]').value = '';
+    document.querySelector('select[name="category"]').value = '';
+    document.querySelector('input[name="location"]').value = '';
+    document.querySelector('input[name="city"]').value = '';
+    document.querySelector('select.form-select').selectedIndex = 0;
+    
+    // Hide active filters
+    document.getElementById('activeFilters').style.display = 'none';
+    
+    // Reset to all places
+    if (window.allPlaces) {
+        currentDisplayCount = 20;
+        const resultsCount = document.getElementById('resultsCount');
+        if (resultsCount) {
+            resultsCount.textContent = `${window.allPlaces.length} Results Found (Showing 1 - ${Math.min(20, window.allPlaces.length)})`;
+        }
+        window.filteredPlaces = null;
+        displayPlaces(window.allPlaces.slice(0, 20), window.currentUserLocation, window.allPlaces.length);
+    }
+}
+
+function updateLocationBanner(hasLocation) {
+    const banner = document.querySelector('.alert-success');
+    if (banner && hasLocation) {
+        banner.style.display = 'flex';
+    }
+}
+
+function hideLocationLoading() {
+    const loading = document.getElementById('locationLoading');
+    if (loading) {
+        loading.remove();
+    }
+}
+
+function showLocationError() {
+    const container = document.querySelector('.col-lg-9');
+    if (container && !document.getElementById('locationError')) {
+        const errorHtml = `
+            <div class="alert alert-warning text-center" id="locationError">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>Location access denied</strong>
+                <p class="mb-0 small mt-2">Showing default nearby places. Enable location for personalized results.</p>
+            </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', errorHtml);
+        setTimeout(() => {
+            document.getElementById('locationError')?.remove();
+        }, 5000);
+    }
+}
+
+function showError(message) {
+    console.error(message);
+    const container = document.getElementById('listingsContainer');
+    if (container) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger text-center">
+                    <i class="bi bi-exclamation-circle me-2"></i> ${message}
+                </div>
+            </div>
+        `;
+    }
+}
+</script>
+
+<!-- Load Google Maps API AFTER the initBrowseMap function is defined -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initBrowseMap" async defer></script>
+
+<style>
+.btn-outline-orange {
+    border: 1px solid var(--primary-orange);
+    color: var(--primary-orange);
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-orange:hover {
+    background: var(--primary-orange);
+    color: white;
+    border-color: var(--primary-orange);
+}
+
+#locationLoading {
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+</body>
+</html>

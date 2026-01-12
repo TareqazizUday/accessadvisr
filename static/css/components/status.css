@@ -1,0 +1,52 @@
+/* --- Statistics Section Styling --- */
+.stats-section {
+    /* Path to your background image */
+    background-image: url('https://i0.wp.com/hellonimbly.com/wp-content/uploads/2023/08/BLOG-Social-Media_AUG.png?fit=1024%2C576&ssl=1'); 
+    
+    /* The AccessAdvisr Orange color with slight transparency */
+    background-color: rgba(255, 67, 30, 0.85); 
+    
+    /* This makes the image and color blend together like your screenshot */
+    background-blend-mode: multiply; 
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 60px 0;
+}
+
+.stat-icon-wrapper {
+    width: 65px;
+    height: 65px;
+    background-color: white;
+    color: #FF431E; /* Icon matches the orange theme */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.stats-section h2 {
+    font-size: 2.2rem;
+    margin-top: 15px;
+}
+
+.stats-section p {
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+/* --- Mobile Adjustments --- */
+@media (max-width: 767.98px) {
+    .stat-item h2 {
+        font-size: 1.8rem;
+    }
+    .stat-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}

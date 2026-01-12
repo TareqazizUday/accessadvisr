@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accommodation - AccessAdvisr</title>
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+    
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!----- inner header section ------>
+<section class="partners-header-section">
+    <div class="container text-center py-5">
+        <h1 class="text-white fw-bold mb-2">Accommodation</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                <li class="breadcrumb-item active text-orange" aria-current="page">ACCOMMODATION</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!---- hero map section ---->
+<section class="hero-map-section position-relative" id="heroMapSection">
+    <div id="homeMap" style="width: 100%; height: 500px; position: relative;"></div>
+
+    <div class="container search-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="search-bar-wrapper bg-white shadow-lg rounded-1">
+                    <form class="row g-0 align-items-center" action="{% url 'accommodation' %}" method="get">
+                        
+                        <div class="col-md-3 border-end-custom">
+                            <div class="d-flex align-items-center px-3 py-2">
+                                <i class="bi bi-pencil-square text-muted"></i>
+                                <input type="text" name="keywords" class="form-control border-0 shadow-none bg-transparent" placeholder="Keywords..." value="{{ request.GET.keywords }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 border-end-custom">
+                            <div class="d-flex align-items-center px-3 py-2">
+                                <i class="bi bi-layers text-muted"></i>
+                                <input type="text" class="form-control border-0 shadow-none bg-transparent" value="Accommodation" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 border-end-custom">
+                            <div class="d-flex align-items-center px-3 py-2">
+                                <i class="bi bi-geo-alt text-muted"></i>
+                                <input type="text" name="location" id="locationInput" class="form-control border-0 shadow-none bg-transparent" placeholder="Location" value="{{ request.GET.location }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 p-2">
+                            <button type="submit" class="btn btn-orange w-100 py-3 fw-bold text-uppercase">
+                                Search
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section style="height: 100px;"></section>
+
+<section class="explore-section py-5 bg-white">
+    <div class="container py-4">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="section-title mb-4">
+                    Accommodation <span class="text-orange">Listings</span>
+                </h2>
+                <p class="section-subtitle text-muted px-md-5">
+                    Discover accessible accommodation options reviewed by our community. From hotels to vacation rentals, find places that prioritize accessibility.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-------- card section with accommodation listings ------>
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4" id="accommodationCardsContainer">
+            {% if locations %}
+                {% for location in locations %}
+                    {% include 'components/location_card.html' with location=location %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="bi bi-house-door" style="font-size: 4rem; color: #ccc;"></i>
+                        <h4 class="mt-3 text-muted">No accommodation listings found</h4>
+                        <p class="text-muted">Check back soon for new listings in this category.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if locations %}
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <p class="text-muted">
+                    Showing <span id="accommodationCount">{{ locations|length }}</span> accommodation listing<span id="accommodationPlural">{{ locations|length|pluralize }}</span>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if GOOGLE_MAPS_API_KEY %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAccommodationMap" async defer></script>
+
+<script>
+let accommodationMap;
+let accommodationMarkers = [];
+let accommodationPlacesService;
+const ACCOMMODATION_RADIUS = 5000; // 5km radius
+
+function initAccommodationMap() {
+    console.log('🏨 Initializing Accommodation Map...');
+    
+    const mapElement = document.getElementById('homeMap');
+    if (!mapElement) {
+        console.error('❌ Map element not found!');
+        return;
+    }
+    
+    if (typeof google === 'undefined' || !google.maps) {
+        console.error('❌ Google Maps API not loaded!');
+        return;
+    }
+    
+    const defaultCenter = { lat: 23.8103, lng: 90.4125 }; // Dhaka, Bangladesh
+    
+    try {
+        accommodationMap = new google.maps.Map(mapElement, {
+            zoom: 13,
+            center: defaultCenter,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+        });
+        
+        accommodationPlacesService = new google.maps.places.PlacesService(accommodationMap);
+        console.log('✅ Accommodation map initialized');
+        
+        // Load accommodation places
+        loadAccommodationPlaces();
+        
+    } catch (error) {
+        console.error('❌ Error initializing map:', error);
+    }
+}
+
+function loadAccommodationPlaces() {
+    console.log('🔍 Loading accommodation places...');
+    
+    // Get user's current location first
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                
+                console.log('📍 User location:', userLocation);
+                accommodationMap.setCenter(userLocation);
+                
+                // Search for accommodation near user location
+                searchAccommodation(userLocation);
+            },
+            (error) => {
+                console.log('Using default location');
+                const defaultLocation = { lat: 23.8103, lng: 90.4125 };
+                searchAccommodation(defaultLocation);
+            }
+        );
+    } else {
+        const defaultLocation = { lat: 23.8103, lng: 90.4125 };
+        searchAccommodation(defaultLocation);
+    }
+}
+
+function searchAccommodation(location) {
+    // Clear existing markers
+    accommodationMarkers.forEach(marker => {
+        if (marker.setMap) marker.setMap(null);
+    });
+    accommodationMarkers = [];
+    
+    // Search for accommodation types: hotels, lodging, etc.
+    const accommodationTypes = ['lodging', 'hotel', 'motel', 'hostel', 'guest_house'];
+    
+    accommodationTypes.forEach(type => {
+        const request = {
+            location: location,
+            radius: ACCOMMODATION_RADIUS,
+            type: type
+        };
+        
+        accommodationPlacesService.nearbySearch(request, (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                console.log(`✅ Found ${results.length} ${type} places`);
+                results.forEach(place => {
+                    createAccommodationMarker(place);
+                });
+                
+                // Update card section
+                updateAccommodationCards(results);
+            }
+        });
+    });
+}
+
+function createAccommodationMarker(place) {
+    const marker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: accommodationMap,
+        title: place.name,
+        icon: {
+            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            scaledSize: new google.maps.Size(40, 40)
+        }
+    });
+    
+    const infoWindow = new google.maps.InfoWindow({
+        content: `
+            <div style="padding: 10px; min-width: 200px;">
+                <h6 style="margin: 0 0 8px 0; font-weight: bold;">${place.name}</h6>
+                <p style="margin: 0 0 5px 0; font-size: 13px; color: #666;">${place.vicinity || ''}</p>
+                ${place.rating ? `
+                    <div style="margin-top: 8px;">
+                        <span style="color: #FFA500;">⭐</span>
+                        <span style="font-weight: bold;">${place.rating}</span>
+                        ${place.user_ratings_total ? `<span style="color: #999; font-size: 12px;"> (${place.user_ratings_total})</span>` : ''}
+                    </div>
+                ` : ''}
+                <a href="/place/google/${place.place_id}/" style="display: inline-block; margin-top: 10px; color: #FF431E; text-decoration: none; font-weight: 600;">View Details →</a>
+            </div>
+        `
+    });
+    
+    marker.addListener('click', () => {
+        accommodationMarkers.forEach(m => {
+            if (m.infoWindow) m.infoWindow.close();
+        });
+        infoWindow.open(accommodationMap, marker);
+    });
+    
+    marker.infoWindow = infoWindow;
+    accommodationMarkers.push(marker);
+}
+
+function updateAccommodationCards(places) {
+    // This function would update the cards section with Google Places results
+    // For now, it just updates the count
+    const countEl = document.getElementById('accommodationCount');
+    if (countEl) {
+        const currentCount = parseInt(countEl.textContent) || 0;
+        countEl.textContent = currentCount + places.length;
+    }
+}
+</script>
+{% endif %}
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

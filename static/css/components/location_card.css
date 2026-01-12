@@ -1,0 +1,28 @@
+/* Unique Prefixed CSS for Location Card */
+.location_card_main {
+    border-radius: 10px !important;
+    background-color: #ffffff;
+}
+
+/* Icon Styling - Matches brand color #FF431F */
+.location_card_icon {
+    color: #FF431F;
+    font-size: 2.5rem;
+}
+
+.location_card_title {
+    color: #1a2b48; /* Dark navy blue from screenshot */
+    font-size: 1.5rem;
+}
+
+.location_card_text p {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Responsive shadow adjustment */
+@media (max-width: 768px) {
+    .location_card_main {
+        padding: 2rem !important; /* Smaller padding on mobile */
+    }
+}

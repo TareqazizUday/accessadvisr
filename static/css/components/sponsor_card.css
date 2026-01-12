@@ -1,0 +1,97 @@
+/* sponsor Card Container */
+.partner-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+    border: 1px solid #f0f0f0;
+    transition: transform 0.3s ease;
+}
+
+/* Image Box and Hover Effect */
+.card-image-box {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    overflow: hidden; /* Clips the zoomed image */
+    position: relative;
+    border-bottom: 1px solid #eee;
+}
+
+.partner-img {
+    max-width: 70%;
+    max-height: 70%;
+    object-fit: contain;
+    transition: transform 0.5s ease, filter 0.3s ease;
+}
+
+.partner-card:hover .partner-img {
+    transform: scale(1.15); /* Zooms image in on hover */
+}
+
+/* Pressalit Dark Style (Middle Card) */
+.bg-dark-style {
+    background-color: #333 !important;
+}
+.invert-logo {
+    filter: brightness(0) invert(1);
+}
+
+/* Card Body Content */
+.card-body-content {
+    padding: 25px;
+    text-align: center;
+}
+
+.partner-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+/* Branding Icon 'A' */
+.author-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.brand-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+.brand-text {
+    font-size: 17px;
+    color: #777;
+}
+
+.partner-desc {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.read-more-btn {
+    color: #FF431E; /* Brand Orange */
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.read-more-btn:hover {
+    color: #d13516;
+    text-decoration: underline;
+}
+.sponsor_card_href{
+    text-decoration: none;
+}

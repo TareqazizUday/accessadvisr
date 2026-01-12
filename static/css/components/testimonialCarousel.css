@@ -1,0 +1,62 @@
+/* --- Testimonial Section Styling --- */
+.testimonial-section {
+    position: relative;
+    /* Replace with your specific background image path */
+    background: linear-gradient(rgba(35, 42, 52, 0.8), rgba(35, 42, 52, 0.8)), 
+                url('https://disabilityhorizons.com/wp-content/uploads/2014/05/disabled-person-talking-to-a-stranger.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+}
+
+.testimonial-avatar-wrapper img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
+.testimonial-text {
+    max-width: 800px;
+    font-size: 1.25rem;
+    line-height: 1.8;
+}
+
+/* Custom Navigation Buttons (The white circles) */
+.custom-nav-btn {
+    background-color: white;
+    color: #FF431E; /* Orange icon */
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.custom-nav-btn:hover {
+    background-color: #FF431E;
+    color: white;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 767.98px) {
+    .testimonial-text {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+    .testimonial-avatar-wrapper img {
+        width: 90px;
+        height: 90px;
+    }
+    .custom-nav-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,53 @@
+{% load static %}
+<section class="recent-contributions py-5" style="padding-top: 0 !important;">
+    <div class="container" style="padding-top: 0 !important;">
+        <div class="row gy-4">
+            {% for review in recent_contributions %}
+            <div class="col-lg-4 col-md-6">
+                <div class="contribution-card bg-white shadow-sm h-100 rounded-1 overflow-hidden">
+                    <div class="p-4 text-center">
+                        <img src="https://i.pravatar.cc/150?u={{ review.author_name|slugify }}" class="reviewer-img rounded-circle mb-3" alt="{{ review.author_name }}" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #eee;">
+                        <h6 class="mb-2 fw-bold">{{ review.author_name }}</h6>
+                        <div class="stars text-warning small d-flex justify-content-center mb-0">
+                            {% with avg_rating=review.get_average_rating %}
+                                {% if avg_rating >= 5 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                {% elif avg_rating >= 4.5 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                                {% elif avg_rating >= 4 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 3.5 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 3 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 2.5 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 2 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 1.5 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% elif avg_rating >= 1 %}
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% else %}
+                                    <i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <div class="bg-orange p-4 text-white">
+                        <p class="mb-0 small">{{ review.author_name }} reviewed {{ review.place_name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <p>No recent contributions yet. Be the first to share your review!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'all_contributions' %}" class="btn btn-orange px-5 py-2 fw-bold text-uppercase">See All</a>
+        </div>
+    </div>
+</section>

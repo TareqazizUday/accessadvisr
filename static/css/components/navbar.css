@@ -1,0 +1,59 @@
+/*----------------------------------------------- Navbar styles------------------------------------------ */
+
+/* Make navbar sticky on all pages */
+.navbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1050 !important;
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-nav .nav-link {
+    color: #6c757d !important;  /* Grey text */
+    font-weight: 400;
+    margin: 0 5px;
+}
+
+.active-link {
+    color: #FF431E !important; /* The orange from your logo */
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FF431E !important; /* Hover effect */
+}
+
+/* Adjustments for the @ symbol in logo alignment */
+.navbar-brand img {
+    object-fit: contain !important;
+}
+
+/* Mobile adjustments (Standard Bootstrap 'xl' breakpoint is 1200px) */
+@media (max-width: 1199.98px) {
+    .navbar-collapse {
+        padding: 1rem 0;
+        border-top: 1px solid #eee;
+        margin-top: 1rem;
+    }
+
+    .navbar-nav {
+        align-items: flex-start !important; /* Left-align links on mobile */
+    }
+
+    .nav-item {
+        width: 100%; /* Make items full width for easier tapping */
+        padding: 8px 0;
+    }
+
+    .nav-item.ms-xl-4, 
+    .nav-item.ms-xl-3 {
+        margin-left: 0 !important; /* Reset the desktop spacing */
+        margin-top: 10px;
+    }
+
+    .btn-orange {
+        display: inline-block;
+        width: 100%; /* Make the button full width on mobile */
+        text-align: center;
+    }
+}
