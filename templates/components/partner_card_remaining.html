@@ -1,0 +1,198 @@
+{% load static %}
+<section class="partner-cards-section py-5" id="remainingPartnersSection">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row gy-4" id="remainingPartnersContainer">
+                    {% if remaining_partners %}
+                        {% for partner in remaining_partners %}
+                            <div class="col-lg-4 col-md-6 partner-card-item">
+                                <div class="partner-card shadow-sm">
+                                    <a href="{% url 'partner_detail' partner.slug %}" class="card-image-box">
+                                        {% if partner.image %}
+                                            <img src="{{ partner.image.url }}" class="partner-img" alt="{{ partner.title }}">
+                                        {% else %}
+                                            <div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;">
+                                                <span>No Image</span>
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                    <div class="card-body-content">
+                                        <h5 class="partner-title">{{ partner.title }}</h5>
+                                        <div class="author-info">
+                                            <a href="{% url 'home' %}" class="partner_card_href">
+                                                <img src="{% static 'images/icons/accessadvisr_logo.png' %}" class="brand-icon" alt="A">
+                                                <span class="brand-text">accessadvisr</span>
+                                            </a>
+                                        </div>
+                                        <p class="partner-desc">
+                                            {% if partner.short_description %}
+                                                {{ partner.short_description|truncatewords:20 }}
+                                            {% else %}
+                                                Partner: {{ partner.title }} – supporting accessibility and inclusion...
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'partner_detail' partner.slug %}" class="read-more-btn">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% elif remaining_sponsors %}
+                        {% for sponsor in remaining_sponsors %}
+                            <div class="col-lg-4 col-md-6 partner-card-item">
+                                <div class="partner-card shadow-sm">
+                                    <a href="{% url 'partner_detail' sponsor.slug %}" class="card-image-box">
+                                        {% if sponsor.image %}
+                                            <img src="{{ sponsor.image.url }}" class="partner-img" alt="{{ sponsor.title }}">
+                                        {% else %}
+                                            <div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;">
+                                                <span>No Image</span>
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                    <div class="card-body-content">
+                                        <h5 class="partner-title">{{ sponsor.title }}</h5>
+                                        <div class="author-info">
+                                            <a href="{% url 'home' %}" class="partner_card_href">
+                                                <img src="{% static 'images/icons/accessadvisr_logo.png' %}" class="brand-icon" alt="A">
+                                                <span class="brand-text">accessadvisr</span>
+                                            </a>
+                                        </div>
+                                        <p class="partner-desc">
+                                            {% if sponsor.short_description %}
+                                                {{ sponsor.short_description|truncatewords:20 }}
+                                            {% else %}
+                                                Partner: {{ sponsor.title }} – supporting accessibility and inclusion...
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'partner_detail' sponsor.slug %}" class="read-more-btn">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-center text-muted">No additional partners available.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Load More Button -->
+                {% if remaining_partners_count > remaining_partners_showing %}
+                <div class="container text-center mt-4" id="loadMoreContainer">
+                    <button class="btn btn-orange btn-fixed" id="loadMoreBtn" 
+                            data-current="{{ remaining_partners_showing }}" 
+                            data-total="{{ remaining_partners_count }}">
+                        Load More
+                    </button>
+                </div>
+                {% elif remaining_sponsors_count > remaining_sponsors_showing %}
+                <div class="container text-center mt-4" id="loadMoreContainer">
+                    <button class="btn btn-orange btn-fixed" id="loadMoreBtn" 
+                            data-current="{{ remaining_sponsors_showing }}" 
+                            data-total="{{ remaining_sponsors_count }}">
+                        Load More
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Hidden data container for remaining partners -->
+{% if remaining_partners_count > remaining_partners_showing %}
+<div id="remainingPartnersData" style="display: none;">
+    {% for partner in remaining_partners_all %}
+        {% if forloop.counter0 >= remaining_partners_showing %}
+        <div class="partner-data-item" 
+             data-name="{{ partner.title|escape }}" 
+             data-slug="{{ partner.slug }}" 
+             data-image="{% if partner.image %}{{ partner.image.url }}{% endif %}" 
+             data-description="{{ partner.short_description|truncatewords:20|escape|default:'' }}">
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% elif remaining_sponsors_count > remaining_sponsors_showing %}
+<div id="remainingPartnersData" style="display: none;">
+    {% for sponsor in remaining_sponsors_all %}
+        {% if forloop.counter0 >= remaining_sponsors_showing %}
+        <div class="partner-data-item" 
+             data-name="{{ sponsor.title|escape }}" 
+             data-slug="{{ sponsor.slug }}" 
+             data-image="{% if sponsor.image %}{{ sponsor.image.url }}{% endif %}" 
+             data-description="{{ sponsor.short_description|truncatewords:20|escape|default:'' }}">
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+(function() {
+    'use strict';
+    
+    function loadMorePartners() {
+        const container = document.getElementById('remainingPartnersContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        const dataContainer = document.getElementById('remainingPartnersData');
+        
+        if (!container || !dataContainer) return;
+        
+        // Get remaining partner data items
+        const dataItems = dataContainer.querySelectorAll('.partner-data-item');
+        if (dataItems.length === 0) {
+            if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+            return;
+        }
+        
+        // Show next 6 partners
+        const itemsToShow = Math.min(6, dataItems.length);
+        const staticUrl = '{% static "images/icons/accessadvisr_logo.png" %}';
+        
+        for (let i = 0; i < itemsToShow; i++) {
+            const item = dataItems[i];
+            const name = item.getAttribute('data-name');
+            const slug = item.getAttribute('data-slug');
+            const imageUrl = item.getAttribute('data-image');
+            const description = item.getAttribute('data-description') || ('Partner: ' + name + ' – supporting accessibility and inclusion...');
+            
+            const imageHtml = imageUrl 
+                ? '<img src="' + imageUrl + '" class="partner-img" alt="' + name + '">'
+                : '<div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;"><span>No Image</span></div>';
+            
+            const cardHtml = '<div class="col-lg-4 col-md-6 partner-card-item">' +
+                '<div class="partner-card shadow-sm">' +
+                '<a href="/partner/' + slug + '/" class="card-image-box">' + imageHtml + '</a>' +
+                '<div class="card-body-content">' +
+                '<h5 class="partner-title">' + name + '</h5>' +
+                '<div class="author-info">' +
+                '<a href="/" class="partner_card_href">' +
+                '<img src="' + staticUrl + '" class="brand-icon" alt="A">' +
+                '<span class="brand-text">accessadvisr</span></a></div>' +
+                '<p class="partner-desc">' + description + '</p>' +
+                '<a href="/partner/' + slug + '/" class="read-more-btn">Read More</a>' +
+                '</div></div></div>';
+            
+            container.insertAdjacentHTML('beforeend', cardHtml);
+            item.remove(); // Remove from data container
+        }
+        
+        // Hide button if no more items
+        if (dataContainer.querySelectorAll('.partner-data-item').length === 0) {
+            if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+        }
+    }
+    
+    // Add event listener to load more button
+    document.addEventListener('DOMContentLoaded', function() {
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', loadMorePartners);
+        }
+    });
+})();
+</script>
+

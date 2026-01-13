@@ -9,13 +9,13 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
-<body>
+<body class="">
 	
 <!-- include navbar -->
 {% include 'components/navbar.html' %}
 
 <!----- inner hder section ------>
-<section class="partners-header-section">
+<section class="partners-header-section ">
     <div class="container text-center py-5">
         <h1 class="text-white fw-bold mb-2">Partners</h1>
         <nav aria-label="breadcrumb">
@@ -33,16 +33,16 @@
 
 <!---- sponsor heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">Our Sponsors</h2>
+    <h2 class="fw-bold partner-heading">Our Sponsors</h2>
     <div class="orange-divider mx-auto"></div>
 </div>
 
 
 <!------------- sponsor slider section ---------->
-{% include 'components/sponsor_slide.html' %}
+{% include 'components/partner_slide.html' %}
 
 <!----- sponsor description section ------>
-<div class="container text-center mt-4 mb-5">
+<div class="container text-center mt-4 mb-5 ">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <p class="text-muted medium mb-4 lh-lg">
@@ -56,12 +56,12 @@
 </div>
 
 
-<!-------- sponsor card section ------------------>
-{% include 'components/sponsor_card.html' %}
+<!-------- sponsor card section (First 3 only) ------------------>
+{% include 'components/partner_card.html' %}
 
 <!---- sponsor heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">Partners & Friends of AccessAdvisr</h2>
+    <h2 class="fw-bold partner-heading">Partners & Friends of AccessAdvisr</h2>
     <div class="orange-divider mx-auto"></div>
 </div>
 
@@ -83,13 +83,8 @@
     </div>
 </div>
 
-<!-------- sponsor card section ------------------>
-{% include 'components/sponsor_card.html' %}
-
-
-<div class="container text-center">
-    <a href="#" class="btn btn-orange btn-fixed">Load More</a>
-</div>
+<!-------- remaining sponsor card section (Shows remaining sponsors, not duplicates) ------------------>
+{% include 'components/partner_card_remaining.html' %}
 
 
 

@@ -1,0 +1,653 @@
+{% load static %}
+{% load partner_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{ partner.title }} - AccessAdvisr</title>
+	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	<style>
+		.comment-section {
+			margin-top: 3rem;
+			padding-top: 2rem;
+		}
+		.comment-form {
+			background: #f9f9f9;
+			padding: 2rem;
+			border-radius: 8px;
+		}
+		.comment-form input,
+		.comment-form textarea {
+			width: 100%;
+			padding: 0.75rem;
+			margin-bottom: 1rem;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+		.contact-box {
+			background: #FF431E;
+			color: white;
+			padding: 1.5rem;
+			border-radius: 8px;
+			margin-top: 2rem;
+		}
+		.contact-box a {
+			color: white;
+			text-decoration: none;
+			font-weight: bold;
+		}
+		.popular-partners-section {
+			margin-top: 2rem;
+		}
+		/* Comment Section Styles */
+		.comments-section .card {
+			border: 1px solid #e0e0e0;
+			transition: box-shadow 0.2s;
+		}
+		.comments-section .card:hover {
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+		.reply-btn {
+			background-color: transparent;
+			color: #6cbd7d;
+			border: none;
+			padding: 0.25rem 0.5rem;
+			font-size: 0.875rem;
+			cursor: pointer;
+		}
+		.reply-btn:hover {
+			color: #5aab6a;
+			background-color: transparent;
+		}
+		.reply-btn i {
+			margin-right: 0.25rem;
+		}
+		/* Reply Popup Modal */
+		.reply-popup {
+			position: fixed;
+			background: white;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+			padding: 1.5rem;
+			width: 400px;
+			z-index: 1000;
+			max-width: calc(100vw - 40px);
+		}
+		.reply-popup-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.1);
+			z-index: 999;
+		}
+		/* Video Container Styles */
+		.video-container {
+			max-width: 100%;
+			margin: 0 auto;
+		}
+		.video-container .ratio {
+			position: relative;
+			width: 100%;
+		}
+		.video-container iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border: 0;
+		}
+		/* Visit Website Button Styling */
+		.btn-orange {
+			background-color: #FF431E !important;
+			color: white !important;
+			border: none !important;
+			border-radius: 8px !important;
+			padding: 12px 30px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			display: inline-block !important;
+			transition: all 0.3s ease !important;
+		}
+		.btn-orange:hover {
+			background-color: #e03a1a !important;
+			color: white !important;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(255, 67, 30, 0.3);
+		}
+	</style>
+</head>
+<body>
+	
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!----- inner header section ------>
+<section class="partners-header-section">
+    <div class="container text-center py-5">
+        <h1 class="text-white fw-bold mb-2">Partners</h1>
+    </div>
+</section>
+
+<!-- Main Content Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Left Column - Main Content -->
+            <div class="col-lg-8">
+                <!-- Partner Title -->
+                <h2 class="fw-bold mb-4">{{ partner.title }}</h2>
+                
+                <!-- Video Section -->
+                {% if partner.video_url %}
+                    <div class="mb-5">
+                        <div class="video-container shadow-lg rounded overflow-hidden">
+                            <div class="ratio ratio-16x9">
+                                <iframe 
+                                    src="{{ partner.video_url|youtube_embed_url }}?enablejsapi=1&origin={{ request.scheme }}://{{ request.get_host }}&rel=0" 
+                                    title="{{ partner.title }} Video" 
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Partner Content -->
+                {% if partner.content %}
+                    <div class="mb-5">
+                        <div class="text-muted lh-lg">
+                            {{ partner.content|safe }}
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Fallback to old structured fields if content is empty -->
+                    {% if partner.partner_spotlight_description %}
+                        <div class="mb-5">
+                            {% if partner.partner_spotlight_title %}
+                                <h2 class="fw-bold mb-3">{{ partner.partner_spotlight_title }}</h2>
+                            {% endif %}
+                            <div class="text-muted lh-lg">
+                                {{ partner.partner_spotlight_description|linebreaks }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if partner.why_partner_title or partner.why_partner_description %}
+                        <div class="mb-5">
+                            <h3 class="fw-bold mb-3">
+                                {% if partner.why_partner_title %}
+                                    {{ partner.why_partner_title }}
+                                {% else %}
+                                    Why AccessAdvisr Partners with {{ partner.title }}
+                                {% endif %}
+                            </h3>
+                            {% if partner.why_partner_description %}
+                                <div class="text-muted lh-lg">
+                                    {{ partner.why_partner_description|linebreaks }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if partner.services_title or partner.services_description %}
+                        <div class="mb-5">
+                            <h3 class="fw-bold mb-3">
+                                {% if partner.services_title %}
+                                    {{ partner.services_title }}
+                                {% else %}
+                                    Services by {{ partner.title }}
+                                {% endif %}
+                            </h3>
+                            {% if partner.services_description %}
+                                <div class="text-muted lh-lg">
+                                    {{ partner.services_description|linebreaks }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if partner.why_supports_title or partner.why_supports_description %}
+                        <div class="mb-5">
+                            <h3 class="fw-bold mb-3">
+                                {% if partner.why_supports_title %}
+                                    {{ partner.why_supports_title }}
+                                {% else %}
+                                    Why {{ partner.title }} Supports AccessAdvisr
+                                {% endif %}
+                            </h3>
+                            {% if partner.why_supports_description %}
+                                <div class="text-muted lh-lg">
+                                    {{ partner.why_supports_description|linebreaks }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <!-- Website URL Button -->
+                {% if partner.website_url %}
+                    <div class="mb-5 text-center">
+                        <a href="{{ partner.website_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-orange btn-lg px-5 py-3" style="border-radius: 8px; font-weight: 600; text-decoration: none;">
+                            Visit The Original Website
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Right Column - Sidebar -->
+            <div class="col-lg-4">
+                <!-- Recent Partners Section -->
+                {% if recent_partners %}
+                    <div class="mb-5">
+                        <h4 class="fw-bold mb-4">Recent Partners</h4>
+                        {% for recent_partner in recent_partners|slice:":3" %}
+                            <div class="card mb-3 shadow-sm">
+                                {% if recent_partner.image %}
+                                    <img src="{{ recent_partner.image.url }}" class="card-img-top" alt="{{ recent_partner.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                                        <span class="text-muted">No Image</span>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'partner_detail' recent_partner.slug %}" class="text-decoration-none text-dark">
+                                            {{ recent_partner.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text small text-muted">
+                                        {% if recent_partner.short_description %}
+                                            {{ recent_partner.short_description|truncatewords:15 }}
+                                        {% else %}
+                                            {{ recent_partner.title }} is a valued partner of AccessAdvisr...
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="https://i2.wp.com/accessadvisr.com/wp-content/plugins/wp-first-letter-avatar/images/default/128/latin_a.png?ssl=1" class="rounded-circle me-2" width="24" height="24" alt="A">
+                                        <small class="text-muted">accessadvisr</small>
+                                    </div>
+                                    <small class="text-muted">{{ recent_partner.created_at|date:"F d, Y" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Popular Partners Section -->
+                {% if recent_partners|length > 3 %}
+                    <div class="popular-partners-section">
+                        <h4 class="fw-bold mb-4">Popular Partners</h4>
+                        {% for popular_partner in recent_partners|slice:"3:5" %}
+                            <div class="card mb-3 shadow-sm">
+                                {% if popular_partner.image %}
+                                    <img src="{{ popular_partner.image.url }}" class="card-img-top" alt="{{ popular_partner.title }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                                        <span class="text-muted small">No Image</span>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{% url 'partner_detail' popular_partner.slug %}" class="text-decoration-none text-dark">
+                                            {{ popular_partner.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="card-text small text-muted mb-2">
+                                        {% if popular_partner.short_description %}
+                                            {{ popular_partner.short_description|truncatewords:10 }}
+                                        {% else %}
+                                            {{ popular_partner.title }} is a valued partner of AccessAdvisr...
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="https://i2.wp.com/accessadvisr.com/wp-content/plugins/wp-first-letter-avatar/images/default/128/latin_a.png?ssl=1" class="rounded-circle me-2" width="24" height="24" alt="A">
+                                        <small class="text-muted">accessadvisr</small>
+                                    </div>
+                                    <small class="text-muted">{{ popular_partner.created_at|date:"F d, Y" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Contact Section -->
+                <div class="contact-box">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-telephone-fill me-2"></i>
+                        Contact With Us For Any Advice
+                    </h5>
+                    <p class="mb-2">Need help? Talk to an expert</p>
+                    <a href="tel:+447554823078" class="h4">+44 (0) 755 482 3078</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comments Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Existing Comments -->
+                {% if total_comments_count > 0 %}
+                <div class="mb-5">
+                    <h3 class="fw-bold mb-4">
+                        {{ total_comments_count }} Comments
+                    </h3>
+                    {% for comment in comments %}
+                        <div class="card mb-4 shadow-sm border">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start mb-3 position-relative">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 50px; height: 50px; font-weight: bold; font-size: 1.2rem;">
+                                        {{ comment.author_name|first|upper }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="mb-1 fw-bold" style="color: #333; font-size: 1rem;">{{ comment.author_name }}</h6>
+                                                <small class="text-muted d-block">{{ comment.created_at|date:"F d, Y" }}</small>
+                                            </div>
+                                            <button type="button" class="btn reply-btn" data-comment-id="{{ comment.id }}" style="border: none; margin-left: 10px;">
+                                                <i class="bi bi-chat-left-text"></i> Reply
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="mb-0" style="color: #333; line-height: 1.6;">{{ comment.comment_text|linebreaks }}</p>
+                                
+                                <!-- Replies to this comment (Tree structure) -->
+                                {% if comment.replies.all %}
+                                    {% for reply in comment.replies.all %}
+                                        {% if reply.is_active and not reply.parent_reply %}
+                                            <div class="ms-5 mt-3 pt-3 border-start border-2 border-secondary ps-3" style="border-left-width: 3px !important;">
+                                                <div class="d-flex align-items-start mb-2">
+                                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px; font-weight: bold; font-size: 0.9rem;">
+                                                        {{ reply.author_name|first|upper }}
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 fw-bold small">{{ reply.author_name }}</h6>
+                                                        <small class="text-muted">{{ reply.created_at|date:"F d, Y" }}</small>
+                                                    </div>
+                                                </div>
+                                                <p class="mb-0 small" style="line-height: 1.6;">{{ reply.reply_text|linebreaks }}</p>
+                                                
+                                                <!-- Nested replies (replies to replies) -->
+                                                {% if reply.child_replies.all %}
+                                                    {% for nested_reply in reply.child_replies.all %}
+                                                        {% if nested_reply.is_active %}
+                                                            <div class="ms-4 mt-3 pt-3 border-start border-2 border-secondary ps-3" style="border-left-width: 2px !important;">
+                                                                <div class="d-flex align-items-start mb-2">
+                                                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 35px; height: 35px; font-weight: bold; font-size: 0.8rem;">
+                                                                        {{ nested_reply.author_name|first|upper }}
+                                                                    </div>
+                                                                    <div class="flex-grow-1">
+                                                                        <h6 class="mb-1 fw-bold" style="font-size: 0.85rem;">{{ nested_reply.author_name }}</h6>
+                                                                        <small class="text-muted" style="font-size: 0.75rem;">{{ nested_reply.created_at|date:"F d, Y" }}</small>
+                                                                    </div>
+                                                                </div>
+                                                                <p class="mb-0" style="font-size: 0.85rem; line-height: 1.5;">{{ nested_reply.reply_text|linebreaks }}</p>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Leave a Comment Form -->
+                <div class="comment-section">
+                    <h3 class="fw-bold mb-4">Leave a Comment</h3>
+                    <p class="text-muted small mb-4">Your email address will not be published.</p>
+                    
+                    <form id="commentForm" class="comment-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="partner_id" id="partner_id" value="{{ partner.id }}">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="author_name" id="author_name" placeholder="Name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" class="form-control" name="author_email" id="author_email" placeholder="Email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="save_info" id="save_info">
+                                <label class="form-check-label" for="save_info">
+                                    Save my name, email, and website in this browser for the next time I comment.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <textarea class="form-control" name="comment_text" id="comment_text" rows="5" placeholder="Your Comment" required></textarea>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-orange btn-lg px-5">POST COMMENT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!---------- footer section ---------->
+{% include 'components/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script>
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Comment form submission
+        const commentForm = document.getElementById('commentForm');
+        if (!commentForm) {
+            console.error('Comment form not found');
+            return;
+        }
+        
+        commentForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        const formData = {
+            partner_id: form.querySelector('[name="partner_id"]').value,
+            author_name: form.querySelector('[name="author_name"]').value.trim(),
+            author_email: form.querySelector('[name="author_email"]').value.trim(),
+            comment_text: form.querySelector('[name="comment_text"]').value.trim(),
+            save_info: form.querySelector('[name="save_info"]').checked,
+        };
+        
+        try {
+            const response = await fetch('/api/partner-comments/submit/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                // Reload page to show the comment (no popup)
+                window.location.reload();
+            } else {
+                console.error('Error:', data.error || 'Failed to submit comment');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                // Show error message in form instead of popup
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'alert alert-danger mt-2';
+                errorMsg.textContent = data.error || 'Failed to submit comment. Please try again.';
+                form.insertBefore(errorMsg, form.firstChild);
+                setTimeout(() => errorMsg.remove(), 5000);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            // Show error message in form instead of popup
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'alert alert-danger mt-2';
+            errorMsg.textContent = 'Error submitting comment. Please try again.';
+            form.insertBefore(errorMsg, form.firstChild);
+            setTimeout(() => errorMsg.remove(), 5000);
+        }
+    });
+    
+    // Reply button handlers
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const commentId = this.getAttribute('data-comment-id');
+            
+            // Remove existing popup if any
+            const existingPopup = document.querySelector('.reply-popup');
+            const existingOverlay = document.querySelector('.reply-popup-overlay');
+            if (existingPopup) existingPopup.remove();
+            if (existingOverlay) existingOverlay.remove();
+            
+            // Get button position
+            const buttonRect = this.getBoundingClientRect();
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'reply-popup-overlay';
+            document.body.appendChild(overlay);
+            
+            // Create popup positioned above the button
+            const popup = document.createElement('div');
+            popup.className = 'reply-popup';
+            // Position above button (280px is approximate popup height)
+            const popupTop = buttonRect.top - 280;
+            popup.style.top = (popupTop > 10 ? popupTop : 10) + 'px';
+            // Align right edge with button
+            popup.style.right = (window.innerWidth - buttonRect.right) + 'px';
+            // Adjust if it goes off screen
+            if (parseInt(popup.style.right) < 10) {
+                popup.style.right = '10px';
+            }
+            
+            popup.innerHTML = `
+                <form class="reply-comment-form">
+                    <input type="hidden" name="comment_id" value="${commentId}">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="author_name" placeholder="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" name="author_email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="reply_text" rows="4" placeholder="Your Reply" required></textarea>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-sm btn-secondary cancel-reply">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-success">Post Reply</button>
+                    </div>
+                </form>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Handle overlay click to close
+            overlay.addEventListener('click', function() {
+                popup.remove();
+                overlay.remove();
+            });
+            
+            // Handle reply form submission
+            const replyFormElement = popup.querySelector('.reply-comment-form');
+            replyFormElement.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                
+                const replyData = {
+                    comment_id: this.querySelector('[name="comment_id"]').value,
+                    author_name: this.querySelector('[name="author_name"]').value.trim(),
+                    author_email: this.querySelector('[name="author_email"]').value.trim(),
+                    reply_text: this.querySelector('[name="reply_text"]').value.trim(),
+                };
+                
+                try {
+                    const response = await fetch('/api/partner-comments/reply/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify(replyData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Reload page to show the reply
+                        window.location.reload();
+                    } else {
+                        console.error('Error:', data.error || 'Failed to submit reply');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        // Show error message
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'alert alert-danger mt-2';
+                        errorMsg.textContent = data.error || 'Failed to submit reply. Please try again.';
+                        replyFormElement.insertBefore(errorMsg, replyFormElement.firstChild);
+                        setTimeout(() => errorMsg.remove(), 5000);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    // Show error message
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'alert alert-danger mt-2';
+                    errorMsg.textContent = 'Error submitting reply. Please try again.';
+                    replyFormElement.insertBefore(errorMsg, replyFormElement.firstChild);
+                    setTimeout(() => errorMsg.remove(), 5000);
+                }
+            });
+            
+            // Handle cancel
+            popup.querySelector('.cancel-reply').addEventListener('click', function() {
+                popup.remove();
+                overlay.remove();
+            });
+        });
+    });
+    }); // End of DOMContentLoaded
+</script>
+</body>
+</html>

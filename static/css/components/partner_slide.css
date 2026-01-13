@@ -39,14 +39,14 @@
 
 /* Mobile - Show 1 logo per slide */
  @media (max-width: 767px) {
-    .sponsor_slider .col-4{
+    .partner_slider .col-4{
         /* border:3px solid #24f311 !important;
         background-color: aqua; */
         height: 150px !important;
 
 
     }
-    .sponsor_slider img{
+    .partner_slider img{
         width: 70% !important;
         /* border:1px solid #FF431E !important; */
 

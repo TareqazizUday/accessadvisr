@@ -1,10 +1,11 @@
 /* Unique Prefixed Styles */
 .tip_card_main {
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .tip_card_main:hover {
     transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 .tip_card_img {
@@ -38,9 +39,22 @@
     color: #444; /* Darker link as shown in image */
     font-size: 0.8rem;
     letter-spacing: 1px;
+    transition: color 0.2s ease;
 }
 
-.tip_card_link:hover {
+/* Card link wrapper styling */
+.tip_card_section a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.tip_card_section a:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.tip_card_main:hover .tip_card_link {
     color: #FF431F; /* Brand color on hover */
 }
 

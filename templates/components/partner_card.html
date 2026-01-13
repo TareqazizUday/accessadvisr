@@ -1,0 +1,50 @@
+{% load static %}
+<section class="partner-cards-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row gy-4">
+                    {% if partners %}
+                        {% for partner in partners %}
+                            <div class="col-lg-4 col-md-6">
+                                <div class="partner-card shadow-sm">
+                                    <a href="{% url 'partner_detail' partner.slug %}" class="card-image-box">
+                                        {% if partner.image %}
+                                            <img src="{{ partner.image.url }}" class="partner-img" alt="{{ partner.title }}">
+                                        {% else %}
+                                            <div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;">
+                                                <span>No Image</span>
+                                            </div>
+                                        {% endif %}
+                                    </a>
+                                    <div class="card-body-content">
+                                        <h5 class="partner-title">{{ partner.title }}</h5>
+                                        <div class="author-info">
+                                            <a href="{% url 'home' %}" class="partner_card_href">
+                                                <img src="{% static 'images/icons/accessadvisr_logo.png' %}" class="brand-icon" alt="A">
+                                                <span class="brand-text">accessadvisr</span>
+                                            </a>
+                                        </div>
+                                        <p class="partner-desc">
+                                            {% if partner.short_description %}
+                                                {{ partner.short_description|truncatewords:20 }}
+                                            {% else %}
+                                                Partner: {{ partner.title }} – supporting accessibility and inclusion...
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'partner_detail' partner.slug %}" class="read-more-btn">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-center text-muted">No partners available at the moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

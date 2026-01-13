@@ -31,9 +31,11 @@
 {% include 'components/blogs_card.html' %}
 
 
+{% if has_more %}
 <div class="container text-center">
-    <a href="#" class="btn btn-orange btn-fixed">Load More</a>
+    <button id="loadMoreBtn" class="btn btn-orange btn-fixed">Load More</button>
 </div>
+{% endif %}
 
 
 <!---------- footer section ---------->
