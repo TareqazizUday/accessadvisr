@@ -1,0 +1,199 @@
+<!-- Authentication Modals -->
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-5">
+                <h2 id="registerModalLabel" class="text-center mb-4" style="color: #2C3E50; font-weight: 600;">Register</h2>
+                
+                <form id="registerForm">
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="registerUsername" 
+                            name="username" 
+                            placeholder="Enter Username"
+                            required
+                        >
+                        <div class="invalid-feedback" id="usernameError"></div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="mb-3">
+                        <input 
+                            type="email" 
+                            class="form-control form-control-lg" 
+                            id="registerEmail" 
+                            name="email" 
+                            placeholder="Enter Email"
+                            required
+                        >
+                        <div class="invalid-feedback" id="emailError"></div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                        <input 
+                            type="password" 
+                            class="form-control form-control-lg" 
+                            id="registerPassword" 
+                            name="password" 
+                            placeholder="Enter Password"
+                            required
+                        >
+                        <div class="invalid-feedback" id="passwordError"></div>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="mb-4">
+                        <input 
+                            type="password" 
+                            class="form-control form-control-lg" 
+                            id="registerConfirmPassword" 
+                            name="confirm_password" 
+                            placeholder="Confirm Password"
+                            required
+                        >
+                        <div class="invalid-feedback" id="confirmPasswordError"></div>
+                    </div>
+
+                    <!-- General Error Message -->
+                    <div class="alert alert-danger d-none" id="registerGeneralError" role="alert"></div>
+
+                    <!-- Success Message -->
+                    <div class="alert alert-success d-none" id="registerSuccess" role="alert"></div>
+
+                    <!-- Register Button -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-lg" id="registerBtn" style="background-color: #FF6B35; color: white; border: none;">
+                            <span id="registerBtnText">Register now</span>
+                            <span class="spinner-border spinner-border-sm d-none" id="registerSpinner" role="status" aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                    <!-- Login Link -->
+                    <div class="text-center">
+                        <p class="mb-0" style="color: #7F8C8D;">
+                            Already have an account? 
+                            <a href="#" class="text-decoration-none" id="showLoginFromRegister" style="color: #FF6B35; font-weight: 600;">Login</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-5">
+                <h2 id="loginModalLabel" class="text-center mb-4" style="color: #2C3E50; font-weight: 600;">Login</h2>
+                
+                <form id="loginForm">
+                    {% csrf_token %}
+                    
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="loginUsername" 
+                            name="username" 
+                            placeholder="Enter Username or Email"
+                            required
+                        >
+                        <div class="invalid-feedback" id="loginUsernameError"></div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-4">
+                        <input 
+                            type="password" 
+                            class="form-control form-control-lg" 
+                            id="loginPassword" 
+                            name="password" 
+                            placeholder="Enter Password"
+                            required
+                        >
+                        <div class="invalid-feedback" id="loginPasswordError"></div>
+                    </div>
+
+                    <!-- General Error Message -->
+                    <div class="alert alert-danger d-none" id="loginGeneralError" role="alert"></div>
+
+                    <!-- Success Message -->
+                    <div class="alert alert-success d-none" id="loginSuccess" role="alert"></div>
+
+                    <!-- Login Button -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-lg" id="loginBtn" style="background-color: #FF6B35; color: white; border: none;">
+                            <span id="loginBtnText">Login</span>
+                            <span class="spinner-border spinner-border-sm d-none" id="loginSpinner" role="status" aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                    <!-- Register Link -->
+                    <div class="text-center">
+                        <p class="mb-0" style="color: #7F8C8D;">
+                            Don't have an account? 
+                            <a href="#" class="text-decoration-none" id="showRegisterFromLogin" style="color: #FF6B35; font-weight: 600;">Register</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #FF6B35;
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .invalid-feedback {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+</style>

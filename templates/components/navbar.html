@@ -1,48 +1,142 @@
 {% load static %}
-<nav class="navbar navbar-expand-xl navbar-light bg-white border-bottom py-3">
-    <div class="container-fluid px-4">
+<nav class="navbar navbar-expand-xl navbar-light bg-white shadow-sm sticky-top">
+    <div class="container-fluid px-4 py-2">
         <a class="navbar-brand" href="{% url 'home' %}">
-            <img src="{% static 'images/accessAdvisr_logo.jpeg' %}" alt="AccessAdvisr Logo" height="50">
+            <img src="{% static 'images/accessAdvisr_logo.jpeg' %}" alt="AccessAdvisr Logo" height="45" class="d-inline-block align-top">
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="mainNav">
             
             <ul class="navbar-nav mx-auto align-items-center">
-                <li class="nav-item"><a class="nav-link active-link" href="{% url 'home' %}">Home</a></li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'home' %}">Home</a>
+                </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="{% url 'browse' %}" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Browse</a>
-                    <ul class="dropdown-menu animate slideIn">
-                        <li><a class="dropdown-item" href="{% url 'accommodation' %}">Accommodation</a></li>
-                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=entertainment">Entertainment</a></li>
-                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=food">Food & Drink</a></li>
-                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=shopping">Shopping</a></li>
-                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=sport">Sports & Recreational</a></li>
-                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=education">Education</a></li>
+                    <a class="nav-link fw-semibold d-inline-flex align-items-center" href="{% url 'browse' %}" onclick="if(event.target.classList.contains('dropdown-toggle')) { event.preventDefault(); return false; }">
+                        Browse
+                        <span class="dropdown-toggle ms-1" role="button" data-bs-toggle="dropdown" aria-expanded="false"></span>
+                    </a>
+                    <ul class="dropdown-menu border-0 shadow-lg">
+                        <li><a class="dropdown-item" href="{% url 'accommodation' %}"><i class="bi bi-house-door me-2"></i>Accommodation</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=entertainment"><i class="bi bi-ticket-perforated me-2"></i>Entertainment</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=food"><i class="bi bi-cup-straw me-2"></i>Food & Drink</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=shopping"><i class="bi bi-bag-check me-2"></i>Shopping</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=sport"><i class="bi bi-trophy me-2"></i>Sports & Recreational</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=transport"><i class="bi bi-bus-front me-2"></i>Transport</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=travel"><i class="bi bi-airplane me-2"></i>Flight & Travel</a></li>
+                        <li><a class="dropdown-item" href="{% url 'browse' %}?category=education"><i class="bi bi-book me-2"></i>Education</a></li>
                     </ul>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'partners' %}">Partners</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'packages' %}">Packages</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'blogs' %}">Blogs</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'donate' %}">Donate</a></li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'partners' %}">Partners</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'packages' %}">Packages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'blogs' %}">Blogs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'contact' %}">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'about' %}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="{% url 'donate' %}">Donate</a>
+                </li>
             </ul>
 
-            <ul class="navbar-nav align-items-center">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                {% if user.is_authenticated %}
+                
+                <!-- Add Review Button -->
+                <li class="nav-item">
+                    <a class="btn btn-add-review" href="#">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Add Review
+                    </a>
+                </li>
+                
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown user-menu-dropdown">
+                    <a class="nav-link dropdown-toggle user-menu-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="d-flex align-items-center">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="user-avatar-image">
+                            {% else %}
+                                <div class="user-avatar-circle">
+                                    <span>{{ user.username|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <span class="user-name-text ms-2 d-none d-xl-inline">{{ user.username }}</span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu user-dropdown-menu" aria-labelledby="userDropdown">
+                        <li class="dropdown-header bg-light">
+                            <div class="d-flex align-items-center py-2">
+                                {% if user.profile.profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="user-avatar-image-large me-3">
+                                {% else %}
+                                    <div class="user-avatar-circle-large me-3">
+                                        <span>{{ user.username|first|upper }}</span>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ user.username }}</h6>
+                                    <small class="text-muted">{{ user.email }}</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'profile' username=user.username %}">
+                                <i class="bi bi-person-circle me-2 text-primary"></i>My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'my_reviews' %}">
+                                <i class="bi bi-star-fill me-2 text-warning"></i>My Reviews
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'my_favorites' %}">
+                                <i class="bi bi-heart-fill me-2 text-danger"></i>Favorites
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="{% url 'profile_settings' %}">
+                                <i class="bi bi-gear-fill me-2 text-secondary"></i>Settings
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <a class="dropdown-item py-2 text-danger fw-semibold" href="/api/auth/logout/" id="logoutBtn">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                {% else %}
+                
+                <!-- Guest User - Sign In / Register (Original Design) -->
                 <li class="nav-item py-2 py-xl-0 me-xl-4">
-                    <a class="nav-link p-0 text-dark" href="#">
-                        <i class="bi bi-person"></i> Sign in <span class="text-muted small">or</span> Register
+                    <a class="nav-link p-0 text-dark" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-person"></i> Sign in <span class="text-muted small">or</span> 
+                        <span class="register-link" data-bs-toggle="modal" data-bs-target="#registerModal" onclick="event.preventDefault();">Register</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn btn-orange px-4" href="#">
+                    <a class="btn btn-add-review" href="#">
                         <i class="bi bi-plus-lg me-1"></i> Add Reviews
                     </a>
                 </li>
+                
+                {% endif %}
             </ul>
 
         </div>
@@ -50,13 +144,154 @@
 </nav>
 
 <style>
-    /* Dropdown hover animation */
-    .dropdown:hover .dropdown-menu {
-        display: block;
-        animation: slideDown 0.3s ease-in-out;
+    /* ==================== Navbar Base Styles ==================== */
+    .navbar {
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
     
-    @keyframes slideDown {
+    .navbar-brand img {
+        transition: transform 0.3s ease;
+    }
+    
+    .navbar-brand:hover img {
+        transform: scale(1.05);
+    }
+
+    /* ==================== Nav Links ==================== */
+    .nav-link {
+        position: relative;
+        color: #2C3E50 !important;
+        padding: 0.5rem 1rem !important;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .nav-link:hover {
+        color: #FF6B35 !important;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: #FF6B35;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .nav-link:hover::after {
+        width: 60%;
+    }
+
+    /* ==================== Add Review Button ==================== */
+    .btn-add-review {
+        background: linear-gradient(135deg, #FF6B35 0%, #FF8C61 100%);
+        border: none;
+        color: white;
+        padding: 0.65rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    }
+    
+    .btn-add-review:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(255, 107, 53, 0.4);
+        color: white;
+        background: linear-gradient(135deg, #FF8C61 0%, #FF6B35 100%);
+    }
+    
+    .btn-add-review:active {
+        transform: translateY(0);
+    }
+
+    /* ==================== User Avatar Circle ==================== */
+    .user-avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF6B35 0%, #FF8C61 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+    }
+    
+    .user-avatar-image {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+    }
+    
+    .user-avatar-circle-large {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF6B35 0%, #FF8C61 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.3rem;
+        box-shadow: 0 3px 15px rgba(255, 107, 53, 0.3);
+    }
+    
+    .user-avatar-image-large {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 3px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    /* ==================== User Menu Toggle ==================== */
+    .user-menu-toggle {
+        padding: 0.4rem 1rem !important;
+        border-radius: 50px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    
+    .user-menu-toggle:hover {
+        background-color: #fff3ef;
+        box-shadow: 0 3px 15px rgba(255, 107, 53, 0.2);
+    }
+    
+    .user-name-text {
+        font-weight: 600;
+        color: #2C3E50;
+        font-size: 0.9rem;
+    }
+
+    /* ==================== User Dropdown Menu ==================== */
+    .user-dropdown-menu {
+        min-width: 300px;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        margin-top: 0.75rem;
+        padding: 0;
+        overflow: hidden;
+        animation: dropdownSlide 0.3s ease;
+        /* Left alignment - dropdown will open to the left */
+        right: 0;
+        left: auto;
+        transform-origin: top right;
+    }
+    
+    @keyframes dropdownSlide {
         from {
             opacity: 0;
             transform: translateY(-10px);
@@ -67,39 +302,207 @@
         }
     }
     
+    .user-dropdown-menu .dropdown-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    }
+    
+    .user-dropdown-menu .dropdown-item {
+        padding: 0.75rem 1.25rem;
+        transition: all 0.2s ease;
+        font-weight: 500;
+        color: #2C3E50;
+        border-left: 3px solid transparent;
+    }
+    
+    .user-dropdown-menu .dropdown-item:hover {
+        background-color: #fff5f2;
+        border-left-color: #FF6B35;
+        padding-left: 1.5rem;
+        color: #FF6B35;
+    }
+    
+    .user-dropdown-menu .dropdown-item i {
+        width: 20px;
+        font-size: 1.1rem;
+    }
+    
+    .user-dropdown-menu .dropdown-item.text-danger:hover {
+        background-color: #fff0f0;
+        border-left-color: #dc3545;
+        color: #dc3545 !important;
+    }
+
+    /* ==================== Browse & General Dropdown ==================== */
     .dropdown-menu {
-        margin-top: 0;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+        animation: dropdownSlide 0.3s ease;
     }
     
     .dropdown-item {
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        margin-bottom: 0.25rem;
         transition: all 0.2s ease;
-        padding: 10px 20px;
+        font-weight: 500;
     }
     
     .dropdown-item:hover {
-        background-color: var(--primary-orange);
-        color: white;
+        background-color: #fff5f2;
+        color: #FF6B35;
         transform: translateX(5px);
+    }
+    
+    .dropdown-item i {
+        color: #FF6B35;
+    }
+
+    /* ==================== Guest User Sign In/Register ==================== */
+    .register-link {
+        color: #FF6B35;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .register-link:hover {
+        color: #ff5722;
+        text-decoration: underline;
+    }
+
+    /* ==================== Guest User Buttons ==================== */
+    .btn-outline-primary {
+        border: 2px solid #FF6B35;
+        color: #FF6B35;
+        font-weight: 600;
+        padding: 0.65rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #FF6B35;
+        border-color: #FF6B35;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(255, 107, 53, 0.3);
+    }
+
+    /* ==================== Mobile Responsive ==================== */
+    @media (max-width: 1200px) {
+        .navbar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            margin: 0.25rem 0;
+        }
+        
+        .user-dropdown-menu {
+            position: static !important;
+            transform: none !important;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-add-review {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    }
+
+    /* ==================== Sticky Navbar Effect ==================== */
+    .sticky-top {
+        z-index: 1030;
+    }
+    
+    .navbar.scrolled {
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     }
 </style>
 
 <script>
-    // Dropdown hover functionality
     document.addEventListener('DOMContentLoaded', function() {
+        // Dropdown hover functionality for desktop
         const dropdowns = document.querySelectorAll('.navbar .dropdown');
         
         dropdowns.forEach(dropdown => {
-            dropdown.addEventListener('mouseenter', function() {
-                const menu = this.querySelector('.dropdown-menu');
-                if (menu) menu.classList.add('show');
-            });
+            // Only enable hover on desktop
+            if (window.innerWidth > 1200) {
+                dropdown.addEventListener('mouseenter', function() {
+                    const menu = this.querySelector('.dropdown-menu');
+                    if (menu) {
+                        menu.classList.add('show');
+                        adjustDropdownPosition(menu, dropdown);
+                    }
+                });
+                
+                dropdown.addEventListener('mouseleave', function() {
+                    const menu = this.querySelector('.dropdown-menu');
+                    if (menu) {
+                        menu.classList.remove('show');
+                    }
+                });
+            }
+        });
+        
+        // Adjust dropdown position to prevent overflow
+        function adjustDropdownPosition(menu, dropdown) {
+            const menuRect = menu.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
             
-            dropdown.addEventListener('mouseleave', function() {
-                const menu = this.querySelector('.dropdown-menu');
-                if (menu) menu.classList.remove('show');
+            // If dropdown goes beyond right edge, align it to the right
+            if (menuRect.right > viewportWidth) {
+                menu.style.right = '0';
+                menu.style.left = 'auto';
+            }
+        }
+        
+        // Reposition user dropdown on show
+        const userDropdown = document.getElementById('userDropdown');
+        if (userDropdown) {
+            userDropdown.addEventListener('click', function() {
+                setTimeout(() => {
+                    const menu = this.nextElementSibling;
+                    if (menu && menu.classList.contains('show')) {
+                        adjustDropdownPosition(menu, this.parentElement);
+                    }
+                }, 10);
+            });
+        }
+        
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar');
+        let lastScroll = 0;
+        
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+        // Auto-close mobile menu after click
+        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1200 && navbarCollapse.classList.contains('show')) {
+                    navbarToggler.click();
+                }
             });
         });
     });
 </script>
+

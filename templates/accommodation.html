@@ -14,6 +14,9 @@
 <!-- include navbar -->
 {% include 'components/navbar.html' %}
 
+<!-- include authentication modals -->
+{% include 'components/auth_modals.html' %}
+
 <!----- inner header section ------>
 <section class="partners-header-section">
     <div class="container text-center py-5">
@@ -203,6 +206,8 @@ function searchAccommodation(location) {
     
     // Search for accommodation types: hotels, lodging, etc.
     const accommodationTypes = ['lodging', 'hotel', 'motel', 'hostel', 'guest_house'];
+    let allResults = [];
+    let searchesCompleted = 0;
     
     accommodationTypes.forEach(type => {
         const request = {
@@ -212,40 +217,94 @@ function searchAccommodation(location) {
         };
         
         accommodationPlacesService.nearbySearch(request, (results, status) => {
+            searchesCompleted++;
+            
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 console.log(`✅ Found ${results.length} ${type} places`);
-                results.forEach(place => {
-                    createAccommodationMarker(place);
-                });
                 
-                // Update card section
-                updateAccommodationCards(results);
+                results.forEach(place => {
+                    // Avoid duplicates by checking place_id
+                    if (!allResults.find(p => p.place_id === place.place_id)) {
+                        createAccommodationMarker(place);
+                        allResults.push(place);
+                    }
+                });
+            }
+            
+            // Update cards after all searches complete
+            if (searchesCompleted === accommodationTypes.length && allResults.length > 0) {
+                console.log(`✅ Total unique accommodation places: ${allResults.length}`);
+                updateAccommodationCards(allResults);
             }
         });
     });
 }
 
 function createAccommodationMarker(place) {
+    // Create custom icon based on accommodation type
+    let iconUrl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    let iconSize = new google.maps.Size(40, 40);
+    
+    // Check place types for specific accommodation icons
+    if (place.types) {
+        if (place.types.includes('hotel')) {
+            // Hotel icon - blue
+            iconUrl = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+        } else if (place.types.includes('lodging')) {
+            // Lodging - red
+            iconUrl = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+        } else if (place.types.includes('hostel') || place.types.includes('guest_house')) {
+            // Hostel/Guest House - green
+            iconUrl = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+        } else if (place.types.includes('motel')) {
+            // Motel - yellow
+            iconUrl = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+        }
+    }
+    
     const marker = new google.maps.Marker({
         position: place.geometry.location,
         map: accommodationMap,
         title: place.name,
         icon: {
-            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-            scaledSize: new google.maps.Size(40, 40)
-        }
+            url: iconUrl,
+            scaledSize: iconSize
+        },
+        animation: google.maps.Animation.DROP
     });
+    
+    // Get accommodation type label
+    let typeLabel = 'Accommodation';
+    if (place.types) {
+        if (place.types.includes('hotel')) typeLabel = 'Hotel';
+        else if (place.types.includes('hostel')) typeLabel = 'Hostel';
+        else if (place.types.includes('motel')) typeLabel = 'Motel';
+        else if (place.types.includes('guest_house')) typeLabel = 'Guest House';
+        else if (place.types.includes('lodging')) typeLabel = 'Lodging';
+    }
     
     const infoWindow = new google.maps.InfoWindow({
         content: `
             <div style="padding: 10px; min-width: 200px;">
+                <div style="background: #FF431E; color: white; padding: 4px 8px; border-radius: 4px; display: inline-block; font-size: 11px; margin-bottom: 8px;">
+                    ${typeLabel}
+                </div>
                 <h6 style="margin: 0 0 8px 0; font-weight: bold;">${place.name}</h6>
-                <p style="margin: 0 0 5px 0; font-size: 13px; color: #666;">${place.vicinity || ''}</p>
+                <p style="margin: 0 0 5px 0; font-size: 13px; color: #666;">
+                    <i class="bi bi-geo-alt"></i> ${place.vicinity || ''}
+                </p>
                 ${place.rating ? `
                     <div style="margin-top: 8px;">
                         <span style="color: #FFA500;">⭐</span>
                         <span style="font-weight: bold;">${place.rating}</span>
-                        ${place.user_ratings_total ? `<span style="color: #999; font-size: 12px;"> (${place.user_ratings_total})</span>` : ''}
+                        ${place.user_ratings_total ? `<span style="color: #999; font-size: 12px;"> (${place.user_ratings_total} reviews)</span>` : ''}
+                    </div>
+                ` : ''}
+                ${place.opening_hours ? `
+                    <div style="margin-top: 8px; font-size: 13px;">
+                        <span style="color: ${place.opening_hours.open_now ? '#28a745' : '#dc3545'}; font-weight: 600;">
+                            ${place.opening_hours.open_now ? '🟢 Open Now' : '🔴 Closed'}
+                        </span>
                     </div>
                 ` : ''}
                 <a href="/place/google/${place.place_id}/" style="display: inline-block; margin-top: 10px; color: #FF431E; text-decoration: none; font-weight: 600;">View Details →</a>
@@ -265,12 +324,89 @@ function createAccommodationMarker(place) {
 }
 
 function updateAccommodationCards(places) {
-    // This function would update the cards section with Google Places results
-    // For now, it just updates the count
+    const container = document.getElementById('accommodationCardsContainer');
+    if (!container) return;
+    
+    // Only update if container is empty or has "no listings" message
+    const isEmpty = container.querySelector('.text-center.py-5') !== null;
+    if (!isEmpty) return; // Don't override Django-rendered cards
+    
+    // Clear the "no listings" message
+    container.innerHTML = '';
+    
+    // Add Google Places as cards
+    places.forEach(place => {
+        const photoUrl = place.photos && place.photos.length > 0 
+            ? place.photos[0].getUrl({ maxWidth: 400 })
+            : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=400';
+        
+        const rating = place.rating || 0;
+        const reviews = place.user_ratings_total || 0;
+        const isOpen = place.opening_hours && place.opening_hours.open_now;
+        
+        // Get accommodation type
+        let typeLabel = 'Accommodation';
+        let typeIcon = 'house-door';
+        if (place.types) {
+            if (place.types.includes('hotel')) {
+                typeLabel = 'Hotel';
+                typeIcon = 'building';
+            } else if (place.types.includes('hostel')) {
+                typeLabel = 'Hostel';
+                typeIcon = 'door-open';
+            } else if (place.types.includes('motel')) {
+                typeLabel = 'Motel';
+                typeIcon = 'signpost';
+            } else if (place.types.includes('guest_house')) {
+                typeLabel = 'Guest House';
+                typeIcon = 'house';
+            }
+        }
+        
+        const cardHtml = `
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="position-relative">
+                        <img src="${photoUrl}" class="card-img-top" alt="${place.name}" style="height: 220px; object-fit: cover;">
+                        <span class="badge bg-orange position-absolute top-0 end-0 m-3">
+                            <i class="bi bi-${typeIcon} me-1"></i>${typeLabel}
+                        </span>
+                        ${isOpen !== undefined ? `
+                            <span class="badge ${isOpen ? 'bg-success' : 'bg-danger'} position-absolute bottom-0 start-0 m-3">
+                                ${isOpen ? '🟢 Open' : '🔴 Closed'}
+                            </span>
+                        ` : ''}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-2">${place.name}</h5>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-geo-alt me-1"></i>${place.vicinity || 'Location not available'}
+                        </p>
+                        ${rating > 0 ? `
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="text-warning me-2">⭐ ${rating.toFixed(1)}</span>
+                                <span class="text-muted small">(${reviews} reviews)</span>
+                            </div>
+                        ` : ''}
+                        <a href="/place/google/${place.place_id}/" class="btn btn-orange btn-sm w-100">
+                            View Details <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', cardHtml);
+    });
+    
+    // Update count
     const countEl = document.getElementById('accommodationCount');
+    const pluralEl = document.getElementById('accommodationPlural');
     if (countEl) {
-        const currentCount = parseInt(countEl.textContent) || 0;
-        countEl.textContent = currentCount + places.length;
+        countEl.textContent = places.length;
+        if (pluralEl) {
+            pluralEl.textContent = places.length !== 1 ? 's' : '';
+        }
     }
 }
 </script>
@@ -280,5 +416,6 @@ function updateAccommodationCards(places) {
 {% include 'components/footer.html' %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="{% static 'js/accessadvisr-script.js' %}"></script>
 </body>
 </html>

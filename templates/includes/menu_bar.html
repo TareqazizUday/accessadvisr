@@ -9,16 +9,16 @@
         </div>
         <div class="menu-items">
             <a href="{% url 'home' %}" class="menu-link">Home</a>
-            <div class="menu-dropdown">
-                <button type="button" class="menu-link menu-browse-btn">Browse <span class="dropdown-arrow">▼</span></button>
-                <div class="dropdown-menu">
-                    <a href="{% url 'accommodation' %}">Accommodation</a>
-                    <a href="{% url 'browse' %}?category=entertainment">Entertainment</a>
-                    <a href="{% url 'browse' %}?category=food">Food & Drink</a>
-                    <a href="{% url 'browse' %}?category=shopping">Shopping</a>
-                    <a href="{% url 'browse' %}?category=sport">Sports & Recreational</a>
-                    <a href="{% url 'browse' %}?category=education">Education</a>
-                </div>
+            <div class="menu-dropdown dropdown">
+                <button type="button" class="menu-link menu-browse-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Browse</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'accommodation' %}">Accommodation</a></li>
+                    <li><a class="dropdown-item" href="{% url 'browse' %}?category=entertainment">Entertainment</a></li>
+                    <li><a class="dropdown-item" href="{% url 'browse' %}?category=food">Food & Drink</a></li>
+                    <li><a class="dropdown-item" href="{% url 'browse' %}?category=shopping">Shopping</a></li>
+                    <li><a class="dropdown-item" href="{% url 'browse' %}?category=sport">Sports & Recreational</a></li>
+                    <li><a class="dropdown-item" href="{% url 'browse' %}?category=education">Education</a></li>
+                </ul>
             </div>
             <a href="{% url 'partners' %}" class="menu-link">Partners</a>
             <a href="{% url 'packages' %}" class="menu-link">Packages</a>
@@ -28,10 +28,33 @@
             <a href="{% url 'donate' %}" class="menu-link">Donate</a>
         </div>
         <div class="menu-actions">
-            <a href="#" class="menu-signin">
-                <span class="user-icon">👤</span>
-                <span>Sign in or Register</span>
-            </a>
+            {% if user.is_authenticated %}
+                <!-- Logged in user menu -->
+                <div class="menu-dropdown dropdown">
+                    <button type="button" class="menu-link menu-profile-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.profile and user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-pic-small">
+                        {% else %}
+                            <span class="user-icon">👤</span>
+                        {% endif %}
+                        <span>{{ user.username }}</span>
+                    </button>
+                    <ul class="dropdown-menu profile-dropdown">
+                        <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_reviews' %}">My Reviews</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_favorites' %}">My Favorites</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile_settings' %}">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="handleLogout(event); return false;">Logout</a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <!-- Not logged in -->
+                <a href="#" class="menu-signin" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <span class="user-icon">👤</span>
+                    <span>Sign in or Register</span>
+                </a>
+            {% endif %}
             <a href="#" class="btn-add-reviews">
                 <span class="plus-icon">+</span> Add Reviews
             </a>
@@ -40,10 +63,53 @@
 </nav>
 
 <style>
-    .menu-browse-btn {
+    .menu-browse-btn, .menu-profile-btn {
         background: none;
         border: none;
         cursor: pointer;
         font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .profile-pic-small {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+    
+    .menu-dropdown {
+        position: relative;
+    }
+    
+    .profile-dropdown {
+        min-width: 180px;
     }
 </style>
+
+<script>
+    function handleLogout(event) {
+        event.preventDefault();
+        
+        fetch('{% url "logout" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '{% url "home" %}';
+            }
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            window.location.href = '{% url "home" %}';
+        });
+    }
+</script>
+

@@ -14,6 +14,9 @@
 <!-- include navbar -->
 {% include 'components/navbar.html' %}
 
+<!-- include authentication modals -->
+{% include 'components/auth_modals.html' %}
+
 <!----- inner header section ------>
 <section class="partners-header-section">
     <div class="container text-center py-3">
@@ -81,6 +84,7 @@
 {% include 'components/footer.html' %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="{% static 'js/accessadvisr-script.js' %}"></script>
 </body>
 </html>
 

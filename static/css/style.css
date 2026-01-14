@@ -762,8 +762,8 @@ header h1 {
     text-decoration: underline;
 }
 
-/* Modal Styles */
-.modal {
+/* Custom Modal Styles - for non-Bootstrap modals only */
+.custom-modal {
     display: flex;
     position: fixed;
     z-index: 2000;
@@ -776,11 +776,11 @@ header h1 {
     justify-content: center;
 }
 
-.modal.hidden {
+.custom-modal.hidden {
     display: none;
 }
 
-.modal-content {
+.custom-modal-content {
     background-color: #fff;
     padding: 2rem;
     border-radius: 12px;
@@ -808,7 +808,7 @@ header h1 {
     color: #333;
 }
 
-.modal-content h2 {
+.custom-modal-content h2 {
     margin-bottom: 1.5rem;
     color: #1976d2;
 }
@@ -940,7 +940,7 @@ header h1 {
         max-width: 100%;
     }
     
-    .modal-content {
+    .custom-modal-content {
         width: 95%;
         padding: 1.5rem;
     }

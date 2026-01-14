@@ -19,17 +19,36 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
-from locations.views import HomeView, GooglePlaceDetailView, SearchResultsView, SubmitReviewView, UpdateReviewEngagementView, SubmitReplyView, ListingsView, BrowseView
+from locations.views import HomeView, GooglePlaceDetailView, SearchResultsView, SubmitReviewView, UpdateReviewEngagementView, SubmitReplyView, UpdateReviewView, ListingsView, BrowseView
 from locations.views_partner_comments import SubmitPartnerCommentView, SubmitPartnerCommentReplyView
 from locations.views_blog_comments import SubmitBlogCommentView, SubmitBlogCommentReplyView
 from locations.views_about_comments import SubmitAboutCommentView, SubmitAboutCommentReplyView
 from locations.views_donations import SubmitDonationView
 from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
+from locations.views_auth import RegisterView, LoginView, LogoutView
+from locations.views_profile import profile_view, profile_edit, my_reviews, my_favorites, profile_settings, delete_review
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('locations.urls')),
+    
+    # Authentication URLs
+    path('api/auth/register/', RegisterView.as_view(), name='register'),
+    path('api/auth/login/', LoginView.as_view(), name='login'),
+    path('api/auth/logout/', LogoutView.as_view(), name='logout'),
+    
+    # Profile URLs - Specific paths MUST come before generic <username> pattern
+    path('profile/edit/', profile_edit, name='profile_edit'),
+    path('profile/reviews/', my_reviews, name='my_reviews'),
+    path('profile/favorites/', my_favorites, name='my_favorites'),
+    path('profile/settings/', profile_settings, name='profile_settings'),
+    path('api/profile/review/<int:review_id>/delete/', delete_review, name='delete_review'),
+    path('profile/', profile_view, name='my_profile'),
+    path('profile/<str:username>/', profile_view, name='profile'),
+    
+    # Review and Comment URLs
     path('api/reviews/submit/', SubmitReviewView.as_view(), name='submit_review'),
+    path('api/reviews/update/', UpdateReviewView.as_view(), name='update_review'),
     path('api/reviews/engagement/', UpdateReviewEngagementView.as_view(), name='update_review_engagement'),
     path('api/reviews/reply/', SubmitReplyView.as_view(), name='submit_reply'),
     path('api/partner-comments/submit/', SubmitPartnerCommentView.as_view(), name='submit_partner_comment'),

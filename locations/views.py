@@ -39,6 +39,7 @@ class GooglePlaceDetailView(TemplateView):
         place = {}
         lat = lng = None
         location_obj = None
+        error_message = None
         
         if api_key and place_id:
             params = {
@@ -55,7 +56,7 @@ class GooglePlaceDetailView(TemplateView):
                 resp = requests.get(
                     'https://maps.googleapis.com/maps/api/place/details/json',
                     params=params,
-                    timeout=5,
+                    timeout=10,
                 )
                 data = resp.json()
                 if data.get('status') == 'OK':
@@ -63,6 +64,10 @@ class GooglePlaceDetailView(TemplateView):
                     loc = (place.get('geometry') or {}).get('location') or {}
                     lat = loc.get('lat')
                     lng = loc.get('lng')
+                    
+                    # Ensure photos is a list
+                    if 'photos' not in place or not place['photos']:
+                        place['photos'] = []
                     
                     # Try to find matching Location in our database
                     if lat and lng:
@@ -77,9 +82,17 @@ class GooglePlaceDetailView(TemplateView):
                         except (ValueError, TypeError):
                             pass
                 else:
-                    place = {'error': data.get('status')}
-            except requests.RequestException:
-                place = {'error': 'REQUEST_FAILED'}
+                    error_message = data.get('status')
+                    place = {'error': error_message, 'name': 'Place Not Found'}
+            except requests.RequestException as e:
+                error_message = f'REQUEST_FAILED: {str(e)}'
+                place = {'error': error_message, 'name': 'Error Loading Place'}
+        else:
+            if not api_key:
+                error_message = 'GOOGLE_MAPS_API_KEY not configured'
+            elif not place_id:
+                error_message = 'INVALID_PLACE_ID'
+            place = {'error': error_message, 'name': 'Configuration Error'}
 
         # Get all amenities for the template
         all_amenities = Amenity.objects.all().order_by('name')
@@ -108,12 +121,20 @@ class GooglePlaceDetailView(TemplateView):
 
         context['place'] = place
         context['location'] = location_obj  # Our database Location if found
-        context['lat'] = lat
-        context['lng'] = lng
+        context['lat'] = lat if lat else 0
+        context['lng'] = lng if lng else 0
         context['GOOGLE_MAPS_API_KEY'] = api_key
         context['all_amenities'] = all_amenities
         context['reviews'] = reviews
         context['place_id'] = place_id
+        context['error_message'] = error_message
+        
+        # Debug info
+        if place.get('photos'):
+            print(f"Place has {len(place['photos'])} photos")
+            if place['photos']:
+                print(f"First photo ref: {place['photos'][0].get('photo_reference', 'NO REF')}")
+        
         return context
 
 
@@ -528,11 +549,21 @@ class SubmitReviewView(APIView):
     
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            # Use request.data instead of json.loads(request.body) to avoid "cannot access body" error
+            data = request.data
             
             # Validate required fields
             place_id = data.get('place_id')
-            author_name = data.get('author_name', '').strip()
+            
+            # If user is logged in, use their information automatically
+            if request.user.is_authenticated:
+                author_name = request.user.username
+                author_email = request.user.email
+            else:
+                # For anonymous users, require name and email
+                author_name = data.get('author_name', '').strip()
+                author_email = data.get('author_email', '').strip()
+            
             review_text = data.get('review_text', '').strip()
             
             if not place_id:
@@ -544,6 +575,12 @@ class SubmitReviewView(APIView):
             if not author_name:
                 return Response(
                     {'error': 'Name is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if not author_email and not request.user.is_authenticated:
+                return Response(
+                    {'error': 'Email is required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
@@ -594,7 +631,7 @@ class SubmitReviewView(APIView):
                 place_id=place_id,
                 place_name=place_name,
                 author_name=author_name,
-                author_email=data.get('author_email', '').strip(),
+                author_email=author_email,
                 quality_rating=quality_rating,
                 location_rating=location_rating,
                 service_rating=service_rating,
@@ -620,14 +657,12 @@ class SubmitReviewView(APIView):
                 }
             }, status=status.HTTP_201_CREATED)
             
-        except json.JSONDecodeError:
-            return Response(
-                {'error': 'Invalid JSON data'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
         except Exception as e:
+            import traceback
+            print('Error in SubmitReviewView:', str(e))
+            print(traceback.format_exc())
             return Response(
-                {'error': str(e)},
+                {'success': False, 'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -638,28 +673,44 @@ class SubmitReplyView(APIView):
     
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            # Use request.data instead of json.loads(request.body)
+            data = request.data
             
             review_id = data.get('review_id')
             parent_reply_id = data.get('parent_reply_id')  # For nested replies
-            author_name = data.get('author_name', '').strip()
+            
+            # If user is logged in, use their information automatically
+            if request.user.is_authenticated:
+                author_name = request.user.username
+                author_email = request.user.email
+            else:
+                # For anonymous users, require name and email
+                author_name = data.get('author_name', '').strip()
+                author_email = data.get('author_email', '').strip()
+            
             reply_text = data.get('reply_text', '').strip()
             
             if not review_id:
                 return Response(
-                    {'error': 'Review ID is required'},
+                    {'success': False, 'error': 'Review ID is required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
             if not author_name:
                 return Response(
-                    {'error': 'Name is required'},
+                    {'success': False, 'error': 'Name is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if not author_email and not request.user.is_authenticated:
+                return Response(
+                    {'success': False, 'error': 'Email is required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
             if not reply_text:
                 return Response(
-                    {'error': 'Reply text is required'},
+                    {'success': False, 'error': 'Reply text is required'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
@@ -667,7 +718,7 @@ class SubmitReplyView(APIView):
                 review = Review.objects.get(id=review_id, is_active=True)
             except Review.DoesNotExist:
                 return Response(
-                    {'error': 'Review not found'},
+                    {'success': False, 'error': 'Review not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
             
@@ -678,7 +729,7 @@ class SubmitReplyView(APIView):
                     parent_reply = ReviewReply.objects.get(id=parent_reply_id, is_active=True, review=review)
                 except ReviewReply.DoesNotExist:
                     return Response(
-                        {'error': 'Parent reply not found'},
+                        {'success': False, 'error': 'Parent reply not found'},
                         status=status.HTTP_404_NOT_FOUND
                     )
             
@@ -687,7 +738,7 @@ class SubmitReplyView(APIView):
                 review=review,
                 parent_reply=parent_reply,
                 author_name=author_name,
-                author_email=data.get('author_email', '').strip(),
+                author_email=author_email,
                 reply_text=reply_text,
             )
             
@@ -699,17 +750,18 @@ class SubmitReplyView(APIView):
                     'author_name': reply.author_name,
                     'reply_text': reply.reply_text,
                     'created_at': reply.created_at.isoformat(),
+                    'likes': reply.likes,
+                    'dislikes': reply.dislikes,
+                    'hearts': reply.hearts,
                 }
             }, status=status.HTTP_201_CREATED)
             
-        except json.JSONDecodeError:
-            return Response(
-                {'error': 'Invalid JSON data'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
         except Exception as e:
+            import traceback
+            print('Error in SubmitReplyView:', str(e))
+            print(traceback.format_exc())
             return Response(
-                {'error': str(e)},
+                {'success': False, 'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -720,7 +772,8 @@ class UpdateReviewEngagementView(APIView):
     
     def post(self, request):
         try:
-            data = json.loads(request.body)
+            # Use request.data instead of json.loads(request.body)
+            data = request.data
             
             review_id = data.get('review_id')
             reply_id = data.get('reply_id')
@@ -832,13 +885,88 @@ class UpdateReviewEngagementView(APIView):
                 'is_active': is_active,
             }, status=status.HTTP_200_OK)
             
-        except json.JSONDecodeError:
-            return Response(
-                {'error': 'Invalid JSON data'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
         except Exception as e:
+            import traceback
+            print('Error in UpdateReviewEngagementView:', str(e))
+            print(traceback.format_exc())
             return Response(
-                {'error': str(e)},
+                {'success': False, 'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateReviewView(APIView):
+    """API endpoint to update/edit a review or reply"""
+    
+    def post(self, request):
+        try:
+            data = request.data
+            
+            review_id = data.get('review_id')
+            reply_id = data.get('reply_id')
+            new_text = data.get('text', '').strip()
+            
+            if not new_text:
+                return Response(
+                    {'success': False, 'error': 'Text cannot be empty'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update reply
+            if reply_id:
+                try:
+                    reply = ReviewReply.objects.get(id=reply_id, is_active=True)
+                    reply.reply_text = new_text
+                    reply.save()
+                    
+                    return Response({
+                        'success': True,
+                        'message': 'Reply updated successfully',
+                        'reply': {
+                            'id': reply.id,
+                            'text': reply.reply_text,
+                            'updated_at': reply.created_at.isoformat(),
+                        }
+                    }, status=status.HTTP_200_OK)
+                except ReviewReply.DoesNotExist:
+                    return Response(
+                        {'success': False, 'error': 'Reply not found'},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+            
+            # Update review
+            elif review_id:
+                try:
+                    review = Review.objects.get(id=review_id, is_active=True)
+                    review.review_text = new_text
+                    review.save()
+                    
+                    return Response({
+                        'success': True,
+                        'message': 'Review updated successfully',
+                        'review': {
+                            'id': review.id,
+                            'text': review.review_text,
+                            'updated_at': review.created_at.isoformat(),
+                        }
+                    }, status=status.HTTP_200_OK)
+                except Review.DoesNotExist:
+                    return Response(
+                        {'success': False, 'error': 'Review not found'},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+            else:
+                return Response(
+                    {'success': False, 'error': 'Review ID or Reply ID is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+        except Exception as e:
+            import traceback
+            print('Error in UpdateReviewView:', str(e))
+            print(traceback.format_exc())
+            return Response(
+                {'success': False, 'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

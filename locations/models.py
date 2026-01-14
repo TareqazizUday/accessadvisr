@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import os
 
 def partner_image_upload_path(instance, filename):
@@ -34,6 +37,45 @@ def blog_image_upload_path(instance, filename):
         base_name = os.path.splitext(filename)[0]
         filename = f"{base_name}.{ext}"
     return f"images/blogs/{filename}"
+
+
+def profile_picture_upload_path(instance, filename):
+    """Generate upload path for user profile pictures"""
+    ext = filename.split('.')[-1]
+    filename = f"user_{instance.user.id}.{ext}"
+    return f"profile_pictures/{filename}"
+
+
+class UserProfile(models.Model):
+    """Extended user profile with additional fields"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(upload_to=profile_picture_upload_path, null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True)
+    location = models.CharField(max_length=100, blank=True)
+    website = models.URLField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'User Profile'
+        verbose_name_plural = 'User Profiles'
+    
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Automatically create profile when user is created"""
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Save profile when user is saved"""
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
 
 
 

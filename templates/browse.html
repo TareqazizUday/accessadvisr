@@ -16,6 +16,9 @@
 <!-- include navbar -->
 {% include 'components/navbar.html' %}
 
+<!-- include authentication modals -->
+{% include 'components/auth_modals.html' %}
+
 <!-- Hero Section with Breadcrumb -->
 <section class="listings-hero position-relative d-flex align-items-center justify-content-center text-center text-white" style="min-height: 240px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&q=80&w=1920') center/cover no-repeat;">
     <div class="container">
@@ -49,12 +52,13 @@
                     <div class="mb-3">
                         <select name="category" class="form-select">
                             <option value="" {% if not selected_category %}selected{% endif %}>Filter by category</option>
-                            <option value="food" {% if selected_category == 'food' %}selected{% endif %}>Food & Restaurants</option>
-                            <option value="education" {% if selected_category == 'education' %}selected{% endif %}>Education</option>
-                            <option value="sport" {% if selected_category == 'sport' %}selected{% endif %}>Sport</option>
+                            <option value="food" {% if selected_category == 'food' %}selected{% endif %}>Food & Drink</option>
                             <option value="entertainment" {% if selected_category == 'entertainment' %}selected{% endif %}>Entertainment</option>
                             <option value="shopping" {% if selected_category == 'shopping' %}selected{% endif %}>Shopping</option>
-                            <option value="travel" {% if selected_category == 'travel' %}selected{% endif %}>Travel & Tour</option>
+                            <option value="sport" {% if selected_category == 'sport' %}selected{% endif %}>Sports & Recreational</option>
+                            <option value="transport" {% if selected_category == 'transport' %}selected{% endif %}>Transport</option>
+                            <option value="travel" {% if selected_category == 'travel' %}selected{% endif %}>Flight & Travel</option>
+                            <option value="education" {% if selected_category == 'education' %}selected{% endif %}>Education</option>
                         </select>
                     </div>
                     
@@ -157,6 +161,7 @@
 {% include 'components/footer.html' %}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="{% static 'js/accessadvisr-script.js' %}"></script>
 
 <script>
 let map;
@@ -630,11 +635,12 @@ function applyFilters() {
     if (category) {
         const categoryMap = {
             'food': ['restaurant', 'cafe', 'food', 'bar', 'meal', 'bakery'],
-            'education': ['school', 'university', 'college', 'library', 'education'],
-            'sport': ['gym', 'stadium', 'sports', 'fitness'],
             'entertainment': ['movie_theater', 'cinema', 'amusement', 'entertainment', 'theater'],
             'shopping': ['shopping_mall', 'store', 'market', 'shopping', 'supermarket'],
-            'travel': ['hotel', 'lodging', 'travel', 'tourist', 'accommodation']
+            'sport': ['gym', 'stadium', 'sports', 'fitness'],
+            'transport': ['bus_station', 'transit_station', 'train_station', 'subway_station', 'taxi', 'transport'],
+            'travel': ['airport', 'travel_agency', 'lodging', 'hotel', 'tourist', 'flight'],
+            'education': ['school', 'university', 'college', 'library', 'education']
         };
         
         const categoryTypes = categoryMap[category] || [];

@@ -7,6 +7,9 @@
     {% load static %}
     {% load place_photos %}
     {% load category_videos %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
     <link rel="stylesheet" href="{% static 'css/place-detail.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
@@ -26,33 +29,189 @@
             visibility: visible !important;
             opacity: 1 !important;
         }
+        /* Photo gallery enhancements */
+        .thumbnail-img {
+            transition: all 0.3s ease;
+        }
+        .thumbnail-img:hover {
+            transform: scale(1.05);
+            border-color: #1976d2 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .thumbnail-img.active {
+            border-color: #1976d2 !important;
+            box-shadow: 0 4px 12px rgba(25,118,210,0.4);
+            transform: scale(1.05);
+        }
+        #main-photo {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+        }
+        
+        /* Custom Notification Styles - No Popup */
+        .custom-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            min-width: 300px;
+            max-width: 450px;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .custom-notification-success {
+            border-left-color: #4CAF50;
+        }
+        
+        .custom-notification-error {
+            border-left-color: #F44336;
+        }
+        
+        .custom-notification-warning {
+            border-left-color: #FF9800;
+        }
+        
+        .custom-notification-info {
+            border-left-color: #2196F3;
+        }
+        
+        .notif-icon {
+            font-size: 24px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .custom-notification-success .notif-icon {
+            color: #4CAF50;
+        }
+        
+        .custom-notification-error .notif-icon {
+            color: #F44336;
+        }
+        
+        .custom-notification-warning .notif-icon {
+            color: #FF9800;
+        }
+        
+        .custom-notification-info .notif-icon {
+            color: #2196F3;
+        }
+        
+        .notif-message {
+            flex: 1;
+            color: #333;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        
+        .notif-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+        
+        .notif-close:hover {
+            color: #333;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notif-fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(400px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .custom-notification {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
-        {% include 'includes/menu_bar.html' %}
+        {% include 'components/navbar.html' %}
         
         {% if place.error %}
-        <div class="error-container">
-            <h2>⚠️ Error Loading Place Details</h2>
-            <p>Status: {{ place.error }}</p>
-            <p>Please try again later or check if the place ID is valid.</p>
+        <div class="error-container" style="max-width: 800px; margin: 100px auto; padding: 40px; text-align: center; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <h2 style="color: #dc3545; font-size: 2rem; margin-bottom: 20px;">⚠️ Error Loading Place Details</h2>
+            <p style="font-size: 1.2rem; color: #666; margin-bottom: 10px;"><strong>Status:</strong> {{ place.error }}</p>
+            {% if error_message %}
+            <p style="color: #888; margin-bottom: 20px;">{{ error_message }}</p>
+            {% endif %}
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="color: #555; margin-bottom: 10px;"><strong>Possible reasons:</strong></p>
+                <ul style="text-align: left; color: #666; max-width: 500px; margin: 0 auto;">
+                    <li>Invalid or expired place ID</li>
+                    <li>Google Maps API key not configured or invalid</li>
+                    <li>API request limit exceeded</li>
+                    <li>Network connectivity issues</li>
+                </ul>
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="/" style="display: inline-block; padding: 12px 30px; background: #1976d2; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">Go to Homepage</a>
+                <a href="javascript:window.history.back()" style="display: inline-block; padding: 12px 30px; background: #6c757d; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; margin-left: 10px;">Go Back</a>
+            </div>
             </div>
         {% elif not place.name %}
-        <div class="error-container">
-            <h2>⚠️ Place Not Found</h2>
-            <p>The requested place could not be found.</p>
+        <div class="error-container" style="max-width: 800px; margin: 100px auto; padding: 40px; text-align: center; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <h2 style="color: #dc3545; font-size: 2rem; margin-bottom: 20px;">⚠️ Place Not Found</h2>
+            <p style="font-size: 1.1rem; color: #666; margin-bottom: 30px;">The requested place could not be found or does not exist.</p>
+            <div style="margin-top: 30px;">
+                <a href="/" style="display: inline-block; padding: 12px 30px; background: #1976d2; color: white; text-decoration: none; border-radius: 6px; font-weight: 500;">Go to Homepage</a>
+                <a href="/listings/" style="display: inline-block; padding: 12px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: 500; margin-left: 10px;">Browse Listings</a>
+            </div>
             </div>
         {% else %}
         {% with place.photos.0 as hero_photo %}
         <!-- Banner Section -->
-        <div class="detail-banner" {% if hero_photo %}style="background-image:url('{{ hero_photo|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}');"{% endif %}>
+        <div class="detail-banner" {% if hero_photo and GOOGLE_MAPS_API_KEY %}style="background-image:url('{{ hero_photo|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}'); background-size: cover; background-position: center;"{% else %}style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"{% endif %}>
             <div class="banner-overlay"></div>
             <div class="banner-content">
                 <!-- Main content in bottom-left -->
                 <div class="banner-main-content">
                     <div class="profile-avatar-large">
-                        {% if place.photos.1 %}
-                            <img src="{{ place.photos.1|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}" alt="{{ place.name }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        {% if place.photos.1 and GOOGLE_MAPS_API_KEY %}
+                            <img src="{{ place.photos.1|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}" 
+                                 alt="{{ place.name }}" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             <div class="avatar-fallback" style="display:none;">{{ place.name|first|upper }}</div>
                         {% else %}
                             <div class="avatar-fallback">{{ place.name|first|upper }}</div>
@@ -229,10 +388,16 @@
                                         <div class="map-zoom-control">+</div>
                                         <div class="map-zoom-control">−</div>
                                     </div>
-                                    <div class="map-error">
-                                        <div class="map-error-icon">!</div>
-                                        <div class="map-error-title">Oops! Something went wrong.</div>
-                                        <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                    <div class="map-error" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; padding: 20px; text-align: center;">
+                                        <div class="map-error-icon" style="font-size: 3rem; color: #dc3545; margin-bottom: 10px;">⚠️</div>
+                                        <div class="map-error-title" style="font-size: 1.3rem; font-weight: bold; color: #333; margin-bottom: 10px;">Map Loading Error</div>
+                                        <div class="map-error-message" style="color: #666; line-height: 1.6;">
+                                            {% if not GOOGLE_MAPS_API_KEY %}
+                                                Google Maps API key is not configured. Please add GOOGLE_MAPS_API_KEY to your .env file.
+                                            {% else %}
+                                                Loading map... If this persists, check the browser console for details.
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="street-view" class="detail-map" style="display:none;">
@@ -240,10 +405,10 @@
                                         <div class="map-zoom-control">+</div>
                                         <div class="map-zoom-control">−</div>
                                     </div>
-                                    <div class="map-error">
-                                        <div class="map-error-icon">!</div>
-                                        <div class="map-error-title">Oops! Something went wrong.</div>
-                                        <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                    <div class="map-error" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; padding: 20px; text-align: center;">
+                                        <div class="map-error-icon" style="font-size: 3rem; color: #dc3545; margin-bottom: 10px;">⚠️</div>
+                                        <div class="map-error-title" style="font-size: 1.3rem; font-weight: bold; color: #333; margin-bottom: 10px;">Street View Loading Error</div>
+                                        <div class="map-error-message" style="color: #666; line-height: 1.6;">Street View is loading... If this persists, try the Map view instead.</div>
                                     </div>
                                 </div>
                                 <div id="directions-panel" class="directions-panel" style="display:none;">
@@ -283,33 +448,47 @@
                 </div>
 
                         <!-- Photos Section -->
-                {% if place.photos %}
+                {% if place.photos and place.photos|length > 0 %}
                 <div class="detail-section">
-                    <h3>Photos</h3>
+                    <h3>Photos ({{ place.photos|length }})</h3>
                             <div class="photo-gallery">
                                 <div class="photo-main">
                                     <img id="main-photo" 
                                          src="" 
                                          alt="{{ place.name }}"
-                                         style="display: none;">
+                                         style="display: none; width: 100%; height: 100%; object-fit: contain;"
+                                         onerror="console.error('Failed to load photo:', this.src); this.style.display='none'; document.getElementById('photo-placeholder').style.display='flex';">
                                     <div id="photo-placeholder" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 400px; background: #f5f5f5; color: #999; font-size: 1.1rem;">
                                         Click on a thumbnail to view image
                                     </div>
                                     <button class="photo-nav photo-prev" onclick="changePhoto(-1)" style="display: none;">‹</button>
                                     <button class="photo-nav photo-next" onclick="changePhoto(1)" style="display: none;">›</button>
                                 </div>
-                                <div class="photo-thumbnails">
+                                <div class="photo-thumbnails" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
                                     {% for p in place.photos|slice:":10" %}
                                         <img src="{{ p|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}" 
-                                             alt="{{ place.name }}"
+                                             alt="{{ place.name }} - Photo {{ forloop.counter }}"
                                              data-photo-index="{{ forloop.counter0 }}"
+                                             data-photo-url="{{ p|get_place_photo_url:GOOGLE_MAPS_API_KEY|safe }}"
                                              class="thumbnail-img"
                                              loading="lazy"
-                                             style="display: block; width: 120px; height: 80px; object-fit: cover; border-radius: 6px; cursor: pointer;">
+                                             onerror="console.error('Thumbnail failed:', this.src); this.style.display='none';"
+                                             onmouseover="this.style.borderColor='#4285F4'; this.style.opacity='0.8';"
+                                             onmouseout="if(!this.classList.contains('active')) { this.style.borderColor='transparent'; this.style.opacity='1'; }"
+                                             style="display: block; width: 120px; height: 80px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s;">
                                     {% endfor %}
                                 </div>
                     </div>
                 </div>
+                        {% else %}
+                        <div class="detail-section">
+                            <h3>Photos</h3>
+                            <div class="photo-gallery">
+                                <div style="padding: 40px; text-align: center; background: #f5f5f5; border-radius: 8px;">
+                                    <p style="color: #999; font-size: 1.1rem;">📷 No photos available for this place</p>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
 
                         <!-- Video Section -->
@@ -344,12 +523,14 @@
                                                 <span class="review-rating-top">{{ r.get_average_rating }}</span>
                                             </div>
                                             <div class="review-text">{{ r.review_text }}</div>
-                                            <div class="review-actions">
+                                            <div class="review-actions" data-author-email="{{ r.author_email }}">
                                                 <button class="review-btn review-like" data-review-id="{{ r.id }}">👍 {{ r.likes }}</button>
                                                 <button class="review-btn review-dislike" data-review-id="{{ r.id }}">👎 {{ r.dislikes }}</button>
                                                 <button class="review-btn review-heart" data-review-id="{{ r.id }}">❤️ {{ r.hearts }}</button>
                                                 <a href="#" class="review-link review-reply" data-review-id="{{ r.id }}">💬 Reply</a>
-                                                <a href="#" class="review-link review-edit">✏️ Edit</a>
+                                                {% if user.is_authenticated and user.email == r.author_email %}
+                                                <a href="#" class="review-link review-edit" data-review-id="{{ r.id }}">✏️ Edit</a>
+                                                {% endif %}
                                             </div>
                                             <!-- Replies Section -->
                                             {% if r.replies.all %}
@@ -362,12 +543,14 @@
                                                                 <span style="color: #777; font-size: 0.85rem;">{{ reply.created_at|date:"F d, Y" }}</span>
                                                             </div>
                                                             <div style="color: #555; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem;">{{ reply.reply_text }}</div>
-                                                            <div class="review-actions">
+                                                            <div class="review-actions" data-author-email="{{ reply.author_email }}">
                                                                 <button class="review-btn review-like" data-reply-id="{{ reply.id }}" data-type="reply">👍 {{ reply.likes }}</button>
                                                                 <button class="review-btn review-dislike" data-reply-id="{{ reply.id }}" data-type="reply">👎 {{ reply.dislikes }}</button>
                                                                 <button class="review-btn review-heart" data-reply-id="{{ reply.id }}" data-type="reply">❤️ {{ reply.hearts }}</button>
                                                                 <a href="#" class="review-link review-reply" data-reply-id="{{ reply.id }}" data-review-id="{{ r.id }}" data-type="reply">💬 Reply</a>
+                                                                {% if user.is_authenticated and user.email == reply.author_email %}
                                                                 <a href="#" class="review-link review-edit" data-reply-id="{{ reply.id }}" data-type="reply">✏️ Edit</a>
+                                                                {% endif %}
                                                             </div>
                                                             <!-- Nested Replies (replies to this reply) -->
                                                             {% if reply.child_replies.all %}
@@ -380,12 +563,14 @@
                                                                                 <span style="color: #777; font-size: 0.8rem;">{{ nested_reply.created_at|date:"F d, Y" }}</span>
                                                                             </div>
                                                                             <div style="color: #555; font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.5rem;">{{ nested_reply.reply_text }}</div>
-                                                                            <div class="review-actions">
+                                                                            <div class="review-actions" data-author-email="{{ nested_reply.author_email }}">
                                                                                 <button class="review-btn review-like" data-reply-id="{{ nested_reply.id }}" data-type="reply">👍 {{ nested_reply.likes }}</button>
                                                                                 <button class="review-btn review-dislike" data-reply-id="{{ nested_reply.id }}" data-type="reply">👎 {{ nested_reply.dislikes }}</button>
                                                                                 <button class="review-btn review-heart" data-reply-id="{{ nested_reply.id }}" data-type="reply">❤️ {{ nested_reply.hearts }}</button>
                                                                                 <a href="#" class="review-link review-reply" data-reply-id="{{ nested_reply.id }}" data-review-id="{{ r.id }}" data-type="reply">💬 Reply</a>
+                                                                                {% if user.is_authenticated and user.email == nested_reply.author_email %}
                                                                                 <a href="#" class="review-link review-edit" data-reply-id="{{ nested_reply.id }}" data-type="reply">✏️ Edit</a>
+                                                                                {% endif %}
                                                                             </div>
                                                                         </div>
                                                                         {% endif %}
@@ -420,7 +605,7 @@
                                                 <button class="review-btn review-dislike">👎 1</button>
                                                 <button class="review-btn review-heart">❤️ 1</button>
                                                 <a href="#" class="review-link review-reply">💬 Reply</a>
-                                                <a href="#" class="review-link review-edit">✏️ Edit</a>
+                                                <!-- No edit button for Google reviews -->
                                             </div>
                                         </div>
                                     </div>
@@ -505,12 +690,15 @@
                                         <span class="rating-label-right">Excellent 😎</span>
                                     </div>
                                 </div>
+                                
+                                {% if not user.is_authenticated %}
+                                <!-- Name and Email fields only for non-logged in users -->
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
                                         <input type="text" id="author_name" placeholder="Your Name" class="form-input" required>
                                     </div>
                                     <div class="form-group form-group-half">
-                                        <input type="email" id="author_email" placeholder="your@mail.com" class="form-input">
+                                        <input type="email" id="author_email" placeholder="your@mail.com" class="form-input" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -518,6 +706,12 @@
                                         <input type="checkbox" id="save_info"> Save my name, email, and website in this browser for the next time I comment.
                                     </label>
                                 </div>
+                                {% else %}
+                                <!-- Show logged in user info -->
+                                <div class="alert alert-info mb-3" style="background: linear-gradient(135deg, #e3f2fd 0%, #f1f8ff 100%); border: 1px solid #90caf9; border-radius: 8px; padding: 12px 16px;">
+                                    <i class="bi bi-info-circle me-2"></i>Posting as <strong>{{ user.username }}</strong> ({{ user.email }})
+                                </div>
+                                {% endif %}
                                 <div class="form-group">
                                     <textarea id="review_text" placeholder="Your review" class="form-textarea" rows="5" required></textarea>
                                 </div>
@@ -551,10 +745,16 @@
                                     <div class="map-zoom-control">+</div>
                                     <div class="map-zoom-control">−</div>
                                 </div>
-                                <div class="map-error">
-                                    <div class="map-error-icon">!</div>
-                                    <div class="map-error-title">Oops! Something went wrong.</div>
-                                    <div class="map-error-message">This page didn't load Google Maps correctly. See the JavaScript console for technical details.</div>
+                                <div class="map-error" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; padding: 20px; text-align: center;">
+                                    <div class="map-error-icon" style="font-size: 2.5rem; color: #dc3545; margin-bottom: 8px;">⚠️</div>
+                                    <div class="map-error-title" style="font-size: 1.1rem; font-weight: bold; color: #333; margin-bottom: 8px;">Loading Map...</div>
+                                    <div class="map-error-message" style="color: #666; line-height: 1.5; font-size: 0.9rem;">
+                                        {% if not GOOGLE_MAPS_API_KEY %}
+                                            API key not configured
+                                        {% else %}
+                                            Initializing map...
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="info-item">
@@ -848,40 +1048,138 @@
     {% endif %}
 
     <!-- Pass data to JavaScript via JSON -->
-    {% if location.video_url or place.photos %}
     <script type="application/json" id="place-data">
     {
         "videoUrl": {% if location.video_url %}"{{ location.video_url|escapejs }}"{% else %}null{% endif %},
         "photoUrls": [
-            {% if place.photos %}
-            {% for p in place.photos %}
+            {% if place.photos and GOOGLE_MAPS_API_KEY %}
+            {% for p in place.photos|slice:":10" %}
             "{{ p|get_place_photo_url:GOOGLE_MAPS_API_KEY|escapejs }}"{% if not forloop.last %},{% endif %}
             {% endfor %}
             {% endif %}
-        ]
+        ],
+        "hasApiKey": {% if GOOGLE_MAPS_API_KEY %}"yes"{% else %}"no"{% endif %},
+        "photoCount": {{ place.photos|length|default:0 }},
+        "placeName": "{{ place.name|escapejs }}",
+        "lat": {{ lat|default:0 }},
+        "lng": {{ lng|default:0 }},
+        "types": [{% if place.types %}{% for t in place.types %}"{{ t|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}]
     }
     </script>
-    {% endif %}
 
     <!-- JavaScript -->
     <script>
+        // CSRF Token helper function for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Notification system (no popup alerts)
+        function showNotification(message, type = 'info') {
+            // Remove any existing notifications
+            const existingNotif = document.querySelector('.custom-notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'custom-notification custom-notification-' + type;
+            
+            // Icon based on type
+            const icons = {
+                'success': '✓',
+                'error': '✗',
+                'warning': '⚠',
+                'info': 'ℹ'
+            };
+            const icon = icons[type] || icons['info'];
+            
+            notification.innerHTML = `
+                <span class="notif-icon">${icon}</span>
+                <span class="notif-message">${message}</span>
+                <button class="notif-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.classList.add('notif-fade-out');
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+        
+        // Debug info
+        console.log('=== Place Detail Page Debug ===');
+        console.log('Place ID:', '{{ place_id }}');
+        console.log('Has API Key:', {{ GOOGLE_MAPS_API_KEY|yesno:"true,false" }});
+        {% if GOOGLE_MAPS_API_KEY %}
+        console.log('API Key (first 10 chars):', '{{ GOOGLE_MAPS_API_KEY|slice:":10" }}...');
+        {% else %}
+        console.error('✗ GOOGLE_MAPS_API_KEY is not set!');
+        {% endif %}
+        console.log('Lat/Lng:', {{ lat|default:0 }}, {{ lng|default:0 }});
+        console.log('Photos count:', {{ place.photos|length|default:0 }});
+        {% if place.photos and place.photos|length > 0 %}
+        console.log('First photo exists:', true);
+        {% endif %}
+        
         // Photo gallery functionality
         let currentPhotoIndex = 0;
         let photos = [];
+        let placeTypes = [{% if place.types %}{% for t in place.types %}"{{ t|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}{% endif %}];
+        
+        console.log('Initial place types from template:', placeTypes);
         
         // Initialize data from JSON script tag
         var placeDataScript = document.getElementById('place-data');
         if (placeDataScript) {
-            var placeData = JSON.parse(placeDataScript.textContent);
-            
-            // Video is now handled server-side via template tag
-            // No need for JavaScript video URL manipulation
-            
-            // Initialize photos array
-            if (placeData.photoUrls && placeData.photoUrls.length > 0) {
-                photos = placeData.photoUrls;
+            try {
+                var placeData = JSON.parse(placeDataScript.textContent);
+                console.log('✓ Place data loaded:', placeData);
+                
+                // Video is now handled server-side via template tag
+                // No need for JavaScript video URL manipulation
+                
+                // Store place types for icon selection (override with JSON data if available)
+                if (placeData.types && placeData.types.length > 0) {
+                    placeTypes = placeData.types;
+                    console.log('✓ Place types from JSON:', placeTypes);
+                } else if (placeTypes.length > 0) {
+                    console.log('✓ Using place types from template:', placeTypes);
+                }
+                
+                // Initialize photos array
+                if (placeData.photoUrls && placeData.photoUrls.length > 0) {
+                    photos = placeData.photoUrls;
+                    console.log('✓ Loaded', photos.length, 'photos into array');
+                    console.log('✓ First photo URL:', photos[0]);
+                } else {
+                    console.warn('⚠️ No photos in placeData');
+                }
+            } catch (e) {
+                console.error('✗ Error parsing place data:', e);
             }
+        } else {
+            console.warn('⚠️ No place-data script tag found');
         }
+        
+        // Note: Fallback will load photos from thumbnails in initializeComponents if still empty
 
         function setMainPhoto(index) {
             if (photos.length === 0) return;
@@ -953,10 +1251,16 @@
             document.querySelectorAll('.photo-thumbnails img').forEach((img, i) => {
                 if (i === index) {
                     img.classList.add('active');
+                    img.style.borderColor = '#4285F4';
+                    img.style.opacity = '1';
+                    img.style.transform = 'scale(1.05)';
                     // Scroll thumbnail into view if needed
                     img.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 } else {
                     img.classList.remove('active');
+                    img.style.borderColor = 'transparent';
+                    img.style.opacity = '1';
+                    img.style.transform = 'scale(1)';
                 }
             });
         }
@@ -969,349 +1273,6 @@
             setMainPhoto(currentPhotoIndex);
         }
         
-        // Initialize: Don't show any image initially
-        // Only show when thumbnail is clicked
-        // Initialize all components when DOM is ready
-        function initializeComponents() {
-            // Photo gallery initialization
-            const mainPhoto = document.getElementById('main-photo');
-            const placeholder = document.getElementById('photo-placeholder');
-            const prevBtn = document.querySelector('.photo-prev');
-            const nextBtn = document.querySelector('.photo-next');
-            
-            if (mainPhoto) {
-                mainPhoto.style.display = 'none';
-            }
-            if (placeholder) {
-                placeholder.style.display = 'flex';
-            }
-            if (prevBtn) {
-                prevBtn.style.display = 'none';
-            }
-            if (nextBtn) {
-                nextBtn.style.display = 'none';
-            }
-            
-            // Remove active class from first thumbnail initially
-            const firstThumbnail = document.querySelector('.photo-thumbnails img');
-            if (firstThumbnail) {
-                firstThumbnail.classList.remove('active');
-            }
-            
-            // Add click event delegation for photo thumbnails
-            const photoThumbnails = document.querySelector('.photo-thumbnails');
-            if (photoThumbnails) {
-                photoThumbnails.addEventListener('click', function(e) {
-                    var img = e.target.closest('img');
-                    if (img && img.dataset.photoIndex !== undefined) {
-                        var index = parseInt(img.dataset.photoIndex, 10);
-                        if (!isNaN(index)) {
-                            setMainPhoto(index);
-                        }
-                    }
-                });
-            }
-            
-            // Initialize photo gallery
-            if (photos.length > 0) {
-                setMainPhoto(0);
-                
-                // Add keyboard navigation
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'ArrowLeft') {
-                        changePhoto(-1);
-                    } else if (e.key === 'ArrowRight') {
-                        changePhoto(1);
-                    }
-                });
-            }
-            
-            // Initialize star ratings
-            initStarRatings();
-            
-            // Initialize image upload
-            initImageUpload();
-            
-            // Initialize review actions
-            initReviewActions();
-        }
-        
-        // Run initialization when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                initializeComponents();
-                // Scroll to top after page loads
-                window.scrollTo(0, 0);
-            });
-        } else {
-            initializeComponents();
-            // Scroll to top immediately if DOM already loaded
-            window.scrollTo(0, 0);
-        }
-        
-        // Ensure page starts at top on load
-        window.addEventListener('load', function() {
-            window.scrollTo(0, 0);
-        });
-        
-        // Prevent browser from restoring scroll position
-        if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
-        }
-
-        // Define place coordinates once to avoid linter errors
-        const placeLatitude = parseFloat('{{ lat|default:0|floatformat:6 }}') || 0;
-        const placeLongitude = parseFloat('{{ lng|default:0|floatformat:6 }}') || 0;
-
-        function showPhone() {
-            document.querySelectorAll('.phone-masked').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.phone-full').forEach(el => el.style.display = 'inline');
-            document.querySelectorAll('.btn-show-phone, .btn-show-phone-small').forEach(el => el.style.display = 'none');
-        }
-
-        // Map tabs
-        document.querySelectorAll('.map-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabName = this.dataset.tab;
-                
-                // If it's the directions tab, open Google Maps directly in a new window
-                if (tabName === 'directions') {
-                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${placeLatitude},${placeLongitude}`;
-                    window.open(directionsUrl, '_blank');
-                    return;
-                }
-                
-                document.querySelectorAll('.map-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                document.getElementById('detail-map').style.display = tabName === 'map' ? 'block' : 'none';
-                document.getElementById('street-view').style.display = tabName === 'streetview' ? 'block' : 'none';
-                document.getElementById('directions-panel').style.display = tabName === 'directions' ? 'block' : 'none';
-                
-                if (tabName === 'streetview') {
-                    // Small delay to ensure the element is visible before initializing
-                    setTimeout(() => {
-                        initStreetView();
-                    }, 100);
-                }
-            });
-        });
-    </script>
-
-    {% if GOOGLE_MAPS_API_KEY and lat and lng and not place.error and place.name %}
-    <script>
-        async function createMarker(position, title, icon, mapInstance) {
-            if (typeof google.maps.marker === 'undefined' || !google.maps.marker.AdvancedMarkerElement) {
-                const markerOptions = {
-                    position: position,
-                    map: mapInstance,
-                    title: title,
-                    animation: google.maps.Animation.DROP
-                };
-                if (icon) {
-                    markerOptions.icon = icon;
-                }
-                return new google.maps.Marker(markerOptions);
-            }
-
-            const content = new google.maps.marker.PinElement({
-                background: '#4285F4',
-                borderColor: '#ffffff',
-                glyphColor: '#ffffff',
-                scale: 1.0
-            });
-
-            return new google.maps.marker.AdvancedMarkerElement({
-                map: mapInstance,
-                position: position,
-                title: title,
-                content: content
-            });
-        }
-        
-        async function initDetailMap() {
-            const detailMapElement = document.getElementById('detail-map');
-            if (!detailMapElement) {
-                console.error('Detail map element not found');
-                return;
-            }
-            
-            try {
-                // Hide error message
-                const detailErrorDiv = detailMapElement.querySelector('.map-error');
-                if (detailErrorDiv) {
-                    detailErrorDiv.style.display = 'none';
-                }
-                
-                const detailCenter = { lat: placeLatitude, lng: placeLongitude };
-                const detailMapOptions = {
-                zoom: 15,
-                    center: detailCenter
-                };
-                
-                // Only add mapId if AdvancedMarkerElement is available
-                if (typeof google.maps.marker !== 'undefined' && google.maps.marker.AdvancedMarkerElement) {
-                    detailMapOptions.mapId = 'DEMO_MAP_ID';
-                }
-                
-                const detailMap = new google.maps.Map(detailMapElement, detailMapOptions);
-                await createMarker(detailCenter, "{{ place.name|escapejs }}", null, detailMap);
-                
-                // Hide controls overlay when map loads successfully
-                const detailControlsOverlay = detailMapElement.querySelector('.map-controls-overlay');
-                if (detailControlsOverlay) {
-                    detailControlsOverlay.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error initializing detail map:', error);
-                // Show error message
-                const detailErrorDiv = detailMapElement.querySelector('.map-error');
-                if (detailErrorDiv) {
-                    detailErrorDiv.style.display = 'flex';
-                }
-            }
-        }
-
-        async function initSidebarMap() {
-            const sidebarMapElement = document.getElementById('sidebar-map');
-            if (!sidebarMapElement) {
-                console.error('Sidebar map element not found');
-                return;
-            }
-            
-            try {
-                // Hide error message
-                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
-                if (sidebarErrorDiv) {
-                    sidebarErrorDiv.style.display = 'none';
-                }
-                
-                const sidebarCenter = { lat: placeLatitude, lng: placeLongitude };
-                const sidebarMapOptions = {
-                    zoom: 15,
-                    center: sidebarCenter
-                };
-                
-                // Only add mapId if AdvancedMarkerElement is available
-                if (typeof google.maps.marker !== 'undefined' && google.maps.marker.AdvancedMarkerElement) {
-                    sidebarMapOptions.mapId = 'DEMO_MAP_ID';
-                }
-                
-                const sidebarMap = new google.maps.Map(sidebarMapElement, sidebarMapOptions);
-                await createMarker(sidebarCenter, "{{ place.name|escapejs }}", null, sidebarMap);
-                
-                // Hide controls overlay when map loads successfully
-                const sidebarControlsOverlay = sidebarMapElement.querySelector('.map-controls-overlay');
-                if (sidebarControlsOverlay) {
-                    sidebarControlsOverlay.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error initializing sidebar map:', error);
-                // Show error message
-                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
-                if (sidebarErrorDiv) {
-                    sidebarErrorDiv.style.display = 'flex';
-                }
-            }
-        }
-
-        let streetViewPanorama = null;
-
-        function initStreetView() {
-            const streetViewElement = document.getElementById('street-view');
-            if (!streetViewElement) {
-                console.error('Street View element not found');
-                return;
-            }
-
-            // Check if Google Maps API is loaded
-            if (typeof google === 'undefined' || !google.maps || !google.maps.StreetViewPanorama) {
-                console.error('Google Maps Street View API not loaded');
-                showStreetViewError('Google Maps Street View API not available');
-                return;
-            }
-
-            // Prevent multiple initializations
-            if (streetViewPanorama) {
-                return;
-            }
-
-            const streetViewCenter = { lat: placeLatitude, lng: placeLongitude };
-            
-            // Check if Street View is available for this location
-            const streetViewService = new google.maps.StreetViewService();
-            streetViewService.getPanorama({ location: streetViewCenter, radius: 50 }, function(data, status) {
-                if (status === 'OK') {
-                    // Street View is available, initialize panorama
-                    streetViewPanorama = new google.maps.StreetViewPanorama(
-                        streetViewElement,
-                        {
-                            position: streetViewCenter,
-                            pov: { heading: 0, pitch: 0 },
-                            zoom: 1,
-                            visible: true
-                        }
-                    );
-                    
-                    // Hide error message if visible
-                    const errorDiv = streetViewElement.querySelector('.map-error');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'none';
-                    }
-                } else {
-                    // Street View not available for this location
-                    console.warn('Street View not available for this location:', status);
-                    showStreetViewError('Street View is not available for this location. Try a different location or use the Map view instead.');
-                }
-            });
-        }
-
-        function showStreetViewError(message) {
-            const streetViewElement = document.getElementById('street-view');
-            if (!streetViewElement) return;
-            
-            const errorDiv = streetViewElement.querySelector('.map-error');
-            if (errorDiv) {
-                errorDiv.style.display = 'flex';
-                const messageDiv = errorDiv.querySelector('.map-error-message');
-                if (messageDiv && message) {
-                    messageDiv.textContent = message;
-                }
-            }
-        }
-
-        // Global callback function for Google Maps API
-        window.initPlaceDetailMaps = function() {
-            if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
-                initDetailMap();
-                initSidebarMap();
-            } else {
-                // Show error if API didn't load
-                showMapErrors();
-            }
-        };
-
-        function showMapErrors() {
-            const maps = ['detail-map', 'sidebar-map'];
-            maps.forEach(mapId => {
-                const mapElement = document.getElementById(mapId);
-                if (mapElement) {
-                    const errorDiv = mapElement.querySelector('.map-error');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'flex';
-                    }
-                }
-            });
-        }
-
-        // Try to initialize immediately if API is already loaded
-        if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
-            window.initPlaceDetailMaps();
-        } else {
-            // Show error messages initially
-            setTimeout(showMapErrors, 2000);
-        }
-
         // Star rating labels and emojis
         const ratingLabels = {
             1: { text: 'Poor', emoji: '😞' },
@@ -1464,10 +1425,11 @@
             }
         }
 
-
         // Submit review function
         function submitReview(event) {
             event.preventDefault();
+            
+            console.log('=== Review Submission Started ===');
             
             const form = document.getElementById('reviewForm');
             const submitBtn = form.querySelector('.btn-submit-review');
@@ -1476,10 +1438,26 @@
             // Get form data
             const placeId = document.getElementById('place_id').value;
             const placeName = document.getElementById('place_name').value;
-            const authorName = document.getElementById('author_name').value.trim();
-            const authorEmail = document.getElementById('author_email').value.trim();
             const reviewText = document.getElementById('review_text').value.trim();
-            const saveInfo = document.getElementById('save_info').checked;
+            
+            console.log('Place ID:', placeId);
+            console.log('Place Name:', placeName);
+            console.log('Review Text Length:', reviewText.length);
+            
+            // Get author info - only if fields exist (for non-logged-in users)
+            const authorNameField = document.getElementById('author_name');
+            const authorEmailField = document.getElementById('author_email');
+            const saveInfoField = document.getElementById('save_info');
+            
+            const authorName = authorNameField ? authorNameField.value.trim() : '';
+            const authorEmail = authorEmailField ? authorEmailField.value.trim() : '';
+            const saveInfo = saveInfoField ? saveInfoField.checked : false;
+            
+            console.log('Is User Logged In:', {{ user.is_authenticated|yesno:"true,false" }});
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                console.log('Author Name:', authorName);
+                console.log('Author Email:', authorEmail);
+            }
             
             // Get ratings
             const qualityRating = parseInt(document.getElementById('quality-rating').getAttribute('data-rating')) || 5;
@@ -1487,53 +1465,85 @@
             const serviceRating = parseInt(document.getElementById('service-rating').getAttribute('data-rating')) || 5;
             const priceRating = parseInt(document.getElementById('price-rating').getAttribute('data-rating')) || 5;
             
+            console.log('Ratings - Quality:', qualityRating, 'Location:', locationRating, 'Service:', serviceRating, 'Price:', priceRating);
+            
             // Validation
-            if (!authorName) {
-                alert('Please enter your name');
+            if (authorNameField && !authorName) {
+                showNotification('Please enter your name', 'warning');
+                console.error('Validation failed: Name is required');
+                authorNameField.focus();
                 return;
             }
             
             if (!reviewText) {
-                alert('Please enter your review');
+                showNotification('Please enter your review', 'warning');
+                console.error('Validation failed: Review text is required');
+                document.getElementById('review_text').focus();
                 return;
             }
             
             if (!placeId) {
-                alert('Place ID is missing');
+                showNotification('Place ID is missing', 'error');
+                console.error('Validation failed: Place ID is missing');
                 return;
             }
             
             // Disable submit button
             submitBtn.disabled = true;
             submitBtn.textContent = 'SUBMITTING...';
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
             
             // Prepare data
             const data = {
                 place_id: placeId,
                 place_name: placeName,
-                author_name: authorName,
-                author_email: authorEmail,
                 review_text: reviewText,
                 quality_rating: qualityRating,
                 location_rating: locationRating,
                 service_rating: serviceRating,
                 price_rating: priceRating,
-                save_info: saveInfo
             };
+            
+            // Only include author info if fields exist (for non-logged-in users)
+            if (authorNameField) {
+                data.author_name = authorName;
+                data.author_email = authorEmail;
+                data.save_info = saveInfo;
+            }
+            
+            console.log('Submitting review data:', data);
+            
+            // Get CSRF token
+            const csrfToken = getCookie('csrftoken');
+            console.log('CSRF Token:', csrfToken ? 'Found' : 'Missing');
             
             // Submit review
             fetch('/api/reviews/submit/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response OK:', response.ok);
+                return response.json().then(jsonData => {
+                    return { status: response.status, ok: response.ok, data: jsonData };
+                });
+            })
+            .then(({ status, ok, data: result }) => {
+                console.log('Response data:', result);
+                
+                if (ok && result.success) {
                     // Show success message
-                    alert('Review submitted successfully!');
+                    console.log('Review submitted successfully!');
+                    
+                    // Show success notification without alert popup
+                    showNotification('Review submitted successfully!', 'success');
                     
                     // Reset form
                     form.reset();
@@ -1547,18 +1557,29 @@
                     });
                     
                     // Reload page to show new review
-                    location.reload();
+                    console.log('Reloading page to show new review...');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
                 } else {
-                    alert('Error: ' + (result.error || 'Failed to submit review'));
+                    const errorMsg = result.error || 'Failed to submit review';
+                    console.error('✗ Error:', errorMsg);
+                    console.error('Status:', status);
+                    showNotification('Error: ' + errorMsg, 'error');
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting the review. Please try again.');
+                console.error('✗ Network/Fetch Error:', error);
+                console.error('Error details:', error.message);
+                showNotification('An error occurred. Please try again.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
             });
         }
 
@@ -1612,7 +1633,7 @@
                     
                     // Check current state
                     const isCurrentlyActive = hasUserInteracted(itemId, actionType);
-                    const willToggle = isCurrentlyActive; // If already active, toggle (unlike). If not active, like.
+                    const willToggle = isCurrentlyActive;
                     
                     // Disable button temporarily to prevent rapid clicks
                     const originalText = this.textContent;
@@ -1621,7 +1642,7 @@
                     // Prepare request data
                     const requestData = {
                         action: actionType,
-                        toggle: willToggle  // true = unlike, false = like
+                        toggle: willToggle
                     };
                     
                     if (reviewId) {
@@ -1635,18 +1656,20 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
                         },
+                        credentials: 'same-origin',
                         body: JSON.stringify(requestData)
                     })
                     .then(response => response.json())
                     .then(result => {
                         if (result.success) {
-                            // Update button text with new count
+                            // Update button text with new count from server
                             const emoji = actionType === 'like' ? '👍' : actionType === 'dislike' ? '👎' : '❤️';
-                            const count = result[actionType + 's'];
+                            const count = result[actionType + 's'] || 0;
                             this.textContent = `${emoji} ${count}`;
                             
-                            // Update interaction state
+                            // Update interaction state in localStorage
                             if (result.is_active) {
                                 setUserInteraction(itemId, actionType, true);
                                 this.classList.add('active');
@@ -1656,280 +1679,1122 @@
                                 this.classList.remove('active');
                                 this.style.opacity = '0.7';
                             }
-                            
-                            // Add visual feedback
-                            this.style.transform = 'scale(1.2)';
-                            setTimeout(() => {
-                                this.style.transform = 'scale(1)';
-                            }, 200);
                         } else {
-                            alert('Error: ' + (result.error || 'Failed to update'));
+                            showNotification('Error: ' + (result.error || 'Failed to update'), 'error');
                         }
                         this.disabled = false;
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
+                        showNotification('An error occurred. Please try again.', 'error');
+                        this.textContent = originalText;
                         this.disabled = false;
                     });
                 });
             });
             
-            // Reply button (for both reviews and replies)
+            // Reply buttons - existing code continues...
             document.querySelectorAll('.review-reply').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const reviewItem = this.closest('.review-item');
-                    const replyItem = this.closest('.reply-item');
-                    let reviewId = this.getAttribute('data-review-id');
-                    const parentReplyId = this.getAttribute('data-reply-id'); // If replying to a reply
+                    e.stopPropagation();
                     
-                    // Determine if this is a nested reply (reply to a reply)
-                    const isNestedReply = !!parentReplyId;
+                    const reviewId = this.getAttribute('data-review-id');
+                    const replyId = this.getAttribute('data-reply-id');
+                    const type = this.getAttribute('data-type');
                     
-                    // If replying to a reply, get the parent review ID from the reply item
-                    if (!reviewId && replyItem) {
-                        reviewId = replyItem.getAttribute('data-review-id');
-                    }
+                    let targetElement, isNestedReply = false, parentReplyId = null;
                     
-                    // If still no review ID, try to get from review item
-                    if (!reviewId && reviewItem) {
-                        reviewId = reviewItem.getAttribute('data-review-id');
-                    }
-                    
-                    // Determine target container - if nested reply, use reply item, otherwise use review item
-                    const targetContainer = isNestedReply ? replyItem : reviewItem;
-                    
-                    // Check if reply form already exists in the target container
-                    let replyForm = targetContainer ? targetContainer.querySelector('.reply-form') : null;
-                    
-                    if (replyForm) {
-                        // Toggle reply form
-                        replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+                    if (type === 'reply') {
+                        const replyItem = this.closest('.reply-item');
+                        targetElement = replyItem;
+                        isNestedReply = true;
+                        parentReplyId = replyId;
                     } else {
-                        // Create reply form
-                        const form = document.createElement('div');
-                        form.className = 'reply-form';
-                        form.style.marginTop = '1rem';
-                        form.style.padding = '1rem';
-                        form.style.background = '#f9f9f9';
-                        form.style.borderRadius = '8px';
-                        form.innerHTML = `
-                            <div style="margin-bottom: 0.5rem;">
-                                <input type="text" class="reply-author-name" placeholder="Your Name" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem;" required>
-                                <input type="email" class="reply-author-email" placeholder="your@mail.com" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem;">
-                            </div>
-                            <textarea class="reply-textarea" placeholder="Write your reply..." rows="3" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem; resize: vertical;" required></textarea>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-submit-reply" style="padding: 0.5rem 1rem; background: #1976d2; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Submit Reply</button>
-                                <button class="btn-cancel-reply" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Cancel</button>
-                            </div>
-                        `;
+                        const reviewItem = this.closest('.review-item');
+                        const reviewContent = reviewItem ? reviewItem.querySelector('.review-content') : null;
+                        targetElement = reviewContent;
+                        isNestedReply = false;
+                    }
+                    
+                    if (!targetElement || !reviewId) return;
+                    
+                    // Check if form already exists
+                    const existingForm = targetElement.querySelector('.reply-form');
+                    if (existingForm) {
+                        existingForm.remove();
+                        return;
+                    }
+                    
+                    // Create reply form
+                    const form = document.createElement('div');
+                    form.className = 'reply-form';
+                    form.style.marginTop = '0.75rem';
+                    form.style.padding = '1rem';
+                    form.style.background = '#f5f5f5';
+                    form.style.borderRadius = '8px';
+                    
+                    const authorNameField = document.getElementById('author_name');
+                    const showAuthorFields = !!authorNameField;
+                    
+                    form.innerHTML = `
+                        ${showAuthorFields ? `
+                        <div style="margin-bottom: 0.75rem;">
+                            <input type="text" id="reply-author-name" class="form-input" placeholder="Your Name *" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem;">
+                            <input type="email" id="reply-author-email" class="form-input" placeholder="Your Email *" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        ` : ''}
+                        <textarea id="reply-text" class="form-textarea" placeholder="Write your reply..." style="width: 100%; min-height: 80px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 0.5rem; resize: vertical;"></textarea>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-submit-reply" style="padding: 0.5rem 1rem; background: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Submit Reply</button>
+                            <button class="btn-cancel-reply" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer;">Cancel</button>
+                        </div>
+                    `;
+                    
+                    targetElement.appendChild(form);
+                    
+                    // Cancel button
+                    form.querySelector('.btn-cancel-reply').addEventListener('click', function() {
+                        form.remove();
+                    });
+                    
+                    // Submit button
+                    form.querySelector('.btn-submit-reply').addEventListener('click', function() {
+                        const replyText = form.querySelector('#reply-text').value.trim();
                         
-                        // Find where to insert the form
-                        if (isNestedReply && replyItem) {
-                            // For nested replies, insert after the reply's actions
-                            const replyActions = replyItem.querySelector('.review-actions');
-                            const nestedRepliesList = replyItem.querySelector('.nested-replies-list');
+                        if (!replyText) {
+                            alert('Please enter your reply');
+                            return;
+                        }
+                        
+                        let authorName = '', authorEmail = '';
+                        if (showAuthorFields) {
+                            const authorNameField = form.querySelector('#reply-author-name');
+                            const authorEmailField = form.querySelector('#reply-author-email');
                             
-                            if (nestedRepliesList) {
-                                replyItem.insertBefore(form, nestedRepliesList);
-                            } else {
-                                // Insert after actions
-                                replyActions.parentNode.insertBefore(form, replyActions.nextSibling);
-                            }
-                        } else if (reviewItem) {
-                            // For top-level replies, insert before replies list
-                            const reviewContent = reviewItem.querySelector('.review-content');
-                            const repliesList = reviewItem.querySelector('.replies-list');
-                            
-                            if (repliesList) {
-                                reviewContent.insertBefore(form, repliesList);
-                            } else {
-                                reviewContent.appendChild(form);
+                            if (authorNameField && authorEmailField) {
+                                authorName = authorNameField.value.trim();
+                                authorEmail = authorEmailField.value.trim();
+                                
+                                if (!authorName || !authorEmail) {
+                                    alert('Please enter your name and email');
+                                    return;
+                                }
                             }
                         }
                         
-                        // Handle cancel
-                        form.querySelector('.btn-cancel-reply').addEventListener('click', function() {
-                            form.remove();
-                        });
+                        this.disabled = true;
+                        this.textContent = 'Submitting...';
                         
-                        // Handle submit
-                        form.querySelector('.btn-submit-reply').addEventListener('click', function() {
-                            const authorName = form.querySelector('.reply-author-name').value.trim();
-                            const authorEmail = form.querySelector('.reply-author-email').value.trim();
-                            const replyText = form.querySelector('.reply-textarea').value.trim();
-                            
-                            if (!authorName) {
-                                alert('Please enter your name');
-                                return;
-                            }
-                            
-                            if (!replyText) {
-                                alert('Please enter your reply');
-                                return;
-                            }
-                            
-                            // Disable button
-                            this.disabled = true;
-                            this.textContent = 'Submitting...';
-                            
-                            // Prepare request data
-                            const requestData = {
-                                review_id: reviewId,
-                                author_name: authorName,
-                                author_email: authorEmail,
-                                reply_text: replyText
-                            };
-                            
-                            // If this is a nested reply, add parent_reply_id
-                            if (isNestedReply && parentReplyId) {
-                                requestData.parent_reply_id = parentReplyId;
-                            }
-                            
-                            // Submit reply
-                            fetch('/api/reviews/reply/', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify(requestData)
-                            })
-                            .then(response => response.json())
-                            .then(result => {
-                                if (result.success) {
-                                    // Remove form
-                                    form.remove();
-                                    
-                                    const date = new Date(result.reply.created_at);
-                                    const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                                    
-                                    // Create reply element
-                                    const replyDiv = document.createElement('div');
-                                    replyDiv.className = isNestedReply ? 'reply-item nested-reply' : 'reply-item';
-                                    replyDiv.setAttribute('data-reply-id', result.reply.id);
-                                    replyDiv.setAttribute('data-review-id', reviewId);
-                                    replyDiv.style.marginBottom = isNestedReply ? '0.5rem' : '0.75rem';
-                                    replyDiv.style.padding = '0.75rem';
-                                    replyDiv.style.background = isNestedReply ? '#f0f0f0' : '#f9f9f9';
-                                    replyDiv.style.borderRadius = '6px';
-                                    
-                                    replyDiv.innerHTML = `
-                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                                            <strong style="font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; color: #333;">${result.reply.author_name}</strong>
-                                            <span style="color: #777; font-size: ${isNestedReply ? '0.8rem' : '0.85rem'};">${dateStr}</span>
-                                        </div>
-                                        <div style="color: #555; font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; line-height: 1.5; margin-bottom: 0.5rem;">${result.reply.reply_text}</div>
-                                        <div class="review-actions">
-                                            <button class="review-btn review-like" data-reply-id="${result.reply.id}" data-type="reply">👍 0</button>
-                                            <button class="review-btn review-dislike" data-reply-id="${result.reply.id}" data-type="reply">👎 0</button>
-                                            <button class="review-btn review-heart" data-reply-id="${result.reply.id}" data-type="reply">❤️ 0</button>
-                                            <a href="#" class="review-link review-reply" data-reply-id="${result.reply.id}" data-review-id="${reviewId}" data-type="reply">💬 Reply</a>
-                                            <a href="#" class="review-link review-edit" data-reply-id="${result.reply.id}" data-type="reply">✏️ Edit</a>
-                                        </div>
-                                    `;
-                                    
-                                    if (isNestedReply && replyItem) {
-                                        // Add to nested replies list
-                                        let nestedRepliesList = replyItem.querySelector('.nested-replies-list');
-                                        if (!nestedRepliesList) {
-                                            nestedRepliesList = document.createElement('div');
-                                            nestedRepliesList.className = 'nested-replies-list';
-                                            nestedRepliesList.style.marginTop = '0.75rem';
-                                            nestedRepliesList.style.paddingLeft = '1.5rem';
-                                            nestedRepliesList.style.borderLeft = '2px solid #e0e0e0';
-                                            replyItem.appendChild(nestedRepliesList);
-                                        }
-                                        nestedRepliesList.appendChild(replyDiv);
-                                    } else if (reviewItem) {
-                                        // Add to top-level replies list
-                                        const reviewContent = reviewItem.querySelector('.review-content');
-                                        let repliesList = reviewItem.querySelector('.replies-list');
-                                        if (!repliesList) {
-                                            repliesList = document.createElement('div');
-                                            repliesList.className = 'replies-list';
-                                            repliesList.style.marginTop = '1rem';
-                                            repliesList.style.paddingLeft = '1.5rem';
-                                            repliesList.style.borderLeft = '2px solid #e0e0e0';
-                                            reviewContent.appendChild(repliesList);
-                                        }
-                                        repliesList.appendChild(replyDiv);
+                        const requestData = {
+                            review_id: reviewId,
+                            reply_text: replyText
+                        };
+                        
+                        if (showAuthorFields) {
+                            requestData.author_name = authorName;
+                            requestData.author_email = authorEmail;
+                        }
+                        
+                        if (isNestedReply && parentReplyId) {
+                            requestData.parent_reply_id = parentReplyId;
+                        }
+                        
+                        // Submit reply
+                        fetch('/api/reviews/reply/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken'),
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(requestData)
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                form.remove();
+                                
+                                const date = new Date(result.reply.created_at);
+                                const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                                
+                                const replyDiv = document.createElement('div');
+                                replyDiv.className = isNestedReply ? 'reply-item nested-reply' : 'reply-item';
+                                replyDiv.setAttribute('data-reply-id', result.reply.id);
+                                replyDiv.setAttribute('data-review-id', reviewId);
+                                replyDiv.style.marginBottom = isNestedReply ? '0.5rem' : '0.75rem';
+                                replyDiv.style.padding = '0.75rem';
+                                replyDiv.style.background = isNestedReply ? '#f0f0f0' : '#f9f9f9';
+                                replyDiv.style.borderRadius = '6px';
+                                
+                                replyDiv.innerHTML = `
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                        <strong style="font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; color: #333;">${result.reply.author_name}</strong>
+                                        <span style="color: #777; font-size: ${isNestedReply ? '0.8rem' : '0.85rem'};">${dateStr}</span>
+                                    </div>
+                                    <div style="color: #555; font-size: ${isNestedReply ? '0.85rem' : '0.9rem'}; line-height: 1.5; margin-bottom: 0.5rem;">${result.reply.reply_text}</div>
+                                    <div class="review-actions">
+                                        <button class="review-btn review-like" data-reply-id="${result.reply.id}" data-type="reply">👍 0</button>
+                                        <button class="review-btn review-dislike" data-reply-id="${result.reply.id}" data-type="reply">👎 0</button>
+                                        <button class="review-btn review-heart" data-reply-id="${result.reply.id}" data-type="reply">❤️ 0</button>
+                                        <a href="#" class="review-link review-reply" data-reply-id="${result.reply.id}" data-review-id="${reviewId}" data-type="reply">💬 Reply</a>
+                                        <a href="#" class="review-link review-edit" data-reply-id="${result.reply.id}" data-type="reply">✏️ Edit</a>
+                                    </div>
+                                `;
+                                
+                                if (isNestedReply) {
+                                    const replyItem = targetElement;
+                                    let nestedRepliesList = replyItem.querySelector('.nested-replies-list');
+                                    if (!nestedRepliesList) {
+                                        nestedRepliesList = document.createElement('div');
+                                        nestedRepliesList.className = 'nested-replies-list';
+                                        nestedRepliesList.style.marginTop = '0.75rem';
+                                        nestedRepliesList.style.paddingLeft = '1.5rem';
+                                        nestedRepliesList.style.borderLeft = '2px solid #e0e0e0';
+                                        replyItem.appendChild(nestedRepliesList);
                                     }
-                                    
-                                    // Re-initialize actions for the new reply
-                                    setTimeout(() => {
-                                        initReviewActions();
-                                    }, 100);
-                                    
-                                    // Scroll to new reply
-                                    replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                    nestedRepliesList.appendChild(replyDiv);
                                 } else {
-                                    alert('Error: ' + (result.error || 'Failed to submit reply'));
-                                    this.disabled = false;
-                                    this.textContent = 'Submit Reply';
+                                    const reviewItem = targetElement.closest('.review-item');
+                                    let repliesList = reviewItem.querySelector('.replies-list');
+                                    if (!repliesList) {
+                                        repliesList = document.createElement('div');
+                                        repliesList.className = 'replies-list';
+                                        repliesList.style.marginTop = '1rem';
+                                        repliesList.style.paddingLeft = '1.5rem';
+                                        repliesList.style.borderLeft = '2px solid #e0e0e0';
+                                        targetElement.appendChild(repliesList);
+                                    }
+                                    repliesList.appendChild(replyDiv);
                                 }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('An error occurred. Please try again.');
+                                
+                                setTimeout(() => {
+                                    initReviewActions();
+                                }, 100);
+                                
+                                replyDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            } else {
+                                alert('Error: ' + (result.error || 'Failed to submit reply'));
                                 this.disabled = false;
                                 this.textContent = 'Submit Reply';
-                            });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                            this.disabled = false;
+                            this.textContent = 'Submit Reply';
                         });
-                    }
+                    });
                 });
             });
             
-            // Edit button
+            // Edit buttons - Full implementation with API
             document.querySelectorAll('.review-edit').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const reviewItem = this.closest('.review-item');
-                    const reviewTextEl = reviewItem ? reviewItem.querySelector('.review-text') : null;
                     
-                    if (!reviewTextEl) return;
+                    // Check if this is a reply or review
+                    const isReply = this.getAttribute('data-type') === 'reply';
+                    const replyId = this.getAttribute('data-reply-id');
                     
-                    const currentText = reviewTextEl.textContent.trim();
-                    const reviewId = reviewItem ? reviewItem.getAttribute('data-review-id') : null;
+                    let reviewItem, reviewTextEl, currentText, itemId;
                     
-                    // Create edit form
+                    if (isReply) {
+                        // For replies
+                        reviewItem = this.closest('.reply-item') || this.closest('[data-reply-id]');
+                        reviewTextEl = reviewItem ? reviewItem.querySelector('div[style*="color: #555"]') : null;
+                        itemId = replyId;
+                    } else {
+                        // For reviews
+                        reviewItem = this.closest('.review-item');
+                        reviewTextEl = reviewItem ? reviewItem.querySelector('.review-text') : null;
+                        itemId = reviewItem ? reviewItem.getAttribute('data-review-id') : null;
+                    }
+                    
+                    if (!reviewTextEl || !itemId) {
+                        showNotification('Could not find item to edit', 'error');
+                        return;
+                    }
+                    
+                    currentText = reviewTextEl.textContent.trim();
+                    
                     const editForm = document.createElement('div');
                     editForm.className = 'edit-form';
                     editForm.style.marginTop = '0.5rem';
                     editForm.innerHTML = `
-                        <textarea class="form-textarea" style="width: 100%; margin-bottom: 0.5rem;">${currentText}</textarea>
+                        <textarea class="form-textarea" style="width: 100%; margin-bottom: 0.5rem; min-height: 100px;">${currentText}</textarea>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-save-edit" style="padding: 0.5rem 1rem; background: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer;">Save</button>
-                            <button class="btn-cancel-edit" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer;">Cancel</button>
+                            <button class="btn-save-edit" style="padding: 0.5rem 1rem; background: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Save</button>
+                            <button class="btn-cancel-edit" style="padding: 0.5rem 1rem; background: #999; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>
                         </div>
                     `;
                     
-                    // Hide original text
                     reviewTextEl.style.display = 'none';
                     reviewTextEl.parentNode.insertBefore(editForm, reviewTextEl.nextSibling);
                     
-                    // Handle cancel
-                    editForm.querySelector('.btn-cancel-edit').addEventListener('click', function() {
+                    const textarea = editForm.querySelector('textarea');
+                    const saveBtn = editForm.querySelector('.btn-save-edit');
+                    const cancelBtn = editForm.querySelector('.btn-cancel-edit');
+                    
+                    // Focus textarea and select all text
+                    textarea.focus();
+                    textarea.select();
+                    
+                    // Cancel button
+                    cancelBtn.addEventListener('click', function() {
                         reviewTextEl.style.display = 'block';
                         editForm.remove();
                     });
                     
-                    // Handle save (you can implement edit submission later)
-                    editForm.querySelector('.btn-save-edit').addEventListener('click', function() {
-                        const newText = editForm.querySelector('textarea').value.trim();
-                        if (newText && newText !== currentText) {
-                            alert('Edit functionality will be implemented. New text: ' + newText);
-                            reviewTextEl.textContent = newText;
+                    // Save button
+                    saveBtn.addEventListener('click', function() {
+                        const newText = textarea.value.trim();
+                        
+                        if (!newText) {
+                            showNotification('Text cannot be empty', 'warning');
+                            textarea.focus();
+                            return;
                         }
-                        reviewTextEl.style.display = 'block';
-                        editForm.remove();
+                        
+                        if (newText === currentText) {
+                            showNotification('No changes made', 'info');
+                            reviewTextEl.style.display = 'block';
+                            editForm.remove();
+                            return;
+                        }
+                        
+                        // Disable buttons during save
+                        saveBtn.disabled = true;
+                        cancelBtn.disabled = true;
+                        saveBtn.textContent = 'Saving...';
+                        saveBtn.style.opacity = '0.6';
+                        
+                        // Prepare data
+                        const data = {
+                            text: newText
+                        };
+                        
+                        if (isReply) {
+                            data.reply_id = itemId;
+                        } else {
+                            data.review_id = itemId;
+                        }
+                        
+                        // Send update request
+                        fetch('/api/reviews/update/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken'),
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify(data)
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.success) {
+                                showNotification('Updated successfully!', 'success');
+                                reviewTextEl.textContent = newText;
+                                reviewTextEl.style.display = 'block';
+                                editForm.remove();
+                            } else {
+                                showNotification('Error: ' + (result.error || 'Failed to update'), 'error');
+                                saveBtn.disabled = false;
+                                cancelBtn.disabled = false;
+                                saveBtn.textContent = 'Save';
+                                saveBtn.style.opacity = '1';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating:', error);
+                            showNotification('Failed to update. Please try again.', 'error');
+                            saveBtn.disabled = false;
+                            cancelBtn.disabled = false;
+                            saveBtn.textContent = 'Save';
+                            saveBtn.style.opacity = '1';
+                        });
                     });
                 });
             });
         }
+        
+        // Initialize: Don't show any image initially
+        // Only show when thumbnail is clicked
+        // Initialize all components when DOM is ready
+        function initializeComponents() {
+            console.log('═══════════════════════════════════════');
+            console.log('✓ Initializing Components');
+            console.log('═══════════════════════════════════════');
+            
+            // Fallback: Load photos from thumbnail elements if photos array is still empty
+            if (photos.length === 0) {
+                console.log('⚠️ Photos array empty, loading from DOM thumbnails...');
+                const thumbnails = document.querySelectorAll('.photo-thumbnails img[data-photo-url]');
+                if (thumbnails.length > 0) {
+                    thumbnails.forEach(thumb => {
+                        const photoUrl = thumb.getAttribute('data-photo-url');
+                        if (photoUrl) {
+                            photos.push(photoUrl);
+                        }
+                    });
+                    console.log('✓ Loaded', photos.length, 'photos from thumbnails');
+                } else {
+                    console.warn('⚠️ No photo thumbnails found in DOM');
+                }
+            }
+            
+            // Photo gallery initialization
+            const mainPhoto = document.getElementById('main-photo');
+            const placeholder = document.getElementById('photo-placeholder');
+            const prevBtn = document.querySelector('.photo-prev');
+            const nextBtn = document.querySelector('.photo-next');
+            
+            if (mainPhoto) {
+                mainPhoto.style.display = 'none';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'flex';
+            }
+            if (prevBtn) {
+                prevBtn.style.display = 'none';
+            }
+            if (nextBtn) {
+                nextBtn.style.display = 'none';
+            }
+            
+            // Remove active class from first thumbnail initially
+            const firstThumbnail = document.querySelector('.photo-thumbnails img');
+            if (firstThumbnail) {
+                firstThumbnail.classList.remove('active');
+            }
+            
+            // Add click event delegation for photo thumbnails
+            const photoThumbnails = document.querySelector('.photo-thumbnails');
+            if (photoThumbnails) {
+                photoThumbnails.addEventListener('click', function(e) {
+                    var img = e.target.closest('img');
+                    if (img && img.dataset.photoIndex !== undefined) {
+                        var index = parseInt(img.dataset.photoIndex, 10);
+                        if (!isNaN(index)) {
+                            setMainPhoto(index);
+                        }
+                    }
+                });
+            }
+            
+            // Initialize photo gallery
+            if (photos.length > 0) {
+                console.log('✓ Initializing photo gallery with', photos.length, 'photos');
+                // Show first photo automatically
+                setMainPhoto(0);
+                
+                // Add keyboard navigation
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowLeft') {
+                        changePhoto(-1);
+                    } else if (e.key === 'ArrowRight') {
+                        changePhoto(1);
+                    }
+                });
+            } else {
+                console.warn('⚠️ No photos available to display');
+            }
+            
+            // Initialize star ratings
+            if (typeof initStarRatings === 'function') {
+                initStarRatings();
+            }
+            
+            // Initialize image upload
+            if (typeof initImageUpload === 'function') {
+                initImageUpload();
+            }
+            
+            // Initialize review actions
+            if (typeof initReviewActions === 'function') {
+                initReviewActions();
+            }
+        }
+        
+        // Run initialization when DOM is ready
+        // Wait a bit to ensure all functions are defined
+        function safeInitialize() {
+            try {
+                console.log('Running safeInitialize...');
+                initializeComponents();
+                // Scroll to top after page loads
+                window.scrollTo(0, 0);
+            } catch (error) {
+                console.error('Error during initialization:', error);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(safeInitialize, 100);
+            });
+        } else {
+            setTimeout(safeInitialize, 100);
+        }
+        
+        // Ensure page starts at top on load
+        window.addEventListener('load', function() {
+            window.scrollTo(0, 0);
+        });
+        
+        // Prevent browser from restoring scroll position
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Define place coordinates once to avoid linter errors
+        const placeLatitude = parseFloat('{{ lat|default:0|floatformat:6 }}') || 0;
+        const placeLongitude = parseFloat('{{ lng|default:0|floatformat:6 }}') || 0;
+        
+        // Validate coordinates
+        console.log('=== Coordinate Validation ===');
+        console.log('Raw lat from server:', '{{ lat }}');
+        console.log('Raw lng from server:', '{{ lng }}');
+        console.log('Parsed placeLatitude:', placeLatitude);
+        console.log('Parsed placeLongitude:', placeLongitude);
+        
+        if (placeLatitude === 0 && placeLongitude === 0) {
+            console.error('⚠️ CRITICAL: Coordinates are (0, 0)!');
+            console.error('  This means the place data was not loaded correctly.');
+            console.error('  Maps will not display properly.');
+        } else if (isNaN(placeLatitude) || isNaN(placeLongitude)) {
+            console.error('⚠️ CRITICAL: Invalid coordinates!');
+            console.error('  Latitude:', placeLatitude);
+            console.error('  Longitude:', placeLongitude);
+        } else {
+            console.log('✓ Valid coordinates:', placeLatitude, placeLongitude);
+        }
+
+        function showPhone() {
+            document.querySelectorAll('.phone-masked').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.phone-full').forEach(el => el.style.display = 'inline');
+            document.querySelectorAll('.btn-show-phone, .btn-show-phone-small').forEach(el => el.style.display = 'none');
+        }
+
+        // Map tabs
+        document.querySelectorAll('.map-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // If it's the directions tab, open Google Maps directly in a new window
+                if (tabName === 'directions') {
+                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${placeLatitude},${placeLongitude}`;
+                    window.open(directionsUrl, '_blank');
+                    return;
+                }
+                
+                document.querySelectorAll('.map-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.getElementById('detail-map').style.display = tabName === 'map' ? 'block' : 'none';
+                document.getElementById('street-view').style.display = tabName === 'streetview' ? 'block' : 'none';
+                document.getElementById('directions-panel').style.display = tabName === 'directions' ? 'block' : 'none';
+                
+                if (tabName === 'streetview') {
+                    // Small delay to ensure the element is visible before initializing
+                    setTimeout(() => {
+                        initStreetView();
+                    }, 100);
+                }
+            });
+        });
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=marker&callback=initPlaceDetailMaps&loading=async" async defer></script>
+
+    {% if GOOGLE_MAPS_API_KEY and not place.error and place.name %}
+    <script>
+        // Define callback FIRST before any conditional checks
+        // This ensures the function exists when Google Maps loads
+        window.initPlaceDetailMaps = function() {
+            console.log('═══════════════════════════════════════');
+            console.log('✓ Google Maps API Callback Triggered');
+            console.log('═══════════════════════════════════════');
+            
+            if (typeof google === 'undefined') {
+                console.error('✗ FATAL: google object is undefined!');
+                if (typeof showMapErrors === 'function') showMapErrors();
+                return;
+            }
+            
+            if (!google.maps) {
+                console.error('✗ FATAL: google.maps is undefined!');
+                if (typeof showMapErrors === 'function') showMapErrors();
+                return;
+            }
+            
+            if (!google.maps.Map) {
+                console.error('✗ FATAL: google.maps.Map is undefined!');
+                if (typeof showMapErrors === 'function') showMapErrors();
+                return;
+            }
+            
+            console.log('✓ All Google Maps API checks passed');
+            console.log('  - google:', typeof google);
+            console.log('  - google.maps:', typeof google.maps);
+            console.log('  - google.maps.Map:', typeof google.maps.Map);
+            console.log('  - google.maps.Marker:', typeof google.maps.Marker);
+            
+            // Check if coordinates are valid before initializing
+            const lat = parseFloat('{{ lat|default:0 }}');
+            const lng = parseFloat('{{ lng|default:0 }}');
+            
+            if (lat === 0 && lng === 0) {
+                console.error('✗ Cannot initialize maps: Invalid coordinates (0, 0)');
+                alert('Error: Place location data is not available. The map cannot be displayed.');
+                if (typeof showMapErrors === 'function') showMapErrors();
+                return;
+            }
+            
+            console.log('✓ Coordinates validated:', lat, lng);
+            console.log('✓ Proceeding with map initialization...');
+            console.log('');
+            
+            try {
+                if (typeof initDetailMap === 'function') {
+                    initDetailMap();
+                    console.log('');
+                }
+                if (typeof initSidebarMap === 'function') {
+                    initSidebarMap();
+                    console.log('');
+                }
+                console.log('═══════════════════════════════════════');
+                console.log('✓ ALL MAPS INITIALIZED SUCCESSFULLY ✓');
+                console.log('═══════════════════════════════════════');
+            } catch (error) {
+                console.error('✗ Error during map initialization:', error);
+                console.error('  Stack trace:', error.stack);
+                if (typeof showMapErrors === 'function') showMapErrors();
+            }
+        };
+        
+        {% if lat and lng %}
+        // Only define map-specific functions if we have valid coordinates
+        
+        // Get category-based icon for marker with custom pin design
+        function getCategoryIcon(types) {
+            if (!types || types.length === 0) {
+                return {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
+                            <path d="M20 0C9 0 0 9 0 20c0 15 20 30 20 30s20-15 20-30C40 9 31 0 20 0z" fill="#4285F4"/>
+                            <circle cx="20" cy="20" r="8" fill="white"/>
+                            <text x="20" y="25" font-size="16" text-anchor="middle" fill="#4285F4">📍</text>
+                        </svg>
+                    `),
+                    scaledSize: new google.maps.Size(40, 50),
+                    anchor: new google.maps.Point(20, 50)
+                };
+            }
+            
+            // Category to icon mapping with colors and emoji icons
+            const iconMap = {
+                // Food & Drink
+                'restaurant': { color: '#FF6B6B', emoji: '🍽️', label: 'Restaurant' },
+                'food': { color: '#FF6B6B', emoji: '🍔', label: 'Food' },
+                'cafe': { color: '#8B4513', emoji: '☕', label: 'Cafe' },
+                'bar': { color: '#FFA500', emoji: '🍺', label: 'Bar' },
+                'night_club': { color: '#FF1493', emoji: '🎵', label: 'Club' },
+                'meal_takeaway': { color: '#FF8C00', emoji: '🥡', label: 'Takeaway' },
+                'meal_delivery': { color: '#FF7043', emoji: '🚴', label: 'Delivery' },
+                'bakery': { color: '#FF6F00', emoji: '🥐', label: 'Bakery' },
+                
+                // Accommodation
+                'lodging': { color: '#4ECDC4', emoji: '🛏️', label: 'Lodging' },
+                'hotel': { color: '#4ECDC4', emoji: '🏨', label: 'Hotel' },
+                'motel': { color: '#26C6DA', emoji: '🛏️', label: 'Motel' },
+                'hostel': { color: '#00ACC1', emoji: '🏠', label: 'Hostel' },
+                
+                // Health
+                'hospital': { color: '#E74C3C', emoji: '🏥', label: 'Hospital' },
+                'doctor': { color: '#E74C3C', emoji: '⚕️', label: 'Doctor' },
+                'dentist': { color: '#EF5350', emoji: '🦷', label: 'Dentist' },
+                'pharmacy': { color: '#DC143C', emoji: '💊', label: 'Pharmacy' },
+                'physiotherapist': { color: '#EC407A', emoji: '🩺', label: 'Physio' },
+                'veterinary_care': { color: '#AB47BC', emoji: '🐾', label: 'Vet' },
+                
+                // Finance
+                'bank': { color: '#2ECC71', emoji: '🏦', label: 'Bank' },
+                'atm': { color: '#27AE60', emoji: '💰', label: 'ATM' },
+                'accounting': { color: '#66BB6A', emoji: '💵', label: 'Accounting' },
+                
+                // Shopping
+                'store': { color: '#9B59B6', emoji: '🏪', label: 'Store' },
+                'shopping_mall': { color: '#9B59B6', emoji: '🛍️', label: 'Mall' },
+                'supermarket': { color: '#8E44AD', emoji: '🛒', label: 'Supermarket' },
+                'convenience_store': { color: '#BA68C8', emoji: '🏪', label: 'Convenience' },
+                'clothing_store': { color: '#CE93D8', emoji: '👕', label: 'Clothing' },
+                'shoe_store': { color: '#E1BEE7', emoji: '👟', label: 'Shoes' },
+                'jewelry_store': { color: '#F48FB1', emoji: '💎', label: 'Jewelry' },
+                'book_store': { color: '#9575CD', emoji: '📚', label: 'Books' },
+                'electronics_store': { color: '#7E57C2', emoji: '📱', label: 'Electronics' },
+                'furniture_store': { color: '#9FA8DA', emoji: '🛋️', label: 'Furniture' },
+                'home_goods_store': { color: '#B39DDB', emoji: '🏠', label: 'Home' },
+                'hardware_store': { color: '#7986CB', emoji: '🔧', label: 'Hardware' },
+                'department_store': { color: '#AB47BC', emoji: '🏬', label: 'Department' },
+                
+                // Education
+                'school': { color: '#3498DB', emoji: '🏫', label: 'School' },
+                'university': { color: '#2980B9', emoji: '🎓', label: 'University' },
+                'primary_school': { color: '#42A5F5', emoji: '🎒', label: 'Primary' },
+                'secondary_school': { color: '#1E88E5', emoji: '📚', label: 'Secondary' },
+                'library': { color: '#34495E', emoji: '📚', label: 'Library' },
+                
+                // Culture & Entertainment
+                'museum': { color: '#95A5A6', emoji: '🏛️', label: 'Museum' },
+                'art_gallery': { color: '#BDC3C7', emoji: '🎨', label: 'Gallery' },
+                'movie_theater': { color: '#5E35B1', emoji: '🎬', label: 'Cinema' },
+                'stadium': { color: '#1E88E5', emoji: '🏟️', label: 'Stadium' },
+                'zoo': { color: '#43A047', emoji: '🦁', label: 'Zoo' },
+                'amusement_park': { color: '#AB47BC', emoji: '🎢', label: 'Park' },
+                'aquarium': { color: '#00ACC1', emoji: '🐠', label: 'Aquarium' },
+                'casino': { color: '#F4511E', emoji: '🎰', label: 'Casino' },
+                'bowling_alley': { color: '#FF7043', emoji: '🎳', label: 'Bowling' },
+                
+                // Recreation
+                'park': { color: '#27AE60', emoji: '🌳', label: 'Park' },
+                'gym': { color: '#E67E22', emoji: '💪', label: 'Gym' },
+                'spa': { color: '#F39C12', emoji: '💆', label: 'Spa' },
+                'tourist_attraction': { color: '#E91E63', emoji: '⭐', label: 'Attraction' },
+                'point_of_interest': { color: '#FF9800', emoji: '📌', label: 'POI' },
+                'campground': { color: '#689F38', emoji: '⛺', label: 'Camping' },
+                
+                // Transportation
+                'airport': { color: '#1ABC9C', emoji: '✈️', label: 'Airport' },
+                'train_station': { color: '#16A085', emoji: '🚂', label: 'Train' },
+                'transit_station': { color: '#0097A7', emoji: '🚉', label: 'Transit' },
+                'bus_station': { color: '#F39C12', emoji: '🚌', label: 'Bus' },
+                'subway_station': { color: '#D35400', emoji: '🚇', label: 'Metro' },
+                'light_rail_station': { color: '#00ACC1', emoji: '🚊', label: 'Rail' },
+                'gas_station': { color: '#E74C3C', emoji: '⛽', label: 'Gas' },
+                'parking': { color: '#7F8C8D', emoji: '🅿️', label: 'Parking' },
+                'car_rental': { color: '#95A5A6', emoji: '🚗', label: 'Rental' },
+                'car_wash': { color: '#26C6DA', emoji: '🚿', label: 'Car Wash' },
+                'car_repair': { color: '#78909C', emoji: '🔧', label: 'Repair' },
+                'taxi_stand': { color: '#FDD835', emoji: '🚕', label: 'Taxi' },
+                
+                // Religion
+                'church': { color: '#8E44AD', emoji: '⛪', label: 'Church' },
+                'mosque': { color: '#2C3E50', emoji: '🕌', label: 'Mosque' },
+                'temple': { color: '#C0392B', emoji: '🛕', label: 'Temple' },
+                'hindu_temple': { color: '#E67E22', emoji: '🕉️', label: 'Temple' },
+                'synagogue': { color: '#34495E', emoji: '🕍', label: 'Synagogue' },
+                'place_of_worship': { color: '#5D4037', emoji: '🙏', label: 'Worship' },
+                
+                // Services
+                'beauty_salon': { color: '#EC407A', emoji: '💅', label: 'Salon' },
+                'hair_care': { color: '#D81B60', emoji: '💇', label: 'Hair' },
+                'laundry': { color: '#5C6BC0', emoji: '🧺', label: 'Laundry' },
+                'post_office': { color: '#FDD835', emoji: '📮', label: 'Post' },
+                'real_estate_agency': { color: '#8D6E63', emoji: '🏘️', label: 'Real Estate' },
+                'travel_agency': { color: '#26A69A', emoji: '✈️', label: 'Travel' },
+                'insurance_agency': { color: '#5C6BC0', emoji: '🛡️', label: 'Insurance' },
+                'lawyer': { color: '#455A64', emoji: '⚖️', label: 'Lawyer' },
+                'locksmith': { color: '#78909C', emoji: '🔑', label: 'Locksmith' },
+                'moving_company': { color: '#FF7043', emoji: '📦', label: 'Moving' },
+                'plumber': { color: '#0288D1', emoji: '🔧', label: 'Plumber' },
+                'electrician': { color: '#FBC02D', emoji: '⚡', label: 'Electrician' },
+                'roofing_contractor': { color: '#5D4037', emoji: '🏠', label: 'Roofing' },
+                'painter': { color: '#7CB342', emoji: '🎨', label: 'Painter' },
+                
+                // Government & Public
+                'police': { color: '#1565C0', emoji: '👮', label: 'Police' },
+                'fire_station': { color: '#C62828', emoji: '🚒', label: 'Fire' },
+                'courthouse': { color: '#6A1B9A', emoji: '⚖️', label: 'Court' },
+                'city_hall': { color: '#455A64', emoji: '🏛️', label: 'City Hall' },
+                'local_government_office': { color: '#546E7A', emoji: '🏢', label: 'Gov Office' },
+                'embassy': { color: '#1E88E5', emoji: '🏛️', label: 'Embassy' }
+            };
+            
+            // Find matching category
+            console.log('🔍 Searching for icon match in types:', types);
+            let iconData = null;
+            
+            // First try exact match
+            for (let type of types) {
+                if (iconMap[type]) {
+                    iconData = iconMap[type];
+                    console.log('✓ EXACT MATCH found for type:', type, '→', iconData.emoji, iconData.label, iconData.color);
+                    break;
+                }
+            }
+            
+            // If no exact match, try partial match
+            if (!iconData) {
+                console.log('⚠️ No exact match, trying partial match...');
+                for (let type of types) {
+                    for (let key in iconMap) {
+                        if (type.includes(key) || key.includes(type)) {
+                            iconData = iconMap[key];
+                            console.log('✓ PARTIAL MATCH found:', type, '~', key, '→', iconData.emoji, iconData.label, iconData.color);
+                            break;
+                        }
+                    }
+                    if (iconData) break;
+                }
+            }
+            
+            if (!iconData) {
+                console.warn('✗ No icon match found for types:', types);
+                console.log('Available icon categories:', Object.keys(iconMap).slice(0, 10).join(', '), '...');
+            }
+            
+            // Create custom SVG marker with icon
+            if (iconData) {
+                const svgIcon = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="55" viewBox="0 0 45 55">
+                        <defs>
+                            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                                <feOffset dx="0" dy="2" result="offsetblur"/>
+                                <feComponentTransfer>
+                                    <feFuncA type="linear" slope="0.3"/>
+                                </feComponentTransfer>
+                                <feMerge>
+                                    <feMergeNode/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g filter="url(#shadow)">
+                            <path d="M22.5 0C10.1 0 0 10.1 0 22.5c0 16.9 22.5 32.5 22.5 32.5s22.5-15.6 22.5-32.5C45 10.1 34.9 0 22.5 0z" fill="${iconData.color}"/>
+                            <circle cx="22.5" cy="22.5" r="11" fill="white" opacity="0.95"/>
+                            <text x="22.5" y="30" font-size="18" text-anchor="middle" fill="${iconData.color}">${iconData.emoji}</text>
+                        </g>
+                    </svg>
+                `;
+                
+                return {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svgIcon),
+                    scaledSize: new google.maps.Size(45, 55),
+                    anchor: new google.maps.Point(22.5, 55),
+                    labelOrigin: new google.maps.Point(22.5, -5)
+                };
+            }
+            
+            // Default icon
+            const defaultSvg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
+                    <defs>
+                        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                            <feOffset dx="0" dy="2" result="offsetblur"/>
+                            <feComponentTransfer>
+                                <feFuncA type="linear" slope="0.3"/>
+                            </feComponentTransfer>
+                            <feMerge>
+                                <feMergeNode/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g filter="url(#shadow)">
+                        <path d="M20 0C9 0 0 9 0 20c0 15 20 30 20 30s20-15 20-30C40 9 31 0 20 0z" fill="#4285F4"/>
+                        <circle cx="20" cy="20" r="9" fill="white" opacity="0.95"/>
+                        <text x="20" y="27" font-size="16" text-anchor="middle" fill="#4285F4">📍</text>
+                    </g>
+                </svg>
+            `;
+            
+            return {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(defaultSvg),
+                scaledSize: new google.maps.Size(40, 50),
+                anchor: new google.maps.Point(20, 50)
+            };
+        }
+        
+        function createMarker(position, title, icon, mapInstance) {
+            console.log('Creating marker with:');
+            console.log('  - Position:', position);
+            console.log('  - Title:', title);
+            console.log('  - Place Types:', placeTypes);
+            
+            // Get category icon based on place types
+            const markerIcon = icon || getCategoryIcon(placeTypes);
+            console.log('  - Using icon:', markerIcon);
+            
+            // Use standard Marker API (more reliable than AdvancedMarkerElement)
+            const markerOptions = {
+                position: position,
+                map: mapInstance,
+                title: title,
+                animation: google.maps.Animation.DROP,
+                icon: markerIcon,
+                optimized: false // Better for custom SVG icons
+            };
+            
+            const marker = new google.maps.Marker(markerOptions);
+            
+            // Add click event to marker
+            marker.addListener('click', function() {
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <div style="padding: 10px; max-width: 250px;">
+                            <h3 style="margin: 0 0 10px 0; color: #333; font-size: 16px; font-weight: 600;">
+                                ${title}
+                            </h3>
+                            <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                📍 ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}
+                            </p>
+                            ${placeTypes.length > 0 ? `
+                                <p style="margin: 5px 0; color: #888; font-size: 13px;">
+                                    🏷️ ${placeTypes[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </p>
+                            ` : ''}
+                            <a href="#" onclick="window.scrollTo(0,0); return false;" 
+                               style="display: inline-block; margin-top: 8px; color: #4285F4; text-decoration: none; font-size: 13px;">
+                                View Details ↑
+                            </a>
+                        </div>
+                    `
+                });
+                infoWindow.open(mapInstance, marker);
+            });
+            
+            // Make marker bounce on hover
+            google.maps.event.addListener(marker, 'mouseover', function() {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+                setTimeout(() => marker.setAnimation(null), 750);
+            });
+            
+            return marker;
+        }
+        
+        function initDetailMap() {
+            const detailMapElement = document.getElementById('detail-map');
+            if (!detailMapElement) {
+                console.error('Detail map element not found');
+                return;
+            }
+            
+            console.log('🗺️ Initializing detail map...');
+            console.log('  Coordinates:', placeLatitude, placeLongitude);
+            console.log('  Element:', detailMapElement);
+            
+            try {
+                // Hide error message and controls overlay
+                const detailErrorDiv = detailMapElement.querySelector('.map-error');
+                const detailControlsOverlay = detailMapElement.querySelector('.map-controls-overlay');
+                
+                if (detailErrorDiv) {
+                    detailErrorDiv.style.display = 'none';
+                    console.log('  ✓ Error div hidden');
+                }
+                
+                if (detailControlsOverlay) {
+                    detailControlsOverlay.style.display = 'none';
+                    console.log('  ✓ Controls overlay hidden');
+                }
+                
+                const detailCenter = { lat: placeLatitude, lng: placeLongitude };
+                const detailMapOptions = {
+                    zoom: 15,
+                    center: detailCenter,
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true
+                };
+                
+                const detailMap = new google.maps.Map(detailMapElement, detailMapOptions);
+                console.log('  ✓ Detail map created');
+                
+                const marker = createMarker(detailCenter, "{{ place.name|escapejs }}", null, detailMap);
+                console.log('  ✓ Detail marker created');
+                
+                console.log('✓ Detail map initialized successfully!');
+            } catch (error) {
+                console.error('✗ Error initializing detail map:', error);
+                console.error('  Error details:', error.message);
+                // Show error message
+                const detailErrorDiv = detailMapElement.querySelector('.map-error');
+                if (detailErrorDiv) {
+                    detailErrorDiv.style.display = 'flex';
+                }
+            }
+        }
+
+        function initSidebarMap() {
+            const sidebarMapElement = document.getElementById('sidebar-map');
+            if (!sidebarMapElement) {
+                console.error('✗ Sidebar map element not found');
+                return;
+            }
+            
+            console.log('🗺️ Initializing sidebar map...');
+            console.log('  Coordinates:', placeLatitude, placeLongitude);
+            console.log('  Element:', sidebarMapElement);
+            
+            try {
+                // Hide error message and controls overlay
+                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
+                const sidebarControlsOverlay = sidebarMapElement.querySelector('.map-controls-overlay');
+                
+                if (sidebarErrorDiv) {
+                    sidebarErrorDiv.style.display = 'none';
+                    console.log('  ✓ Error div hidden');
+                }
+                
+                if (sidebarControlsOverlay) {
+                    sidebarControlsOverlay.style.display = 'none';
+                    console.log('  ✓ Controls overlay hidden');
+                }
+                
+                const sidebarCenter = { lat: placeLatitude, lng: placeLongitude };
+                const sidebarMapOptions = {
+                    zoom: 15,
+                    center: sidebarCenter,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: false,
+                    zoomControl: true
+                };
+                
+                const sidebarMap = new google.maps.Map(sidebarMapElement, sidebarMapOptions);
+                console.log('  ✓ Sidebar map created');
+                
+                const marker = createMarker(sidebarCenter, "{{ place.name|escapejs }}", null, sidebarMap);
+                console.log('  ✓ Sidebar marker created');
+                
+                console.log('✓ Sidebar map initialized successfully!');
+            } catch (error) {
+                console.error('✗ Error initializing sidebar map:', error);
+                console.error('  Error details:', error.message);
+                // Show error message
+                const sidebarErrorDiv = sidebarMapElement.querySelector('.map-error');
+                if (sidebarErrorDiv) {
+                    sidebarErrorDiv.style.display = 'flex';
+                    const messageEl = sidebarErrorDiv.querySelector('.map-error-message');
+                    if (messageEl) {
+                        messageEl.innerHTML = 'Error: ' + error.message + '<br>Check console for details';
+                    }
+                }
+            }
+        }
+
+        let streetViewPanorama = null;
+
+        function initStreetView() {
+            const streetViewElement = document.getElementById('street-view');
+            if (!streetViewElement) {
+                console.error('Street View element not found');
+                return;
+            }
+
+            // Check if Google Maps API is loaded
+            if (typeof google === 'undefined' || !google.maps || !google.maps.StreetViewPanorama) {
+                console.error('Google Maps Street View API not loaded');
+                showStreetViewError('Google Maps Street View API not available');
+                return;
+            }
+
+            // Prevent multiple initializations
+            if (streetViewPanorama) {
+                return;
+            }
+
+            const streetViewCenter = { lat: placeLatitude, lng: placeLongitude };
+            
+            // Check if Street View is available for this location
+            const streetViewService = new google.maps.StreetViewService();
+            streetViewService.getPanorama({ location: streetViewCenter, radius: 50 }, function(data, status) {
+                if (status === 'OK') {
+                    // Street View is available, initialize panorama
+                    streetViewPanorama = new google.maps.StreetViewPanorama(
+                        streetViewElement,
+                        {
+                            position: streetViewCenter,
+                            pov: { heading: 0, pitch: 0 },
+                            zoom: 1,
+                            visible: true
+                        }
+                    );
+                    
+                    // Hide error message if visible
+                    const errorDiv = streetViewElement.querySelector('.map-error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
+                } else {
+                    // Street View not available for this location
+                    console.warn('Street View not available for this location:', status);
+                    showStreetViewError('Street View is not available for this location. Try a different location or use the Map view instead.');
+                }
+            });
+        }
+
+        function showStreetViewError(message) {
+            const streetViewElement = document.getElementById('street-view');
+            if (!streetViewElement) return;
+            
+            const errorDiv = streetViewElement.querySelector('.map-error');
+            if (errorDiv) {
+                errorDiv.style.display = 'flex';
+                const messageDiv = errorDiv.querySelector('.map-error-message');
+                if (messageDiv && message) {
+                    messageDiv.textContent = message;
+                }
+            }
+        }
+
+        function showMapErrors() {
+            console.warn('Showing map error messages');
+            const maps = ['detail-map', 'sidebar-map'];
+            maps.forEach(mapId => {
+                const mapElement = document.getElementById(mapId);
+                if (mapElement) {
+                    const errorDiv = mapElement.querySelector('.map-error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'flex';
+                        // Update error message
+                        const messageEl = errorDiv.querySelector('.map-error-message');
+                        if (messageEl) {
+                            messageEl.innerHTML = 'Unable to load Google Maps. Please check:<br>• Internet connection<br>• API key configuration<br>• Browser console for details';
+                        }
+                        console.log('Error shown for', mapId);
+                    }
+                }
+            });
+        }
+
+        // Handle Google Maps API errors
+        window.gm_authFailure = function() {
+            console.error('✗ Google Maps authentication failed! Check your API key.');
+            alert('Google Maps API Key Error: The API key is invalid, expired, or restricted. Please check the browser console for details.');
+            showMapErrors();
+        };
+
+        // Try to initialize immediately if API is already loaded
+        if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
+            console.log('✓ Google Maps already loaded, initializing immediately');
+            window.initPlaceDetailMaps();
+        } else {
+            console.log('⏳ Waiting for Google Maps API to load...');
+            // Show error messages after timeout if API doesn't load
+            setTimeout(function() {
+                if (typeof google === 'undefined' || !google.maps) {
+                    console.error('✗ Google Maps API failed to load after 5 seconds');
+                    console.log('Possible causes:');
+                    console.log('1. Network connectivity issues');
+                    console.log('2. Invalid or missing API key');
+                    console.log('3. API key restrictions (HTTP referrers, IP addresses)');
+                    console.log('4. Billing not enabled for the API key');
+                    showMapErrors();
+                }
+            }, 5000);
+        }
+        {% endif %}
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initPlaceDetailMaps&loading=async" async defer></script>
     {% endif %}
+    
+    {% include 'components/auth_modals.html' %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/accessadvisr-script.js' %}"></script>
 </body>
 </html>

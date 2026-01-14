@@ -1,5 +1,24 @@
 from django.contrib import admin
-from .models import Location, Category, Amenity, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply, AboutPost, AboutComment, AboutCommentReply, DonationCampaign, Donation
+from .models import Location, Category, Amenity, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply, AboutPost, AboutComment, AboutCommentReply, DonationCampaign, Donation, UserProfile
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'location', 'created_at']
+    search_fields = ['user__username', 'user__email', 'location']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('User', {
+            'fields': ('user',)
+        }),
+        ('Profile Information', {
+            'fields': ('profile_picture', 'bio', 'location', 'website')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(Category)

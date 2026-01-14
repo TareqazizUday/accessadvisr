@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -22,7 +23,6 @@ def get_place_photo_url(photo_obj, api_key):
         return ''
 
     # Use mark_safe to prevent HTML entity encoding of & in URLs
-    from django.utils.safestring import mark_safe
     url = (
         f'https://maps.googleapis.com/maps/api/place/photo'
         f'?maxwidth=800&photoreference={ref}&key={api_key}'
