@@ -474,3 +474,259 @@ class Partner(models.Model):
         """Return the URL for the partner detail page"""
         from django.urls import reverse
         return reverse('partner_detail', kwargs={'slug': self.slug})
+
+
+def about_post_image_upload_path(instance, filename):
+    """Generate upload path for about post images - uses slug to prevent duplicates"""
+    ext = filename.split('.')[-1]
+    if instance.slug:
+        filename = f"{instance.slug}.{ext}"
+    elif instance.pk:
+        filename = f"about_{instance.pk}.{ext}"
+    else:
+        base_name = os.path.splitext(filename)[0]
+        filename = f"{base_name}.{ext}"
+    return f"images/about/{filename}"
+
+
+class AboutPost(models.Model):
+    """About Post model for storing about page posts"""
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('published', 'Published'),
+    ]
+    
+    title = models.CharField(max_length=300, help_text="About post title")
+    slug = models.SlugField(max_length=300, unique=True, blank=True, help_text="URL-friendly name (auto-generated from title if left blank)")
+    image = models.ImageField(upload_to=about_post_image_upload_path, blank=True, null=True, help_text="Featured image for the post")
+    content = models.TextField(help_text="Full post content (HTML supported)")
+    share_this_post = models.BooleanField(default=True, help_text="Show share buttons for this post")
+    
+    # Custom Share Links (optional - if not provided, will use default share URLs)
+    share_facebook_url = models.URLField(blank=True, help_text="Custom Facebook share URL (leave blank to use default)")
+    share_twitter_url = models.URLField(blank=True, help_text="Custom Twitter/X share URL (leave blank to use default)")
+    share_linkedin_url = models.URLField(blank=True, help_text="Custom LinkedIn share URL (leave blank to use default)")
+    share_email_url = models.URLField(blank=True, help_text="Custom Email share URL (leave blank to use default)")
+    
+    # Ordering
+    order = models.IntegerField(default=0, help_text="Display order (lower numbers appear first)")
+    
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', help_text="Post status")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = 'About Post'
+        verbose_name_plural = 'About Posts'
+        indexes = [
+            models.Index(fields=['slug']),
+            models.Index(fields=['status', 'created_at']),
+            models.Index(fields=['created_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        """Auto-generate slug if not provided and handle image cleanup"""
+        old_image_path = None
+        if self.pk:
+            try:
+                old_post = AboutPost.objects.get(pk=self.pk)
+                old_image_path = old_post.image.path if old_post.image else None
+            except AboutPost.DoesNotExist:
+                pass
+        
+        # Generate slug if not provided
+        if not self.slug:
+            self.slug = slugify(self.title)
+            original_slug = self.slug
+            counter = 1
+            while AboutPost.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
+        
+        super().save(*args, **kwargs)
+        
+        # If image was updated/removed, delete old image file
+        if old_image_path:
+            current_image_path = self.image.path if (self.image and hasattr(self.image, 'path')) else None
+            if old_image_path != current_image_path and os.path.isfile(old_image_path):
+                try:
+                    os.remove(old_image_path)
+                except (OSError, FileNotFoundError):
+                    pass
+    
+    def delete(self, *args, **kwargs):
+        """Delete image file when post is deleted"""
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        """Return the URL for the about post detail page"""
+        from django.urls import reverse
+        return reverse('about_post_detail', kwargs={'slug': self.slug})
+
+
+class AboutComment(models.Model):
+    """Model for storing comments on about posts"""
+    about_post = models.ForeignKey(AboutPost, on_delete=models.CASCADE, related_name='comments')
+    author_name = models.CharField(max_length=100)
+    author_email = models.EmailField()
+    comment_text = models.TextField()
+    save_info = models.BooleanField(default=False, help_text='Save name, email for next time')
+    is_approved = models.BooleanField(default=False, help_text='Comment is approved and visible')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['about_post', 'is_approved']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['is_active']),
+        ]
+    
+    def __str__(self):
+        return f"Comment by {self.author_name} on {self.about_post.title}"
+
+
+class AboutCommentReply(models.Model):
+    """Model for storing replies to about post comments"""
+    comment = models.ForeignKey(AboutComment, on_delete=models.CASCADE, related_name='replies')
+    parent_reply = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='child_replies', help_text='Parent reply if this is a nested reply')
+    author_name = models.CharField(max_length=100)
+    author_email = models.EmailField()
+    reply_text = models.TextField()
+    is_approved = models.BooleanField(default=False, help_text='Reply is approved and visible')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['comment', 'is_approved']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['is_active']),
+        ]
+    
+    def __str__(self):
+        return f"Reply by {self.author_name} to comment {self.comment.id}"
+
+
+class DonationCampaign(models.Model):
+    """Model for donation campaigns/cards"""
+    title = models.CharField(max_length=300, help_text="Campaign title")
+    slug = models.SlugField(max_length=300, unique=True, blank=True, help_text="URL-friendly name")
+    image = models.ImageField(upload_to='images/donations/', blank=True, null=True, help_text="Campaign image")
+    target_amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Target donation amount")
+    raised_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Amount raised so far")
+    description = models.TextField(blank=True, help_text="Campaign description")
+    is_active = models.BooleanField(default=True, help_text="Is this campaign active?")
+    order = models.IntegerField(default=0, help_text="Display order")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = 'Donation Campaign'
+        verbose_name_plural = 'Donation Campaigns'
+        indexes = [
+            models.Index(fields=['slug']),
+            models.Index(fields=['is_active', 'order']),
+        ]
+    
+    def __str__(self):
+        return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+    
+    def get_percentage_raised(self):
+        """Calculate percentage of target amount raised"""
+        if self.target_amount > 0:
+            return round((self.raised_amount / self.target_amount) * 100, 1)
+        return 0
+
+
+class Donation(models.Model):
+    """Model for storing donation records"""
+    PAYMENT_METHOD_CHOICES = [
+        ('stripe', 'Stripe'),
+        ('paypal', 'PayPal'),
+    ]
+    
+    DONATION_AMOUNT_CHOICES = [
+        ('5', '£5'),
+        ('10', '£10'),
+        ('other', 'Other'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    # Campaign reference
+    campaign = models.ForeignKey(DonationCampaign, on_delete=models.CASCADE, related_name='donations', null=True, blank=True, help_text="Associated campaign (optional)")
+    
+    # Personal Information
+    name = models.CharField(max_length=200, help_text="Donor name")
+    email = models.EmailField(help_text="Donor email address")
+    phone = models.CharField(max_length=20, help_text="Donor phone number")
+    
+    # Address Information
+    street_address = models.CharField(max_length=300, blank=True, help_text="Street address")
+    apartment_suite = models.CharField(max_length=100, blank=True, help_text="Apartment, suite, etc")
+    city = models.CharField(max_length=100, blank=True, help_text="City")
+    state_province = models.CharField(max_length=100, blank=True, help_text="State/Province")
+    zip_postal_code = models.CharField(max_length=20, blank=True, help_text="ZIP / Postal Code")
+    country = models.CharField(max_length=100, blank=True, help_text="Country")
+    
+    # Donation Details
+    donation_amount = models.CharField(max_length=10, choices=DONATION_AMOUNT_CHOICES, help_text="Donation amount option")
+    custom_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Custom donation amount (if 'Other' selected)")
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, help_text="Payment method")
+    
+    # Consent
+    consent_given = models.BooleanField(default=False, help_text="Consent that information is accurate")
+    
+    # Payment Status
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', help_text="Donation status")
+    transaction_id = models.CharField(max_length=200, blank=True, help_text="Payment transaction ID")
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Donation'
+        verbose_name_plural = 'Donations'
+        indexes = [
+            models.Index(fields=['campaign']),
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['email']),
+        ]
+    
+    def __str__(self):
+        return f"Donation of £{self.get_final_amount()} by {self.name}"
+    
+    def get_final_amount(self):
+        """Get the final donation amount"""
+        if self.donation_amount == 'other' and self.custom_amount:
+            return self.custom_amount
+        elif self.donation_amount in ['5', '10']:
+            return float(self.donation_amount)
+        return 0

@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, DetailView, ListView
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from locations.models import Review, Partner, Blog
+from locations.models import Review, Partner, Blog, AboutPost, AboutComment, AboutCommentReply, DonationCampaign
 
 
 class AccessAdvisrIndexView(TemplateView):
@@ -19,8 +19,78 @@ class AccessAdvisrIndexView(TemplateView):
         return context
 
 
-class AboutView(TemplateView):
+class AboutView(ListView):
+    """List view for all about posts"""
+    model = AboutPost
     template_name = 'about.html'
+    context_object_name = 'about_posts'
+    paginate_by = 9
+    
+    def get_queryset(self):
+        """Only show published about posts"""
+        return AboutPost.objects.filter(status='published').order_by('order', '-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get all published posts for the cards section
+        context['all_about_posts'] = AboutPost.objects.filter(status='published').order_by('order', '-created_at')
+        return context
+
+
+class AboutPostDetailView(DetailView):
+    """Detail view for an about post"""
+    model = AboutPost
+    template_name = 'about_post_detail.html'
+    context_object_name = 'about_post'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+    
+    def get_queryset(self):
+        """Only show published about posts"""
+        return AboutPost.objects.filter(status='published')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get recent about posts (excluding current one) for sidebar
+        context['recent_about_posts'] = AboutPost.objects.filter(
+            status='published'
+        ).exclude(id=self.object.id).order_by('order', '-created_at')[:4]
+        
+        # Get all approved comments with nested replies
+        from django.db.models import Prefetch
+        
+        replies_prefetch = Prefetch(
+            'replies',
+            queryset=AboutCommentReply.objects.filter(
+                is_active=True,
+                is_approved=True,
+                parent_reply__isnull=True
+            ).prefetch_related(
+                Prefetch(
+                    'child_replies',
+                    queryset=AboutCommentReply.objects.filter(
+                        is_active=True,
+                        is_approved=True
+                    ).order_by('created_at')
+                )
+            ).order_by('created_at')
+        )
+        
+        context['comments'] = AboutComment.objects.filter(
+            about_post=self.object,
+            is_active=True,
+            is_approved=True
+        ).select_related('about_post').prefetch_related(replies_prefetch).order_by('-created_at')
+        
+        # Count all approved comments
+        context['total_comments_count'] = AboutComment.objects.filter(
+            about_post=self.object,
+            is_active=True,
+            is_approved=True
+        ).count()
+        
+        return context
 
 
 class BlogsView(TemplateView):
@@ -110,6 +180,12 @@ class ContactView(TemplateView):
 
 class DonateView(TemplateView):
     template_name = 'donate.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get all active donation campaigns
+        context['donation_campaigns'] = DonationCampaign.objects.filter(is_active=True).order_by('order', '-created_at')
+        return context
 
 
 class PackagesView(TemplateView):

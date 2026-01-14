@@ -1,6 +1,12 @@
 /* Unique Prefixed Styles for FAQ Accordion */
+.donate_card_faq_section {
+    padding: 0 !important;
+}
+
 .donate_card_accordion {
     border-color: #dee2e6 !important;
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
 
 .donate_card_btn {
@@ -25,6 +31,16 @@
     padding: 1.5rem;
     line-height: 1.8;
     font-size: 0.95rem;
+    text-align: left !important;
+}
+
+.donate_card_body p {
+    text-align: left !important;
+    margin-bottom: 1rem;
+}
+
+.donate_card_body p:last-child {
+    margin-bottom: 0;
 }
 
 /* Bullet styling for the "What funds will be used for" section */
@@ -34,4 +50,29 @@
 
 .donate_card_body ul li {
     margin-bottom: 8px;
+}
+
+/* Ensure FAQ section aligns with other sections */
+.donate_card_faq_section .container {
+    max-width: 1140px;
+}
+
+.donate_card_faq_section .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Match spacing with other sections */
+.donate_card_section {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Ensure FAQ answers are left-aligned */
+.donate_card_faq_section .col-lg-10 {
+    text-align: left !important;
+}
+
+.donate_card_faq_section .accordion-body {
+    text-align: left !important;
 }

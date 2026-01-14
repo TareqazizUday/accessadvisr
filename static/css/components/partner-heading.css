@@ -3,9 +3,46 @@
     color: #232a34;
     font-size: 2rem;
     margin-bottom: 10px;
+    word-wrap: break-word;
+    line-height: 1.3;
 }
 .orange-divider {
     width: 60px;
     height: 2px;
     background-color: #FF431E; /* AccessAdvisr Orange */
+}
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    .partner-heading,
+    .sponsor-heading {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .partner-heading,
+    .sponsor-heading {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        padding: 0 10px;
+    }
+    .orange-divider {
+        width: 50px;
+        height: 2px;
+    }
+    .container.text-center {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .partner-heading,
+    .sponsor-heading {
+        font-size: 1.35rem;
+    }
+    .orange-divider {
+        width: 45px;
+    }
 }

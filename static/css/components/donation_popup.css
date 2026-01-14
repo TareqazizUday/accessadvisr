@@ -1,0 +1,437 @@
+/* Donation Popup Styles */
+.donation-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.donation-popup-container {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.donation-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 1.75rem 0 1.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+}
+
+.donation-popup-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #232a34;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.donation-popup-close {
+    background: #f8f9fa;
+    border: none;
+    font-size: 1.25rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border-radius: 50%;
+}
+
+.donation-popup-close:hover {
+    color: #232a34;
+    background: #e9ecef;
+    transform: rotate(90deg);
+}
+
+.donation-popup-divider {
+    display: none;
+}
+
+.donation-form {
+    padding: 1.75rem;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.form-section-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #232a34;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group-half {
+    width: 48%;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #232a34;
+    margin-bottom: 0.625rem;
+    letter-spacing: 0.2px;
+}
+
+.required-asterisk {
+    color: #dc3545;
+    margin-left: 3px;
+    font-weight: 700;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #232a34;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+}
+
+.form-control:hover {
+    border-color: #c0c0c0;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #FF431E;
+    box-shadow: 0 0 0 3px rgba(255, 67, 30, 0.1);
+    background-color: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #adb5bd;
+    font-weight: 400;
+}
+
+.form-control:invalid:not(:placeholder-shown) {
+    border-color: #dc3545;
+}
+
+/* Input focus animation */
+.form-control:focus {
+    transform: translateY(-1px);
+}
+
+/* Section spacing improvements */
+.form-section + .form-section {
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Custom amount field animation */
+#custom_amount_group {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.75rem;
+    cursor: pointer;
+}
+
+.radio-group {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.radio-group-vertical {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 0.75rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #FF431E;
+    flex-shrink: 0;
+}
+
+.radio-option label {
+    margin: 0;
+    font-weight: 500;
+    color: #232a34;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 2px solid transparent;
+}
+
+.radio-option input[type="radio"]:checked + label {
+    color: #FF431E;
+    font-weight: 600;
+    background-color: #fff5f3;
+    border-color: #FF431E;
+}
+
+.radio-option:hover label {
+    color: #FF431E;
+    background-color: #fff9f8;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 1.25rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1.5px solid #e9ecef;
+    transition: all 0.2s;
+}
+
+.checkbox-group:hover {
+    background-color: #f0f0f0;
+    border-color: #dee2e6;
+}
+
+.checkbox-group input[type="checkbox"]:checked ~ label {
+    color: #232a34;
+    font-weight: 500;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-top: 0.25rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: #FF431E;
+}
+
+.checkbox-group label {
+    margin: 0;
+    font-weight: 400;
+    color: #232a34;
+    cursor: pointer;
+    line-height: 1.6;
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.form-actions {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.btn-donate {
+    background-color: #FF431E !important;
+    color: #ffffff !important;
+    border: none;
+    padding: 1rem 3.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 4px 12px rgba(255, 67, 30, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.btn-donate:hover {
+    background-color: #FF431E !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 67, 30, 0.4);
+    filter: brightness(0.9);
+}
+
+.btn-donate:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 67, 30, 0.3);
+}
+
+.btn-donate:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Custom Scrollbar */
+.donation-popup-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.donation-popup-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.donation-popup-container::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 10px;
+}
+
+.donation-popup-container::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+/* Alert Messages */
+.donation-form .alert {
+    padding: 1rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border: none;
+}
+
+.donation-form .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.donation-form .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .donation-popup-container {
+        max-width: 100%;
+        margin: 10px;
+        border-radius: 8px;
+    }
+    
+    .donation-popup-header {
+        padding: 1.25rem 1.25rem 0.75rem 1.25rem;
+    }
+    
+    .donation-popup-title {
+        font-size: 1.5rem;
+    }
+    
+    .donation-form {
+        padding: 1.25rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-group-half {
+        width: 100%;
+    }
+    
+    .radio-group {
+        flex-direction: row;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .radio-group-vertical {
+        gap: 0.875rem;
+    }
+    
+    .btn-donate {
+        padding: 0.875rem 2rem;
+        max-width: 100%;
+    }
+}
+

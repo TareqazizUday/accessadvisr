@@ -22,7 +22,9 @@ from django.conf.urls.static import static
 from locations.views import HomeView, GooglePlaceDetailView, SearchResultsView, SubmitReviewView, UpdateReviewEngagementView, SubmitReplyView, ListingsView, BrowseView
 from locations.views_partner_comments import SubmitPartnerCommentView, SubmitPartnerCommentReplyView
 from locations.views_blog_comments import SubmitBlogCommentView, SubmitBlogCommentReplyView
-from locations.views_frontend import AccessAdvisrIndexView, AboutView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
+from locations.views_about_comments import SubmitAboutCommentView, SubmitAboutCommentReplyView
+from locations.views_donations import SubmitDonationView
+from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,6 +39,9 @@ urlpatterns = [
     path('api/sponsor-comments/reply/', SubmitPartnerCommentReplyView.as_view(), name='submit_sponsor_comment_reply'),
     path('api/blog-comments/submit/', SubmitBlogCommentView.as_view(), name='submit_blog_comment'),
     path('api/blog-comments/reply/', SubmitBlogCommentReplyView.as_view(), name='submit_blog_comment_reply'),
+    path('api/about-comments/submit/', SubmitAboutCommentView.as_view(), name='submit_about_comment'),
+    path('api/about-comments/reply/', SubmitAboutCommentReplyView.as_view(), name='submit_about_comment_reply'),
+    path('api/donations/submit/', SubmitDonationView.as_view(), name='submit_donation'),
     path('place/google/<str:place_id>/', GooglePlaceDetailView.as_view(), name='google_place_detail'),
     path('place/<str:place_id>/', GooglePlaceDetailView.as_view(), name='place_detail'),
     # Redirect old /search/ URL to new /listing-half-map/
@@ -47,6 +52,7 @@ urlpatterns = [
     
     # AccessAdvisrFrontend Pages
     path('about/', AboutView.as_view(), name='about'),
+    path('about/<slug:slug>/', AboutPostDetailView.as_view(), name='about_post_detail'),
     path('blogs/', BlogsView.as_view(), name='blogs'),
     path('blog/<slug:slug>/', BlogDetailView.as_view(), name='blog_detail'),
     path('contact/', ContactView.as_view(), name='contact'),

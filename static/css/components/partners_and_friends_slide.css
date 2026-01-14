@@ -1,26 +1,37 @@
     .partners_friends_section {
         padding: 80px 0;
+        width: 100%;
+        overflow-x: hidden;
     }
     .partners_friends_card {
         padding: 15px;
         transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
     }
     .partners_friends_card:hover {
         transform: translateY(-5px);
     }
     .partners_friends_card img {
         max-width: 140px;
+        width: 100%;
         height: auto;
         margin-bottom: 15px;
         display: block;
         margin-left: auto;
         margin-right: auto;
+        object-fit: contain;
     }
     .partners_friends_caption {
         font-size: 1.2rem;
         font-weight: 700;
         color: #797979;
         min-height: 40px; /* Keeps text aligned even if long */
+        word-wrap: break-word;
+        padding: 0 10px;
     }
     
     /* Control Styling */
@@ -28,10 +39,92 @@
     .partners_friends_next_icon {
         color: #d9534f;
         font-size: 4rem;
-        /* font-weight: bold; */
         cursor: pointer;
         user-select: none;
     }
     .carousel-control-prev, .carousel-control-next {
         width: 5%; /* Thinner hit area so it doesn't cover logos */
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 991px) {
+        .partners_friends_section {
+            padding: 60px 0;
+        }
+        .partners_friends_card img {
+            max-width: 120px;
+        }
+        .partners_friends_caption {
+            font-size: 1.1rem;
+            min-height: 35px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .partners_friends_section {
+            padding: 40px 0;
+        }
+        
+        /* Hide desktop columns on mobile */
+        #partners_friends_Carousel .carousel-item .col-md-4 {
+            display: none !important;
+        }
+        
+        /* Show and center the single item */
+        #partners_friends_Carousel .carousel-item .col-12 {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .partners_friends_card {
+            padding: 15px;
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .partners_friends_card img {
+            max-width: 120px;
+            margin-bottom: 15px;
+        }
+        .partners_friends_caption {
+            font-size: 1rem;
+            min-height: auto;
+            padding: 0 10px;
+            text-align: center;
+            width: 100%;
+        }
+        .partners_friends_prev_icon,
+        .partners_friends_next_icon {
+            font-size: 3rem;
+        }
+        .carousel-control-prev, .carousel-control-next {
+            width: 10%;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .partners_friends_section {
+            padding: 30px 0;
+        }
+        .partners_friends_card {
+            padding: 10px;
+        }
+        .partners_friends_card img {
+            max-width: 80px;
+            margin-bottom: 10px;
+        }
+        .partners_friends_caption {
+            font-size: 0.9rem;
+            min-height: auto;
+        }
+        .partners_friends_prev_icon,
+        .partners_friends_next_icon {
+            font-size: 2.5rem;
+        }
     }

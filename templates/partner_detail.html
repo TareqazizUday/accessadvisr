@@ -90,6 +90,7 @@
 		.video-container {
 			max-width: 100%;
 			margin: 0 auto;
+			width: 100%;
 		}
 		.video-container .ratio {
 			position: relative;
@@ -120,6 +121,209 @@
 			color: white !important;
 			transform: translateY(-2px);
 			box-shadow: 0 4px 12px rgba(255, 67, 30, 0.3);
+		}
+		
+		/* Mobile Responsive Styles */
+		@media (max-width: 991px) {
+			/* Main content column becomes full width */
+			.col-lg-8 {
+				margin-bottom: 2rem;
+			}
+			
+			/* Sidebar stacks below content */
+			.col-lg-4 {
+				margin-top: 2rem;
+			}
+			
+			/* Video container */
+			.video-container {
+				margin-bottom: 1.5rem;
+			}
+			
+			/* Comment form */
+			.comment-form {
+				padding: 1.5rem;
+			}
+			
+			/* Contact box */
+			.contact-box {
+				padding: 1.25rem;
+			}
+			
+			/* Partner cards in sidebar */
+			.col-lg-4 .card {
+				margin-bottom: 1.5rem;
+			}
+		}
+		
+		@media (max-width: 767px) {
+			/* Reduce padding on mobile */
+			section.py-5 {
+				padding-top: 2rem !important;
+				padding-bottom: 2rem !important;
+			}
+			
+			/* Main content */
+			.col-lg-8 h2 {
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+			}
+			
+			.col-lg-8 h3 {
+				font-size: 1.25rem;
+				margin-bottom: 1rem;
+			}
+			
+			/* Video container on mobile */
+			.video-container {
+				margin-bottom: 1.5rem;
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			
+			/* Comment section */
+			.comment-section {
+				margin-top: 2rem;
+				padding-top: 1.5rem;
+			}
+			
+			.comment-form {
+				padding: 1.25rem;
+				margin-bottom: 1.5rem;
+			}
+			
+			.comment-form input,
+			.comment-form textarea {
+				padding: 0.625rem;
+				font-size: 14px;
+			}
+			
+			/* Comments cards */
+			.comments-section .card {
+				margin-bottom: 1.25rem;
+			}
+			
+			.comments-section .card-body {
+				padding: 1rem;
+			}
+			
+			/* Reply buttons */
+			.reply-btn {
+				font-size: 0.8rem;
+				padding: 0.2rem 0.4rem;
+			}
+			
+			/* Nested replies spacing on mobile */
+			.ms-5 {
+				margin-left: 1rem !important;
+			}
+			
+			.ms-4 {
+				margin-left: 0.75rem !important;
+			}
+			
+			/* Visit Website Button */
+			.btn-orange {
+				width: 100%;
+				max-width: 100%;
+				padding: 14px 20px !important;
+				font-size: 14px !important;
+			}
+			
+			/* Contact box */
+			.contact-box {
+				padding: 1.25rem;
+				margin-top: 1.5rem;
+			}
+			
+			.contact-box h5 {
+				font-size: 1.1rem;
+			}
+			
+			.contact-box a {
+				font-size: 1.1rem;
+			}
+			
+			/* Sidebar cards */
+			.col-lg-4 .card {
+				margin-bottom: 1.25rem;
+			}
+			
+			.col-lg-4 .card img {
+				height: 150px !important;
+			}
+			
+			.col-lg-4 .card-body {
+				padding: 1rem;
+			}
+			
+			/* Reply popup on mobile */
+			.reply-popup {
+				width: calc(100vw - 20px);
+				max-width: calc(100vw - 20px);
+				left: 10px !important;
+				right: 10px !important;
+				padding: 1.25rem;
+			}
+			
+			/* Recent Partners heading */
+			.col-lg-4 h4 {
+				font-size: 1.25rem;
+				margin-bottom: 1rem;
+			}
+		}
+		
+		@media (max-width: 480px) {
+			/* Extra small screens */
+			.comment-form {
+				padding: 1rem;
+			}
+			
+			.comments-section .card-body {
+				padding: 0.875rem;
+			}
+			
+			.col-lg-8 h2 {
+				font-size: 1.35rem;
+			}
+			
+			.col-lg-8 h3 {
+				font-size: 1.15rem;
+			}
+			
+			.contact-box {
+				padding: 1rem;
+			}
+			
+			.contact-box h5 {
+				font-size: 1rem;
+			}
+		}
+		
+		/* WebView specific fixes */
+		@media (max-width: 768px) {
+			/* Prevent horizontal scrolling */
+			body {
+				overflow-x: hidden;
+				max-width: 100vw;
+			}
+			
+			.container {
+				max-width: 100%;
+				padding-left: 15px;
+				padding-right: 15px;
+			}
+			
+			/* Ensure all content fits */
+			.row {
+				margin-left: 0;
+				margin-right: 0;
+			}
+			
+			[class*="col-"] {
+				padding-left: 10px;
+				padding-right: 10px;
+			}
 		}
 	</style>
 </head>

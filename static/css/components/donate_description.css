@@ -1,0 +1,35 @@
+/* Unique Prefixed Styles for Donate Description Section */
+.donate-description-section {
+    padding: 0;
+}
+
+.donate-description-section .container {
+    max-width: 1140px;
+}
+
+.donate-description-section .col-lg-10 {
+    text-align: left !important;
+}
+
+.donate-description-section p {
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.8;
+    text-align: left !important;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+    padding: 0;
+}
+
+.donate-description-section p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .donate-description-section p {
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+}
+

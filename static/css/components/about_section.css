@@ -3,17 +3,64 @@
     height: 220px; /* Uniform height for all images */
     object-fit: cover; /* Ensures images are not stretched */
     width: 100%;
+    border-radius: 0.5rem 0.5rem 0 0;
+    display: block;
 }
 
 .about_section_title {
     color: #1a2b48; /* Dark navy brand color */
     line-height: 1.4;
     font-size: 1.15rem;
+    text-align: left;
+    margin-bottom: 0.75rem;
+    margin-top: 0;
+    font-weight: 700;
 }
 
 .about_section_text {
-    line-height: 1.6;
-    text-align: justify; /* Matches the clean text block look */
+    line-height: 1.7;
+    text-align: left; /* Left aligned text for cards */
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.about_section_values .card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+
+.about_section_values .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.about_section_values .card-body {
+    padding: 1.5rem 1.25rem 1.25rem 1.25rem;
+}
+
+.about_section_values .card-img-top {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.about_section_values .card a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.about_section_values .card a:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.about_section_values .card a:hover .about_section_title {
+    color: #ff9800;
+    transition: color 0.2s ease;
 }
 
 /* Responsive adjustments */

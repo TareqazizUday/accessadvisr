@@ -72,73 +72,35 @@
 </div>
 
 <!----------- about section cards ---------->
+{% if all_about_posts %}
 <section class="about_section_values py-5">
     <div class="container">
         <div class="row gy-4">
-            
+            {% for post in all_about_posts %}
             <div class="col-12 col-md-4">
-                <div class="card border-0 h-100">
-                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/group-businesspeople-fist-bumping-desk-300x200.jpg" class="card-img-top rounded-3 about_section_img" alt="Environmental Responsibility">
-                    <div class="card-body px-0 pt-4">
-                        <h5 class="fw-bold about_section_title mb-3">Commitment to Environmental Responsibility</h5>
-                        <p class="text-muted small about_section_text">
-                            AccessAdvisr is dedicated to sustainable practices in all aspects of our operations. From minimising our digital footprint to supporting eco-conscious initiatives, we strive to reduce environmental impact while promoting a culture of responsibility and care.
-                        </p>
-                    </div>
+                <div class="card border-0 h-100 shadow-sm about-post-card">
+                    <a href="{% url 'about_post_detail' post.slug %}" class="text-decoration-none">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="card-img-top about_section_img" alt="{{ post.title }}">
+                        {% else %}
+                            <div class="card-img-top about_section_img bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="fw-bold about_section_title">{{ post.title }}</h5>
+                            <p class="text-muted small about_section_text">
+                                {{ post.content|striptags|truncatewords:30 }}
+                            </p>
+                        </div>
+                    </a>
                 </div>
             </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card border-0 h-100">
-                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/change-word-wooden-background-300x200.jpg" class="card-img-top rounded-3 about_section_img" alt="Meaningful Change">
-                    <div class="card-body px-0 pt-4">
-                        <h5 class="fw-bold about_section_title mb-3">Making Meaningful Change</h5>
-                        <p class="text-muted small about_section_text">
-                            Through accurate accessibility reviews and resources, AccessAdvisr empowers users to make informed decisions. Our work increases awareness, fosters inclusivity, and creates measurable positive outcomes for the disabled community globally.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card border-0 h-100">
-                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
-                    <div class="card-body px-0 pt-4">
-                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
-                        <p class="text-muted small about_section_text">
-                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card border-0 h-100">
-                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
-                    <div class="card-body px-0 pt-4">
-                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
-                        <p class="text-muted small about_section_text">
-                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <div class="card border-0 h-100">
-                    <img src="https://accessadvisr.com/wp-content/uploads/2025/10/455816-PFD583-834-300x300.jpg" class="card-img-top rounded-3 about_section_img" alt="Accountable Leadership">
-                    <div class="card-body px-0 pt-4">
-                        <h5 class="fw-bold about_section_title mb-3">Transparent and Accountable Leadership</h5>
-                        <p class="text-muted small about_section_text">
-                            AccessAdvisr operates under robust governance principles, ensuring ethical management, accountability, and transparency. Our commitment to good governance builds trust with our community and partners alike.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
+            {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
 
 <!----------- about_section_contact_hero ---------- -->
 <section class="about_section_contact_hero d-flex align-items-center justify-content-center text-center text-white">

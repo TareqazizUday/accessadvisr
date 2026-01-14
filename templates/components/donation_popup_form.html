@@ -1,0 +1,155 @@
+<!-- Donation Popup Form -->
+<div class="donation-popup-overlay" id="donationPopupOverlay" style="display: none;">
+    <div class="donation-popup-container">
+        <div class="donation-popup-header">
+            <h3 class="donation-popup-title">Please Donation</h3>
+            <button type="button" class="donation-popup-close" id="closeDonationPopup" aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <form id="donationForm" class="donation-form">
+            {% csrf_token %}
+            <input type="hidden" name="campaign_id" id="donation_campaign_id" value="">
+            
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="donor_name" class="form-label">
+                        Name <span class="required-asterisk">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="donor_name" name="name" placeholder="E.g. John Doe" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="donor_email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="donor_email" name="email" placeholder="E.g. john@doe.com">
+                    </div>
+                    <div class="form-group form-group-half">
+                        <label for="donor_phone" class="form-label">
+                            Phone <span class="required-asterisk">*</span>
+                        </label>
+                        <input type="tel" class="form-control" id="donor_phone" name="phone" placeholder="E.g. +1 300 400 5000" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Address Information Section -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="street_address" class="form-label">Street Address</label>
+                    <input type="text" class="form-control" id="street_address" name="street_address" placeholder="E.g. 42 Wallaby Way">
+                </div>
+                
+                <div class="form-group">
+                    <label for="apartment_suite" class="form-label">Apartment, suite, etc</label>
+                    <input type="text" class="form-control" id="apartment_suite" name="apartment_suite" placeholder="">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city" placeholder="E.g. Sydney">
+                    </div>
+                    <div class="form-group form-group-half">
+                        <label for="state_province" class="form-label">State/Province</label>
+                        <input type="text" class="form-control" id="state_province" name="state_province" placeholder="E.g. New South Wales">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="zip_postal_code" class="form-label">ZIP / Postal Code</label>
+                        <input type="text" class="form-control" id="zip_postal_code" name="zip_postal_code" placeholder="E.g. 2000">
+                    </div>
+                    <div class="form-group form-group-half">
+                        <label for="country" class="form-label">Country</label>
+                        <select class="form-control" id="country" name="country">
+                            <option value="">Select country</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="United States">United States</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Belgium">Belgium</option>
+                            <option value="Sweden">Sweden</option>
+                            <option value="Norway">Norway</option>
+                            <option value="Denmark">Denmark</option>
+                            <option value="Finland">Finland</option>
+                            <option value="Poland">Poland</option>
+                            <option value="Ireland">Ireland</option>
+                            <option value="Portugal">Portugal</option>
+                            <option value="Greece">Greece</option>
+                            <option value="Austria">Austria</option>
+                            <option value="Switzerland">Switzerland</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Donation Details Section -->
+            <div class="form-section">
+                <h4 class="form-section-title">Donation Details</h4>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Donation Options <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="amount_5" name="donation_amount" value="5" required>
+                            <label for="amount_5">£5</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="amount_10" name="donation_amount" value="10" required>
+                            <label for="amount_10">£10</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="amount_other" name="donation_amount" value="other" required>
+                            <label for="amount_other">Other</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="custom_amount_group" style="display: none; margin-top: 1rem;">
+                        <input type="number" class="form-control" id="custom_amount" name="custom_amount" placeholder="Enter amount (£)" step="0.01" min="0.01">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Payment Method</label>
+                    <div class="radio-group radio-group-vertical">
+                        <div class="radio-option">
+                            <input type="radio" id="payment_stripe" name="payment_method" value="stripe" checked>
+                            <label for="payment_stripe">Stripe</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="payment_paypal" name="payment_method" value="paypal">
+                            <label for="payment_paypal">PayPal</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Consent <span class="required-asterisk">*</span>
+                    </label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="consent" name="consent_given" required>
+                        <label for="consent">Confirm that all information provided is accurate and consent to process the donation.</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-donate">Donate</button>
+            </div>
+        </form>
+    </div>
+</div>
+

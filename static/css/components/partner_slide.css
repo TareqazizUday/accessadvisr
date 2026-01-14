@@ -38,18 +38,90 @@
 
 
 /* Mobile - Show 1 logo per slide */
- @media (max-width: 767px) {
-    .partner_slider .col-4{
-        /* border:3px solid #24f311 !important;
-        background-color: aqua; */
-        height: 150px !important;
-
-
+@media (max-width: 767px) {
+    .slider-section {
+        padding: 40px 0;
     }
-    .partner_slider img{
+    
+    /* Hide desktop columns on mobile */
+    #logoCarousel .carousel-item .col-md-4 {
+        display: none !important;
+    }
+    
+    /* Show and center the single item */
+    #logoCarousel .carousel-item .col-12 {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        padding: 20px;
+    }
+    
+    .partner_slider .col-12 {
+        height: 200px !important;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .partner_slider img {
         width: 70% !important;
-        /* border:1px solid #FF431E !important; */
+        max-width: 150px;
+        height: auto;
+        object-fit: contain;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 10% !important;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        font-size: 2rem !important;
+    }
+    
+    .logo-caption {
+        font-size: 0.9rem;
+        margin-top: 10px;
+        padding: 0 10px;
+        text-align: center;
+        width: 100%;
+    }
+}
 
+@media (max-width: 480px) {
+    .slider-section {
+        padding: 30px 0;
+    }
+    
+    #logoCarousel .carousel-item .row .col-12:first-child {
+        height: 160px;
+        padding: 12px;
+    }
+    
+    .partner_slider .col-4,
+    .partner_slider .col-12 {
+        height: 160px !important;
+        padding: 12px;
+    }
+    
+    .partner_slider img {
+        width: 65% !important;
+        max-width: 120px;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        font-size: 1.75rem !important;
+    }
+    
+    .logo-caption {
+        font-size: 0.85rem;
+        margin-top: 8px;
     }
 }
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Location, Category, Amenity, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply
+from .models import Location, Category, Amenity, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply, AboutPost, AboutComment, AboutCommentReply, DonationCampaign, Donation
 
 
 @admin.register(Category)
@@ -252,3 +252,146 @@ class PartnerAdmin(admin.ModelAdmin):
         if obj:  # Editing an existing object
             readonly.append('slug')
         return readonly
+
+
+@admin.register(AboutPost)
+class AboutPostAdmin(admin.ModelAdmin):
+    list_display = ['title', 'order', 'status', 'share_this_post', 'created_at', 'updated_at']
+    list_filter = ['status', 'share_this_post', 'created_at']
+    search_fields = ['title', 'content']
+    list_editable = ['order', 'status', 'share_this_post']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('title', 'slug', 'order', 'status'),
+            'description': 'Enter the about post title, display order, and status. Slug will be auto-generated from the title if left blank. Lower order numbers appear first.'
+        }),
+        ('Content', {
+            'fields': ('image', 'content'),
+            'description': 'Upload featured image (optional) and full post content. HTML is supported.'
+        }),
+        ('Sharing', {
+            'fields': ('share_this_post', 'share_facebook_url', 'share_twitter_url', 'share_linkedin_url', 'share_email_url'),
+            'description': 'Enable or disable social sharing buttons. You can provide custom share URLs for each platform. If left blank, default share URLs will be used.'
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_prepopulated_fields(self, request, obj=None):
+        """Only prepopulate slug when adding a new post, not when editing"""
+        if obj is None:  # Adding a new object
+            return {'slug': ('title',)}
+        return {}
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Make slug and timestamps readonly when editing"""
+        readonly = ['created_at', 'updated_at']
+        if obj:  # Editing an existing object
+            readonly.append('slug')
+        return readonly
+
+
+@admin.register(AboutComment)
+class AboutCommentAdmin(admin.ModelAdmin):
+    list_display = ['author_name', 'about_post', 'created_at', 'is_active', 'is_approved']
+    list_filter = ['is_active', 'is_approved', 'created_at']
+    search_fields = ['author_name', 'author_email', 'comment_text', 'about_post__title']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_active', 'is_approved']
+    
+    fieldsets = (
+        ('Comment Information', {
+            'fields': ('about_post', 'author_name', 'author_email', 'comment_text', 'save_info', 'is_active', 'is_approved')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(AboutCommentReply)
+class AboutCommentReplyAdmin(admin.ModelAdmin):
+    list_display = ['author_name', 'comment', 'created_at', 'is_active', 'is_approved']
+    list_filter = ['is_active', 'is_approved', 'created_at']
+    search_fields = ['author_name', 'author_email', 'reply_text', 'comment__about_post__title']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_active', 'is_approved']
+    
+    fieldsets = (
+        ('Reply Information', {
+            'fields': ('comment', 'parent_reply', 'author_name', 'author_email', 'reply_text', 'is_active', 'is_approved')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(DonationCampaign)
+class DonationCampaignAdmin(admin.ModelAdmin):
+    list_display = ['title', 'target_amount', 'raised_amount', 'is_active', 'order', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['title', 'description']
+    list_editable = ['is_active', 'order']
+    readonly_fields = ['created_at', 'updated_at', 'slug']
+    
+    fieldsets = (
+        ('Campaign Information', {
+            'fields': ('title', 'slug', 'image', 'description', 'is_active', 'order')
+        }),
+        ('Amounts', {
+            'fields': ('target_amount', 'raised_amount')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_prepopulated_fields(self, request, obj=None):
+        """Only prepopulate slug when adding a new campaign"""
+        if obj is None:
+            return {'slug': ('title',)}
+        return {}
+
+
+@admin.register(Donation)
+class DonationAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'get_final_amount', 'payment_method', 'status', 'campaign', 'created_at']
+    list_filter = ['status', 'payment_method', 'donation_amount', 'created_at', 'campaign']
+    search_fields = ['name', 'email', 'phone', 'transaction_id']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Campaign', {
+            'fields': ('campaign',)
+        }),
+        ('Personal Information', {
+            'fields': ('name', 'email', 'phone')
+        }),
+        ('Address Information', {
+            'fields': ('street_address', 'apartment_suite', 'city', 'state_province', 'zip_postal_code', 'country'),
+            'classes': ('collapse',)
+        }),
+        ('Donation Details', {
+            'fields': ('donation_amount', 'custom_amount', 'payment_method', 'consent_given')
+        }),
+        ('Payment Status', {
+            'fields': ('status', 'transaction_id')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_final_amount(self, obj):
+        return f"£{obj.get_final_amount()}"
+    get_final_amount.short_description = 'Amount'
+
+
