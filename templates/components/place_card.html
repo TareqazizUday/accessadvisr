@@ -1,0 +1,82 @@
+{% comment %}
+Reusable place card component
+Usage: {% include 'components/place_card.html' with location=location %}
+{% endcomment %}
+
+<div class="col-lg-4 col-md-6">
+    <div class="card h-100 border-0 shadow-sm place-card" data-url="{% url 'place_detail' location.id %}" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div class="position-relative">
+            {% if location.image %}
+                <img src="{{ location.image.url }}" class="card-img-top" alt="{{ location.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=400" class="card-img-top" alt="{{ location.name }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <span class="badge-heart"><i class="bi bi-heart-fill"></i></span>
+            <span class="badge-verified"><i class="bi bi-check-circle-fill"></i></span>
+            <div class="user-avatar">
+                {% if location.image %}
+                    <img src="{{ location.image.url }}" alt="{{ location.name }}">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ location.name|urlencode }}&background=FF431E&color=fff&size=150" alt="{{ location.name }}">
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body pt-4">
+            <h5 class="card-title fw-bold mb-1">
+                <a href="{% url 'place_detail' location.id %}" style="text-decoration: none; color: inherit;">{{ location.name }}</a>
+            </h5>
+            <p class="text-muted small mb-3">
+                {% if location.description %}
+                    {{ location.description|truncatewords:5 }}
+                {% else %}
+                    <span class="badge" style="background: #FF431E; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem;">
+                        <i class="bi bi-building me-1"></i>{{ location.category.name|default:"Place" }}
+                    </span>
+                {% endif %}
+            </p>
+            <div class="d-flex align-items-center mb-2 text-secondary small">
+                <i class="bi bi-geo-alt me-2 text-muted"></i> 
+                {% if location.address %}
+                    {{ location.address|truncatechars:40 }}
+                {% else %}
+                    {{ location.category.name|default:"Dhaka, Bangladesh" }}
+                {% endif %}
+            </div>
+            {% if location.phone %}
+            <div class="d-flex align-items-center text-secondary small mb-3">
+                <i class="bi bi-telephone me-2 text-muted"></i> 
+                <span class="phone-number-text" data-full="{{ location.phone }}">
+                    {{ location.phone|slice:":10" }}***
+                </span>
+                <span class="badge-show ms-2" style="cursor: pointer;">Show</span>
+            </div>
+            {% endif %}
+            <hr class="my-3 opacity-10">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="stars text-warning small">
+                    {% with location.rating|default:0 as rating %}
+                        {% with rating|floatformat:0 as rating_int %}
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= rating_int|add:0 %}
+                                    <i class="bi bi-star-fill"></i>
+                                {% elif forloop.counter == rating_int|add:1 and rating|floatformat:1|slice:"-1:" != "0" %}
+                                    <i class="bi bi-star-half"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                        {% if rating > 0 %}
+                            <span class="ms-1 text-muted small">{{ rating|floatformat:1 }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                {% if location.status == 'active' %}
+                    <span class="text-success small fw-bold">Open</span>
+                {% else %}
+                    <span class="text-danger small fw-bold">Closed</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -20,53 +20,94 @@
 
 /* Main Layout */
 .listing-half-map-section {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 70px);
     overflow: hidden;
+    position: relative;
 }
 
 .listings-panel {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
     overflow-y: auto;
     overflow-x: hidden;
     background-color: #fff;
+    position: relative;
+    width: 50%;
+}
+
+/* Custom Scrollbar Styling */
+.listings-panel::-webkit-scrollbar {
+    width: 10px;
+}
+
+.listings-panel::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.listings-panel::-webkit-scrollbar-thumb {
+    background: var(--primary-orange);
+    border-radius: 5px;
+    border: 2px solid #f1f1f1;
+}
+
+.listings-panel::-webkit-scrollbar-thumb:hover {
+    background: #e63910;
+}
+
+/* Firefox Scrollbar */
+.listings-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-orange) #f1f1f1;
 }
 
 .map-panel {
     position: fixed;
-    top: 120px;
+    top: 70px;
     right: 0;
     width: 50%;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
     z-index: 100;
+    overflow: hidden;
 }
 
 .map-container {
     width: 100%;
     height: 100%;
     background-color: #e9ecef;
+    overflow: hidden; /* Prevent any scrolling */
+}
+
+/* Mobile map container - hidden off-screen for initialization */
+#mobileMapContainer {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    visibility: hidden !important;
 }
 
 /* ===== FILTER SECTION STYLES ===== */
 .filter-section {
     background-color: #fff;
-    padding: 25px 30px;
+    padding: 20px 25px;
 }
 
 .filter-input,
 .filter-select {
-    height: 50px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    height: 42px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
     color: #666;
-    padding: 10px 15px;
+    padding: 10px 14px;
     transition: border-color 0.3s ease;
 }
 
 .filter-input:focus,
 .filter-select:focus {
     border-color: var(--primary-orange);
-    box-shadow: none;
+    box-shadow: 0 0 0 0.2rem rgba(255, 67, 30, 0.15);
     outline: none;
 }
 
@@ -82,13 +123,12 @@
     padding-right: 40px;
 }
 
-/* Price Slider Wrapper */
-.price-slider-wrapper {
-    padding: 5px 0;
-}
-
-.price-label {
+/* Form controls size adjustments */
+.form-control-sm, .form-select-sm {
+    height: 42px;
+    padding: 8px 14px;
     font-size: 0.9rem;
+    border-radius: 6px;
 }
 
 /* Dual Range Slider */
@@ -96,7 +136,7 @@
     position: relative;
     width: 100%;
     height: 6px;
-    margin: 20px 0;
+    margin: 10px 0 5px 0;
 }
 
 .slider-track {
@@ -197,15 +237,17 @@
 /* Results Bar */
 .results-bar {
     background-color: #f8f9fa;
+    padding: 8px 15px !important;
 }
 
 .results-count {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* Listings Container */
 .listings-container {
     background-color: #f8f9fa;
+    padding: 12px !important;
 }
 
 /* Listing Cards */
@@ -439,50 +481,20 @@
     color: white;
 }
 
-/* Mobile Map Button */
-.mobile-map-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--primary-orange);
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 15px rgba(255, 67, 30, 0.4);
-    z-index: 1000;
-    transition: all 0.3s ease;
-}
-
-.mobile-map-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 67, 30, 0.5);
-}
-
-/* Custom Scrollbar for Listings Panel */
-.listings-panel::-webkit-scrollbar {
-    width: 8px;
-}
-
-.listings-panel::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.listings-panel::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-
-.listings-panel::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-}
-
 /* Form Controls Styling */
 .filter-section .form-check-input:checked {
     background-color: var(--primary-orange);
     border-color: var(--primary-orange);
+}
+
+/* Mobile Map Inline Section */
+.mobile-map-inline {
+    display: none;
+    background: #f8f9fa;
+}
+
+.mobile-map-inline #mobileMapTop {
+    border-bottom: 2px solid #ddd;
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
@@ -515,18 +527,64 @@
         padding: 10px 0;
     }
     
+    /* Make map visible on mobile with toggle */
+    .map-panel {
+        display: none !important;
+    }
+    
+    /* Show mobile map inline after header */
+    .mobile-map-inline {
+        display: block !important;
+        margin-bottom: 0;
+    }
+    
+    .listings-panel {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        position: relative !important;
+    }
+    
+    .listing-half-map-section {
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    /* Header section stays at top */
+    .partners-header-section {
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* Filter section mobile adjustments */
     .filter-section {
-        padding: 15px;
+        padding: 20px 15px;
+    }
+    
+    .filter-section .col-4 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .filter-section .row {
+        margin-bottom: 0.75rem;
     }
     
     .filter-input,
-    .filter-select {
-        height: 48px;
-        margin-bottom: 5px;
+    .filter-select,
+    .form-control-sm,
+    .form-select-sm {
+        height: 48px !important;
+        margin-bottom: 0px;
+        font-size: 1rem;
     }
     
     .results-bar {
-        padding: 10px 15px;
+        padding: 15px;
     }
     
     .results-bar .form-select {
@@ -540,69 +598,84 @@
     }
     
     .listing-card .card-img-top {
-        height: 180px;
+        height: 200px;
     }
     
     .listings-container {
-        padding: 10px !important;
+        padding: 15px !important;
     }
     
     .listing-card .card-title {
-        font-size: 0.9rem;
-    }
-    
-    .mobile-map-btn {
-        bottom: 20px;
-        right: 20px;
-        width: 55px;
-        height: 55px;
-        font-size: 1.3rem;
+        font-size: 1rem;
     }
 }
 
 /* Small phones */
 @media (max-width: 575.98px) {
     .filter-section {
-        padding: 12px;
+        padding: 15px 12px;
+    }
+    
+    .filter-section .col-4 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
     }
     
     .filter-section .row {
-        --bs-gutter-x: 0.5rem;
-        --bs-gutter-y: 0.5rem;
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 0.75rem;
+        margin-bottom: 1rem;
     }
     
     .filter-input,
-    .filter-select {
-        height: 44px;
-        font-size: 0.85rem;
-        padding: 8px 12px;
+    .filter-select,
+    .form-control-sm,
+    .form-select-sm {
+        height: 46px !important;
+        font-size: 0.95rem;
+        padding: 10px 14px;
+        margin-bottom: 0px;
+    }
+    
+    /* Price slider adjustments */
+    .dual-range-slider {
+        margin: 10px 0;
     }
     
     .price-label {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     
     .filter-section h6 {
-        font-size: 0.95rem;
-        margin-bottom: 10px !important;
+        font-size: 1rem;
+        margin-bottom: 12px !important;
     }
     
     .filter-section .btn-orange {
         width: 100%;
-        padding: 12px 20px;
+        padding: 14px 20px;
+        font-size: 1rem;
     }
     
     .results-count {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     
     .listings-container {
-        padding: 8px !important;
+        padding: 12px !important;
     }
     
     .listings-container .row {
-        --bs-gutter-x: 0.5rem;
-        --bs-gutter-y: 0.5rem;
+        --bs-gutter-x: 1rem;
+        --bs-gutter-y: 1rem;
+    }
+    
+    /* Make cards full width on mobile */
+    .listings-container .col-12.col-sm-6 {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
     }
     
     .listing-card .card-img-top {
@@ -668,14 +741,6 @@
     .btn-outline-orange {
         font-size: 0.9rem;
         padding: 10px 20px;
-    }
-    
-    .mobile-map-btn {
-        bottom: 15px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
     }
 }
 

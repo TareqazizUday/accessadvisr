@@ -117,6 +117,7 @@ class Location(models.Model):
     
     name = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_locations', help_text="User who created this location")
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     keywords = models.TextField(blank=True, help_text="Comma-separated keywords for search")
@@ -124,10 +125,14 @@ class Location(models.Model):
     
     # New fields for detailed page
     description = models.TextField(blank=True, help_text="Main description of the location")
+    image = models.ImageField(upload_to='locations/', blank=True, null=True, help_text="Location/Business image")
+    address = models.CharField(max_length=300, blank=True, help_text="Physical address")
     what_we_looking_for = models.TextField(blank=True, help_text="What we're looking for section")
     why_this_matters = models.TextField(blank=True, help_text="Why this matters section")
     how_to_apply = models.TextField(blank=True, help_text="How to apply section")
     email = models.EmailField(blank=True, help_text="Contact email")
+    phone = models.CharField(max_length=20, blank=True, help_text="Contact phone number")
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.00, help_text="Rating out of 5.00")
     website = models.URLField(blank=True, help_text="Website URL")
     video_url = models.URLField(blank=True, help_text="YouTube or video URL")
     
@@ -167,6 +172,7 @@ class Review(models.Model):
     place_name = models.CharField(max_length=200, blank=True, help_text="Place name for reference")
     
     # User information
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
     author_name = models.CharField(max_length=100)
     author_email = models.EmailField(blank=True)
     

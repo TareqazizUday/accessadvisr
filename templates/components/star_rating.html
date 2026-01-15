@@ -1,0 +1,11 @@
+<div class="stars text-warning small d-flex justify-content-center mb-0">
+    {% for star in full_stars %}
+        <i class="bi bi-star-fill"></i>
+    {% endfor %}
+    {% if has_half_star %}
+        <i class="bi bi-star-half"></i>
+    {% endif %}
+    {% for star in empty_stars %}
+        <i class="bi bi-star"></i>
+    {% endfor %}
+</div>

@@ -38,7 +38,7 @@
         <div class="row g-4">
             
             <!-- Left Sidebar - Filters -->
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                 <div class="bg-white rounded-3 shadow-sm p-4">
                     
                     <form method="get" action="{% url 'listings' %}" id="filterForm">
@@ -52,12 +52,14 @@
                     <div class="mb-3">
                         <select name="category" class="form-select">
                             <option value="" {% if not selected_category_value %}selected{% endif %}>Filter by category</option>
-                            <option value="food" {% if selected_category_value == 'food' %}selected{% endif %}>Food & Restaurants</option>
-                            <option value="education" {% if selected_category_value == 'education' %}selected{% endif %}>Education</option>
-                            <option value="sport" {% if selected_category_value == 'sport' %}selected{% endif %}>Sport</option>
+                            <option value="accommodation" {% if selected_category_value == 'accommodation' %}selected{% endif %}>Accommodation</option>
                             <option value="entertainment" {% if selected_category_value == 'entertainment' %}selected{% endif %}>Entertainment</option>
+                            <option value="food" {% if selected_category_value == 'food' %}selected{% endif %}>Food & Drink</option>
                             <option value="shopping" {% if selected_category_value == 'shopping' %}selected{% endif %}>Shopping</option>
-                            <option value="travel" {% if selected_category_value == 'travel' %}selected{% endif %}>Travel & Tour</option>
+                            <option value="sport" {% if selected_category_value == 'sport' %}selected{% endif %}>Sports & Recreational</option>
+                            <option value="transport" {% if selected_category_value == 'transport' %}selected{% endif %}>Transport</option>
+                            <option value="travel" {% if selected_category_value == 'travel' %}selected{% endif %}>Flight & Travel</option>
+                            <option value="education" {% if selected_category_value == 'education' %}selected{% endif %}>Education</option>
                         </select>
                     </div>
                     
@@ -69,6 +71,37 @@
                     <!-- City -->
                     <div class="mb-3">
                         <input type="text" name="city" class="form-control" placeholder="City" value="{{ city }}">
+                    </div>
+                    
+                    <!-- Filter by Country -->
+                    <div class="mb-3">
+                        <select name="country" class="form-select">
+                            <option value="" {% if not selected_country %}selected{% endif %}>Filter by country</option>
+                            <option value="bangladesh" {% if selected_country == 'bangladesh' %}selected{% endif %}>Bangladesh</option>
+                            <option value="india" {% if selected_country == 'india' %}selected{% endif %}>India</option>
+                            <option value="pakistan" {% if selected_country == 'pakistan' %}selected{% endif %}>Pakistan</option>
+                            <option value="nepal" {% if selected_country == 'nepal' %}selected{% endif %}>Nepal</option>
+                            <option value="sri_lanka" {% if selected_country == 'sri_lanka' %}selected{% endif %}>Sri Lanka</option>
+                            <option value="usa" {% if selected_country == 'usa' %}selected{% endif %}>USA</option>
+                            <option value="uk" {% if selected_country == 'uk' %}selected{% endif %}>UK</option>
+                            <option value="canada" {% if selected_country == 'canada' %}selected{% endif %}>Canada</option>
+                            <option value="australia" {% if selected_country == 'australia' %}selected{% endif %}>Australia</option>
+                            <option value="uae" {% if selected_country == 'uae' %}selected{% endif %}>UAE</option>
+                            <option value="singapore" {% if selected_country == 'singapore' %}selected{% endif %}>Singapore</option>
+                            <option value="malaysia" {% if selected_country == 'malaysia' %}selected{% endif %}>Malaysia</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Filter by Type -->
+                    <div class="mb-3">
+                        <select name="job_type" class="form-select">
+                            <option value="" {% if not selected_job_type %}selected{% endif %}>Filter by type</option>
+                            <option value="freelance" {% if selected_job_type == 'freelance' %}selected{% endif %}>Freelance</option>
+                            <option value="full_time" {% if selected_job_type == 'full_time' %}selected{% endif %}>Full Time</option>
+                            <option value="internship" {% if selected_job_type == 'internship' %}selected{% endif %}>Internship</option>
+                            <option value="part_time" {% if selected_job_type == 'part_time' %}selected{% endif %}>Part Time</option>
+                            <option value="temporary" {% if selected_job_type == 'temporary' %}selected{% endif %}>Temporary</option>
+                        </select>
                     </div>
                     
                     <!-- Price Range -->
@@ -86,15 +119,92 @@
                     <div class="mb-4">
                         <h6 class="fw-semibold mb-3">Filter by Features</h6>
                         
-                        {% for amenity in amenities %}
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="amenities" value="{{ amenity.id }}" id="amenity{{ amenity.id }}" 
-                                {% if amenity.id in selected_amenity_ids %}checked{% endif %}>
-                            <label class="form-check-label small {% if amenity.id in selected_amenity_ids %}text-orange{% else %}text-secondary{% endif %}" for="amenity{{ amenity.id }}">
-                                {{ amenity.name }}
-                            </label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="accepts-credit-cards" id="feature_credit_cards"
+                                        {% if 'accepts-credit-cards' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_credit_cards">Credit Cards</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="alarm-system" id="feature_alarm_system"
+                                        {% if 'alarm-system' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_alarm_system">Alarm System</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="bike-parking" id="feature_bike_parking"
+                                        {% if 'bike-parking' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_bike_parking">Bike Parking</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="coupons" id="feature_coupons"
+                                        {% if 'coupons' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_coupons">Coupons</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="elevator" id="feature_elevator"
+                                        {% if 'elevator' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_elevator">Elevator</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="outdoor-seating" id="feature_outdoor_seating"
+                                        {% if 'outdoor-seating' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_outdoor_seating">Outdoor Seating</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="parking-street" id="feature_parking_street"
+                                        {% if 'parking-street' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_parking_street">Parking Street</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="reservations" id="feature_reservations"
+                                        {% if 'reservations' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_reservations">Reservations</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="security-cameras" id="feature_security_cameras"
+                                        {% if 'security-cameras' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_security_cameras">Security Cameras</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="smoking-allowed" id="feature_smoking_allowed"
+                                        {% if 'smoking-allowed' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_smoking_allowed">Smoking Allowed</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="wheelchair-accessible" id="feature_wheelchair"
+                                        {% if 'wheelchair-accessible' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_wheelchair">Wheelchair</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="feature" value="wireless-internet" id="feature_wireless_internet"
+                                        {% if 'wireless-internet' in selected_features %}checked{% endif %}>
+                                    <label class="form-check-label small text-secondary" for="feature_wireless_internet">Wireless Internet</label>
+                                </div>
+                            </div>
                         </div>
-                        {% endfor %}
                     </div>
                     
                     <!-- Filter Button -->
@@ -116,7 +226,7 @@
             </div>
             
             <!-- Right Side - Listings -->
-            <div class="col-lg-9">
+            <div class="col-lg-8">
                 
                 <!-- Results Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -152,12 +262,12 @@
                     {% for location in locations %}
                     <!-- Card -->
                     <div class="col-md-6">
-                        <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card" style="cursor: pointer;" onclick="window.location.href='{% url 'place_detail' location.id %}'">
                             <div class="position-relative">
                                 <img src="https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400" class="card-img-top" alt="{{ location.name }}" style="height: 180px; object-fit: cover;">
                                 <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">$60 - $85</span>
                                 <span class="position-absolute bottom-0 start-0 m-2 badge text-white small px-2 py-1" style="background-color: #ff9800;">4.0</span>
-                                <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2">
+                                <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2" onclick="event.stopPropagation();">
                                     <i class="bi bi-heart"></i> Save
                                 </button>
                                 <div class="position-absolute bottom-0 start-50 translate-middle-x" style="margin-bottom: -25px;">
@@ -173,11 +283,11 @@
                                 <div class="mb-2">
                                     <div class="d-flex justify-content-center align-items-center gap-2 small text-muted mb-1">
                                         <i class="bi bi-geo-alt" style="color: #dc3545;"></i>
-                                        <span>New York, USA</span>
+                                        <span>{{ location.address|default:"Address not available" }}</span>
                                     </div>
                                     <div class="d-flex justify-content-center align-items-center gap-2 small text-muted">
                                         <i class="bi bi-telephone" style="color: #28a745;"></i>
-                                        <span>+88-123-4***</span>
+                                        <span>{{ location.phone|default:"+88-123-4***" }}</span>
                                         <span class="badge small px-2 py-1" style="background-color: #ff431e; color: white;">show</span>
                                     </div>
                                 </div>
@@ -225,44 +335,145 @@
 {% if use_google_places %}
 <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
 <script>
-// Load Google Places results dynamically when amenity is selected
+// Load Google Places results dynamically
 document.addEventListener('DOMContentLoaded', function() {
-    const amenityName = "{{ selected_amenity }}";
+    const amenityName = "{{ selected_amenity }}".trim();
+    const category = "{{ selected_category_value }}".trim();
+    const keywords = "{{ keywords }}".trim();
+    const location = "{{ location_search }}".trim();
+    const city = "{{ city }}".trim();
     
+    console.log('Filter values:', { amenityName, category, keywords, location, city });
+    
+    // Build search query with proper priority
+    let searchQuery = '';
+    
+    // Priority 1: Amenity name (if specified)
     if (amenityName) {
-        // Get user's location
+        searchQuery = amenityName;
+    }
+    
+    // Priority 2: Category mapping
+    if (category) {
+        const categoryMap = {
+            'accommodation': 'hotel lodge motel accommodation',
+            'entertainment': 'cinema theater entertainment amusement',
+            'food': 'restaurant cafe food dining',
+            'shopping': 'shopping mall store boutique',
+            'sport': 'gym stadium sports fitness recreation',
+            'transport': 'bus train transport station',
+            'travel': 'hotel travel tour airport flight',
+            'education': 'school university college education'
+        };
+        const categoryTerm = categoryMap[category] || category;
+        // Only add category if it's different from keywords
+        if (!searchQuery || !keywords || keywords.toLowerCase() !== categoryTerm.toLowerCase()) {
+            searchQuery = searchQuery ? `${searchQuery} ${categoryTerm}` : categoryTerm;
+        }
+    }
+    
+    // Priority 3: Keywords (append at the end)
+    if (keywords) {
+        searchQuery = searchQuery ? `${searchQuery} ${keywords}` : keywords;
+    }
+    
+    // Build location string - City first, then specific location
+    let searchLocation = '';
+    if (location && city) {
+        searchLocation = `${location}, ${city}`;
+    } else if (city) {
+        searchLocation = city;
+    } else if (location) {
+        searchLocation = location;
+    }
+    
+    console.log('Built search query:', searchQuery);
+    console.log('Built search location:', searchLocation);
+    
+    // Always trigger search - either with filters or default
+    if (searchQuery || searchLocation || amenityName || category) {
+        // Get user's location or use search location
+        if (searchLocation) {
+            // Geocode the location first
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: searchLocation }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    const loc = results[0].geometry.location;
+                    searchNearbyPlaces(loc.lat(), loc.lng(), searchQuery);
+                } else {
+                    console.warn('Geocoding failed, using default location');
+                    searchNearbyPlaces(23.8103, 90.4125, searchQuery);
+                }
+            });
+        } else if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                searchNearbyPlaces(position.coords.latitude, position.coords.longitude, searchQuery);
+            }, function(error) {
+                console.warn('Geolocation error:', error.message);
+                // Default to Dhaka if geolocation fails
+                searchNearbyPlaces(23.8103, 90.4125, searchQuery);
+            }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
+        } else {
+            searchNearbyPlaces(23.8103, 90.4125, searchQuery);
+        }
+    } else {
+        // No filters - show default results
+        console.log('No filters, showing default results');
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                searchNearbyPlaces(position.coords.latitude, position.coords.longitude, amenityName);
+                searchNearbyPlaces(position.coords.latitude, position.coords.longitude, '');
             }, function() {
-                // Default to a location if geolocation fails
-                searchNearbyPlaces(23.8103, 90.4125, amenityName); // Dhaka coordinates
-            });
+                searchNearbyPlaces(23.8103, 90.4125, '');
+            }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 });
         } else {
-            searchNearbyPlaces(23.8103, 90.4125, amenityName);
+            searchNearbyPlaces(23.8103, 90.4125, '');
         }
     }
 });
 
-function searchNearbyPlaces(lat, lng, amenity) {
+function searchNearbyPlaces(lat, lng, query) {
     const location = new google.maps.LatLng(lat, lng);
     const map = new google.maps.Map(document.createElement('div'));
     const service = new google.maps.places.PlacesService(map);
     
-    const request = {
+    // Trim query and check if it's meaningful
+    const trimmedQuery = query ? query.trim() : '';
+    const useTextSearch = trimmedQuery && trimmedQuery.length > 0;
+    
+    const request = useTextSearch ? {
         location: location,
-        radius: 5000,
-        keyword: amenity
+        radius: 2000,  // 2000 meters = 2km radius
+        query: trimmedQuery
+    } : {
+        location: location,
+        radius: 2000,  // 2000 meters = 2km radius
+        type: 'establishment'
     };
     
-    service.nearbySearch(request, function(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            displayResults(results);
-            updateResultsCount(results.length);
-        } else {
-            showNoResults();
-        }
-    });
+    console.log('Search location:', lat, lng);
+    console.log('Search query:', trimmedQuery || 'nearby establishments');
+    console.log('Search radius: 2000 meters');
+    console.log('Search method:', useTextSearch ? 'textSearch' : 'nearbySearch');
+    
+    if (useTextSearch) {
+        service.textSearch(request, function(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                displayResults(results);
+                updateResultsCount(results.length);
+            } else {
+                showNoResults();
+            }
+        });
+    } else {
+        service.nearbySearch(request, function(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                displayResults(results);
+                updateResultsCount(results.length);
+            } else {
+                showNoResults();
+            }
+        });
+    }
 }
 
 function displayResults(places) {
@@ -278,14 +489,17 @@ function displayResults(places) {
         const priceLevel = place.price_level || 0;
         const priceRange = priceLevel === 0 ? '$60 - $85' : priceLevel === 1 ? '$50 - $80' : priceLevel === 2 ? '$80 - $120' : priceLevel === 3 ? '$100 - $150' : '$150+';
         
+        // Fetch phone number for this place
+        fetchPhoneNumber(place.place_id, index);
+        
         const card = `
             <div class="col-md-6">
-                <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card">
+                <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card" style="cursor: pointer;" onclick="window.location.href='/place/google/${place.place_id}/'">
                     <div class="position-relative">
                         <img src="${photoUrl}" class="card-img-top" alt="${place.name}" style="height: 180px; object-fit: cover;">
                         <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">${priceRange}</span>
                         <span class="position-absolute bottom-0 start-0 m-2 badge text-white small px-2 py-1" style="background-color: #ff9800;">${rating.toFixed(1)}</span>
-                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2">
+                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 d-flex align-items-center gap-1 small py-1 px-2" onclick="event.stopPropagation();">
                             <i class="bi bi-heart"></i> Save
                         </button>
                         <div class="position-absolute bottom-0 start-50 translate-middle-x" style="margin-bottom: -25px;">
@@ -296,16 +510,16 @@ function displayResults(places) {
                         <h6 class="fw-bold mb-1">
                             <a href="/place/google/${place.place_id}/" class="text-dark text-decoration-none">${place.name}</a>
                         </h6>
-                        <p class="text-muted small mb-2">Villa, food for you</p>
+                        <p class="text-muted small mb-2">${place.types && place.types[0] ? place.types[0].replace(/_/g, ' ') : 'Villa, food for you'}</p>
                         <div class="mb-2">
                             <div class="d-flex justify-content-center align-items-center gap-2 small text-muted mb-1">
                                 <i class="bi bi-geo-alt" style="color: #dc3545;"></i>
-                                <span>${place.vicinity || 'New York, USA'}</span>
+                                <span>${place.vicinity || place.formatted_address || 'Address not available'}</span>
                             </div>
-                            <div class="d-flex justify-content-center align-items-center gap-2 small text-muted">
+                            <div class="d-flex justify-content-center align-items-center gap-2 small text-muted" id="phone-${index}">
                                 <i class="bi bi-telephone" style="color: #28a745;"></i>
-                                <span>+88-123-4***</span>
-                                <span class="badge small px-2 py-1" style="background-color: #ff431e; color: white;">show</span>
+                                <span class="phone-number-text" data-place-id="${place.place_id}">Loading...</span>
+                                <span class="badge small px-2 py-1 phone-show-btn" style="background-color: #ff431e; color: white; cursor: pointer;" onclick="event.stopPropagation(); togglePhoneNumber(${index}, '${place.place_id}')">show</span>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
@@ -313,7 +527,7 @@ function displayResults(places) {
                                 <a href="#" class="text-secondary text-decoration-none">${place.types[0] || 'Category'}</a>
                                 <span class="text-muted ms-1">+1</span>
                             </div>
-                            <span class="${place.opening_hours && place.opening_hours.open_now ? 'text-success' : 'text-danger'} fw-semibold">${place.opening_hours && place.opening_hours.open_now ? 'Open' : 'Closed'}</span>
+                            <span class="${place.business_status === 'OPERATIONAL' ? 'text-success' : 'text-danger'} fw-semibold">${place.business_status === 'OPERATIONAL' ? 'Open' : 'Closed'}</span>
                         </div>
                     </div>
                 </div>
@@ -322,6 +536,67 @@ function displayResults(places) {
         
         container.innerHTML += card;
     });
+}
+
+// Store phone numbers
+const phoneNumbers = {};
+
+function fetchPhoneNumber(placeId, index) {
+    if (phoneNumbers[placeId]) {
+        updatePhoneDisplay(index, placeId, phoneNumbers[placeId]);
+        return;
+    }
+    
+    const map = new google.maps.Map(document.createElement('div'));
+    const service = new google.maps.places.PlacesService(map);
+    
+    service.getDetails({
+        placeId: placeId,
+        fields: ['formatted_phone_number', 'international_phone_number']
+    }, function(place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            const phone = place.formatted_phone_number || place.international_phone_number || 'N/A';
+            phoneNumbers[placeId] = phone;
+            updatePhoneDisplay(index, placeId, phone);
+        } else {
+            updatePhoneDisplay(index, placeId, 'N/A');
+        }
+    });
+}
+
+function updatePhoneDisplay(index, placeId, phone) {
+    const phoneElement = document.querySelector(`#phone-${index} .phone-number-text`);
+    if (phoneElement) {
+        if (phone === 'N/A') {
+            phoneElement.textContent = phone;
+            const showBtn = document.querySelector(`#phone-${index} .phone-show-btn`);
+            if (showBtn) showBtn.style.display = 'none';
+        } else {
+            const masked = phone.length > 10 ? phone.substring(0, phone.length - 3) + '***' : phone.substring(0, 3) + '***';
+            phoneElement.textContent = masked;
+            phoneElement.setAttribute('data-full', phone);
+            phoneElement.setAttribute('data-masked', masked);
+        }
+    }
+}
+
+function togglePhoneNumber(index, placeId) {
+    const phoneElement = document.querySelector(`#phone-${index} .phone-number-text`);
+    const showBtn = document.querySelector(`#phone-${index} .phone-show-btn`);
+    
+    if (phoneElement && showBtn) {
+        const full = phoneElement.getAttribute('data-full');
+        const masked = phoneElement.getAttribute('data-masked');
+        const current = phoneElement.textContent;
+        
+        if (current === masked) {
+            phoneElement.textContent = full;
+            showBtn.textContent = 'hide';
+        } else {
+            phoneElement.textContent = masked;
+            showBtn.textContent = 'show';
+        }
+    }
 }
 
 function generateStars(rating) {

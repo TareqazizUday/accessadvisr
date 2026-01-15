@@ -191,27 +191,30 @@ class ListingsView(TemplateView):
         amenity_ids = self.request.GET.getlist('amenities')
         amenity_name = self.request.GET.get('amenity', '').strip()
         sort_order = self.request.GET.get('sort', '').strip()
+        selected_features = self.request.GET.getlist('feature')  # Get selected features
         
         # Get all categories and amenities for filters
         categories = Category.objects.all().order_by('name')
         amenities = Amenity.objects.all().order_by('name')
         
-        # Map category values to names
+        # Map category values to names - all 8 standard categories
         category_map = {
-            'education': 'Education',
-            'food': 'Food & Restaurants',
+            'accommodation': 'Accommodation',
             'entertainment': 'Entertainment',
+            'food': 'Food & Drink',
             'shopping': 'Shopping',
-            'sport': 'Sport',
-            'travel': 'Travel & Tour'
+            'sport': 'Sports & Recreational',
+            'transport': 'Transport',
+            'travel': 'Flight & Travel',
+            'education': 'Education'
         }
         
         # Get selected category name
         selected_category = category_map.get(category_value, '')
         
-        # If amenity is selected, use Google Places API (handled by JavaScript)
-        # Otherwise, use database locations
-        use_google_places = bool(amenity_name)
+        # Use Google Places API if any filter is applied (category, keywords, location, amenity)
+        # This ensures we always get results from Google Places when user searches
+        use_google_places = bool(amenity_name or category_value or keywords or location_search or city)
         
         if not use_google_places:
             # Start with database locations
@@ -268,7 +271,8 @@ class ListingsView(TemplateView):
         else:
             # Use Google Places API - results will be loaded by JavaScript
             locations = []
-            selected_amenity = amenity_name
+            # Set selected_amenity to amenity_name if present, otherwise None
+            selected_amenity = amenity_name if amenity_name else None
             total_count = 0
             showing_to = 0
         
@@ -278,6 +282,9 @@ class ListingsView(TemplateView):
         context['selected_amenity'] = selected_amenity
         context['selected_category'] = selected_category
         context['selected_category_value'] = category_value  # Pass the value (education, food, etc.)
+        context['selected_job_type'] = job_type  # Filter by type value
+        context['selected_country'] = country  # Filter by country value
+        context['selected_features'] = selected_features  # Selected feature checkboxes
         context['selected_amenity_ids'] = [int(aid) for aid in amenity_ids if aid.isdigit()]
         context['sort_order'] = sort_order
         context['use_google_places'] = use_google_places
@@ -314,6 +321,10 @@ class BrowseView(TemplateView):
         category_value = self.request.GET.get('category', '').strip()
         city = self.request.GET.get('city', '').strip()
         location_search = self.request.GET.get('location', '').strip()
+        country = self.request.GET.get('country', '').strip()
+        job_type = self.request.GET.get('job_type', '').strip()
+        price_range = self.request.GET.get('price_range', '').strip()
+        selected_features = self.request.GET.getlist('feature')
         sort_order = self.request.GET.get('sort', '').strip()
         user_lat = self.request.GET.get('lat', '').strip()
         user_lng = self.request.GET.get('lng', '').strip()
@@ -399,6 +410,10 @@ class BrowseView(TemplateView):
         context['amenities'] = amenities
         context['GOOGLE_MAPS_API_KEY'] = api_key
         context['selected_category'] = category_value
+        context['selected_country'] = country
+        context['selected_job_type'] = job_type
+        context['selected_price_range'] = price_range
+        context['selected_features'] = selected_features
         context['keywords'] = keywords
         context['city'] = city
         context['sort_order'] = sort_order
@@ -630,6 +645,7 @@ class SubmitReviewView(APIView):
             review = Review.objects.create(
                 place_id=place_id,
                 place_name=place_name,
+                user=request.user if request.user.is_authenticated else None,
                 author_name=author_name,
                 author_email=author_email,
                 quality_rating=quality_rating,

@@ -24,7 +24,7 @@ from locations.views_partner_comments import SubmitPartnerCommentView, SubmitPar
 from locations.views_blog_comments import SubmitBlogCommentView, SubmitBlogCommentReplyView
 from locations.views_about_comments import SubmitAboutCommentView, SubmitAboutCommentReplyView
 from locations.views_donations import SubmitDonationView
-from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
+from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, EntertainmentView, FoodDrinkView, ShoppingView, SportsRecreationalView, TransportView, FlightTravelView, EducationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
 from locations.views_auth import RegisterView, LoginView, LogoutView
 from locations.views_profile import profile_view, profile_edit, my_reviews, my_favorites, profile_settings, delete_review
 
@@ -86,6 +86,13 @@ urlpatterns = [
     path('contributions/', RedirectView.as_view(url='/all-contributions/', permanent=False), name='contributions_redirect'),
     path('all-contributions/', AllContributionsView.as_view(), name='all_contributions'),
     path('accommodation/', AccommodationView.as_view(), name='accommodation'),
+    path('entertainment/', EntertainmentView.as_view(), name='entertainment'),
+    path('food-drink/', FoodDrinkView.as_view(), name='food_drink'),
+    path('shopping/', ShoppingView.as_view(), name='shopping'),
+    path('sports-recreational/', SportsRecreationalView.as_view(), name='sports_recreational'),
+    path('transport/', TransportView.as_view(), name='transport'),
+    path('flight-travel/', FlightTravelView.as_view(), name='flight_travel'),
+    path('education/', EducationView.as_view(), name='education'),
 
         # Keep the original home as default, or change to accessadvisr_index
         path('', AccessAdvisrIndexView.as_view(), name='home'),

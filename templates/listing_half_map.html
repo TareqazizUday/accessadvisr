@@ -9,20 +9,36 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
+            /* Ensure navbar stays fixed at top */
+            .navbar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 1050 !important;
+            }
+            
+            /* Add padding to body to compensate for fixed navbar */
+            body {
+                padding-top: 70px;
+                overflow: hidden;
+                height: 100vh;
+            }
+            
             /* Additional inline styles only for map-specific adjustments */
-            #resultsMap, #mobileMap {
-            width: 100%;
+            #resultsMap, #mobileMapTop {
+                width: 100%;
                 height: 100%;
-                min-height: 600px;
             }
             
             /* Ensure no extra space below map */
-            body, html {
+            html, body {
                 overflow-x: hidden;
+                max-height: 100vh;
             }
             
             .listing-half-map-section {
-                height: calc(100vh - 120px) !important;
+                height: calc(100vh - 70px) !important;
                 overflow: hidden !important;
             }
             
@@ -50,12 +66,13 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background-color: rgba(255, 255, 255, 0.95);
+                background-color: transparent;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 z-index: 9999;
+                pointer-events: none;
             }
             
             .full-page-loader.hidden {
@@ -63,13 +80,15 @@
             }
             
             .loader-spinner {
-            width: 60px;
-            height: 60px;
+                width: 60px;
+                height: 60px;
                 border: 5px solid #f3f3f3;
                 border-top: 5px solid #FF431E;
-            border-radius: 50%;
+                border-radius: 50%;
                 animation: spin 1s linear infinite;
                 margin-bottom: 1.5rem;
+                background-color: white;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
             
             @keyframes spin {
@@ -78,9 +97,13 @@
             }
             
             .loader-text {
-            color: #333;
+                color: #333;
                 font-size: 1.1rem;
-            font-weight: 600;
+                font-weight: 600;
+                background-color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
         </style>
 </head>
@@ -95,25 +118,31 @@
     <div class="loader-text">Loading results...</div>
 </div>
 
-<!----- inner header section ------>
-    <section class="partners-header-section">
-        <div class="container text-center py-2">
-            <h1 class="text-white fw-bold mb-1">Listing Half Map</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb justify-content-center mb-0">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
-                    <li class="breadcrumb-item active text-orange" aria-current="page">LISTING HALF MAP</li>
-                </ol>
-            </nav>
-        </div>
-    </section>
-
 <!-- Main Listing Half Map Section -->
 <section class="listing-half-map-section">
     <div class="row g-0">
         
         <!-- Left Side - Listings -->
         <div class="col-lg-6 listings-panel">
+            
+            <!----- inner header section ------>
+            <div class="partners-header-section">
+                <div class="text-center py-3">
+                    <h1 class="text-white fw-bold mb-1">Listing Half Map</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white text-decoration-none">HOME</a></li>
+                            <li class="breadcrumb-item active text-orange" aria-current="page">LISTING HALF MAP</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Mobile Map Section (Shows after header on mobile) -->
+            <div class="mobile-map-inline d-lg-none" style="height: 280px; width: 100%; position: relative;">
+                <div id="mobileMapTop" style="width: 100%; height: 100%;"></div>
+            </div>
+            
             <!-- Mobile Filter Toggle -->
             <div class="filter-toggle-bar d-md-none p-3 bg-white border-bottom">
                 <button class="btn btn-outline-orange w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="collapse" data-bs-target="#filterSection">
@@ -122,79 +151,64 @@
             </div>
 
             <!-- Filter Section -->
-            <div class="filter-section p-4 bg-white border-bottom collapse show" id="filterSection">
-                <div class="row g-3">
-                    
-                    <!-- Row 1: Keywords & Category -->
-                    <div class="col-12 col-md-6">
-                        <input type="text" id="filterKeywords" class="form-control filter-input" placeholder="Keywords...">
+            <div class="filter-section p-3 bg-white border-bottom collapse show" id="filterSection">
+                <!-- Row 1: Keywords, Category, Type -->
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <input type="text" id="filterKeywords" class="form-control form-control-sm" placeholder="Keywords...">
                     </div>
-                    
-                    <!-- Category -->
-                    <div class="mb-3">
-                        <select id="filterType" class="form-select">
+                    <div class="col-4">
+                        <select id="filterType" class="form-select form-select-sm">
                             <option value="" selected disabled>Filter by category</option>
-                            <option value="education">Education</option>
-                            <option value="food">Food & Restaurants</option>
+                            <option value="accommodation">Accommodation</option>
                             <option value="entertainment">Entertainment</option>
+                            <option value="food">Food & Drink</option>
                             <option value="shopping">Shopping</option>
-                            <option value="sport">Sport</option>
-                            <option value="travel">Travel & Tour</option>
+                            <option value="sport">Sports & Recreational</option>
+                            <option value="transport">Transport</option>
+                            <option value="travel">Flight & Travel</option>
+                            <option value="education">Education</option>
                         </select>
                     </div>
-                    
-                    <!-- Type -->
-                    <div class="mb-3">
-                        <select id="filterJobType" class="form-select">
+                    <div class="col-4">
+                        <select id="filterJobType" class="form-select form-select-sm">
                             <option value="" selected disabled>Filter by type</option>
-                            <option value="freelance">Freelance</option>
-                            <option value="fulltime">Full Time</option>
-                            <option value="internship">Internship</option>
-                            <option value="parttime">Part Time</option>
-                            <option value="temporary">Temporary</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="cafe">Cafe</option>
+                            <option value="hospital">Hospital</option>
+                            <option value="school">School</option>
                         </select>
                     </div>
-                    
-                    <!-- Country -->
-                    <div class="mb-3">
-                        <select id="filterCountry" class="form-select">
+                </div>
+                
+                <!-- Row 2: Country, City, Location -->
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <select id="filterCountry" class="form-select form-select-sm">
                             <option value="" selected disabled>Filter by country</option>
+                            <option value="bangladesh">Bangladesh</option>
                             <option value="usa">USA</option>
                             <option value="uk">United Kingdom</option>
                             <option value="canada">Canada</option>
                             <option value="australia">Australia</option>
-                            <option value="germany">Germany</option>
-                            <option value="france">France</option>
                             <option value="india">India</option>
-                            <option value="china">China</option>
-                            <option value="japan">Japan</option>
-                            <option value="brazil">Brazil</option>
-                            <option value="mexico">Mexico</option>
-                            <option value="spain">Spain</option>
-                            <option value="italy">Italy</option>
-                            <option value="netherlands">Netherlands</option>
-                            <option value="switzerland">Switzerland</option>
-                            <option value="singapore">Singapore</option>
                             <option value="uae">UAE</option>
-                            <option value="new-zealand">New Zealand</option>
-                            <option value="south-korea">South Korea</option>
-                            <option value="thailand">Thailand</option>
+                            <option value="singapore">Singapore</option>
                         </select>
                     </div>
-                    
-                    <!-- City -->
-                    <div class="mb-3">
-                        <input type="text" id="filterCity" class="form-control" placeholder="City">
+                    <div class="col-4">
+                        <input type="text" id="filterCity" class="form-control form-control-sm" placeholder="City">
                     </div>
-                    
-                    <!-- Location -->
-                    <div class="mb-3">
-                        <input type="text" id="filterLocation" class="form-control" placeholder="Location">
+                    <div class="col-4">
+                        <input type="text" id="filterLocation" class="form-control form-control-sm" placeholder="Location">
                     </div>
-                    
-                    <!-- Price Range Dropdown -->
-                    <div class="mb-4">
-                        <select id="priceRangeSelect" class="form-select">
+                </div>
+                
+                <!-- Row 3: Price Range Dropdown -->
+                <div class="row g-3 mb-3">
+                    <div class="col-4">
+                        <select id="priceRangeSelect" class="form-select form-select-sm">
                             <option value="" selected disabled>Price Range</option>
                             <option value="0-100">$0 - $100</option>
                             <option value="100-500">$100 - $500</option>
@@ -202,10 +216,21 @@
                             <option value="1000+">$1,000+</option>
                         </select>
                     </div>
-                    
-                    <!-- Price Slider -->
-                    <div class="mb-4">
-                        <label class="form-label small text-muted">Price: <span class="fw-semibold text-dark">$<span id="priceMinValue">0</span> - $<span id="priceMaxValue">1,000,000</span></span></label>
+                </div>
+                
+                <!-- Filter Button (Full Width) -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button class="btn btn-orange w-100 py-2 fw-semibold" onclick="applyFilters()">
+                            <i class="bi bi-funnel me-1"></i> FILTER
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Price Slider -->
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label small text-muted mb-1">Price: <span class="fw-semibold text-dark">$<span id="priceMinValue">0</span> - $<span id="priceMaxValue">1,000,000</span></span></label>
                         <div class="dual-range-slider">
                             <div class="slider-track"></div>
                             <div class="slider-range" id="sliderRange"></div>
@@ -213,22 +238,11 @@
                             <input type="range" min="0" max="1000000" value="1000000" id="maxRange" class="thumb thumb-right">
                         </div>
                     </div>
-                
-                    <!-- Filter by Features -->
-                    <div class="col-12 mt-3">
-                        <h6 class="fw-bold text-dark mb-3">Filter by Features</h6>
-                    </div>
-                    
-                    <!-- Filter Button -->
-                    <div class="col-12 col-md-3 col-lg-2">
-                        <button class="btn btn-orange px-4 py-2 fw-semibold" onclick="applyFilters()">FILTER</button>
                 </div>
-                
-                    </div>
-                </div>
+            </div>
                 
             <!-- Results Bar -->
-            <div class="results-bar p-3 bg-light border-bottom">
+            <div class="results-bar p-2 bg-light border-bottom">
                 <div class="row align-items-center">
                     <div class="col-6">
                         <span class="results-count text-muted">
@@ -261,32 +275,13 @@
                         </div>
                         </div>
 
-                        </div>
-
         <!-- Right Side - Map -->
         <div class="col-lg-6 map-panel d-none d-lg-block">
-            <div class="map-container" id="resultsMap">
-                    </div>
-                </div>
-                
-            </div>
+            <div class="map-container" id="resultsMap"></div>
+        </div>
+        
+    </div>
 </section>
-
-<!-- Mobile Map Toggle Button (Fixed) -->
-<button class="mobile-map-btn d-lg-none" id="mobileMapToggle" style="display: none;">
-    <i class="bi bi-map-fill"></i>
-</button>
-
-<!-- Mobile Map Modal -->
-<div class="modal fade" id="mobileMapModal" tabindex="-1">
-    <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Map View</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-0">
-                <div id="mobileMap" style="width: 100%; height: 100%;"></div>
             </div>
             </div>
         </div>
@@ -373,9 +368,14 @@
         }
         
         function initMap() {
-            const mapElement = document.getElementById('resultsMap');
+            // Desktop map or mobile inline map
+            const mapElement = document.getElementById('resultsMap') || document.getElementById('mobileMapTop');
+            
             if (!mapElement) {
                 console.error('Map element not found');
+                setTimeout(() => {
+                    loadSearchResults();
+                }, 100);
                 return;
             }
             
@@ -384,7 +384,7 @@
             map = new google.maps.Map(mapElement, {
                 zoom: 12,
                 center: defaultCenter,
-                mapId: 'DEMO_MAP_ID', // Required for Advanced Markers
+                mapId: 'DEMO_MAP_ID',
                 mapTypeControl: true,
                 mapTypeControlOptions: {
                     style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
@@ -407,6 +407,8 @@
             script.defer = true;
             document.head.appendChild(script);
         }
+        
+        // Function to open mobile map modal
         
         loadGoogleMaps();
         
@@ -436,31 +438,31 @@
             'establishment': '#757575' // Gray
         };
 
-        // Get category name from place types (must match map_section.html)
+        // Get category name from place types
         function getCategoryName(types) {
-            if (types.some(t => ['hospital'].includes(t))) return 'Healthcare';
-            if (types.some(t => ['lodging'].includes(t))) return 'Hotels';
+            if (types.some(t => ['lodging', 'hotel', 'motel', 'hostel'].includes(t))) return 'Accommodation';
+            if (types.some(t => ['movie_theater', 'amusement_park', 'zoo', 'night_club', 'bowling_alley', 'casino'].includes(t))) return 'Entertainment';
+            if (types.some(t => ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'cafe', 'bar'].includes(t))) return 'Food & Drink';
+            if (types.some(t => ['shopping_mall', 'store', 'supermarket', 'department_store', 'clothing_store'].includes(t))) return 'Shopping';
+            if (types.some(t => ['gym', 'stadium', 'sports_club'].includes(t))) return 'Sports & Recreational';
+            if (types.some(t => ['bus_station', 'train_station', 'taxi_stand', 'transit_station'].includes(t))) return 'Transport';
+            if (types.some(t => ['airport', 'travel_agency', 'tourist_attraction'].includes(t))) return 'Flight & Travel';
             if (types.some(t => ['school', 'university'].includes(t))) return 'Education';
-            if (types.some(t => ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'cafe', 'bar'].includes(t))) return 'Food & Restaurants';
-            if (types.some(t => ['movie_theater', 'amusement_park', 'zoo', 'night_club'].includes(t))) return 'Entertainment';
-            if (types.some(t => ['shopping_mall', 'store', 'supermarket'].includes(t))) return 'Shopping';
-            if (types.some(t => ['gym', 'stadium'].includes(t))) return 'Sport';
-            if (types.some(t => ['travel_agency', 'tourist_attraction'].includes(t))) return 'Travel & Tour';
-            return 'Business';
+            return 'Other';
         }
 
-        // Get icon symbol for category (must match map_section.html)
+        // Get icon symbol for category
         function getCategorySymbol(category) {
             const symbols = {
-                'Healthcare': '🏥',
-                'Hotels': '🏨',
-                'Education': '🎓',
-                'Food & Restaurants': '🍽️',
+                'Accommodation': '🏨',
                 'Entertainment': '🎬',
+                'Food & Drink': '🍽️',
                 'Shopping': '🛍️',
-                'Sport': '⚽',
-                'Travel & Tour': '✈️',
-                'Business': '🏢'
+                'Sports & Recreational': '⚽',
+                'Transport': '🚌',
+                'Flight & Travel': '✈️',
+                'Education': '🎓',
+                'Other': '📍'
             };
             return symbols[category] || '📍';
         }
@@ -506,12 +508,14 @@
         
         // Common place types for Google Places API
         const commonPlaceTypes = [
-            { name: 'Education', value: 'education', searchTerms: 'school university college academy institute', googleTypes: ['school', 'university'] },
-            { name: 'Food & Restaurants', value: 'food', searchTerms: 'restaurant cafe bar food meal dining', googleTypes: ['restaurant', 'cafe', 'bar', 'meal_takeaway', 'meal_delivery', 'food'] },
+            { name: 'Accommodation', value: 'accommodation', searchTerms: 'hotel motel hostel lodge inn resort accommodation lodging', googleTypes: ['lodging', 'hotel', 'motel', 'hostel'] },
             { name: 'Entertainment', value: 'entertainment', searchTerms: 'movie theater cinema park amusement zoo nightclub entertainment', googleTypes: ['movie_theater', 'amusement_park', 'zoo', 'night_club', 'bowling_alley', 'casino'] },
+            { name: 'Food & Drink', value: 'food', searchTerms: 'restaurant cafe bar food meal dining drink', googleTypes: ['restaurant', 'cafe', 'bar', 'meal_takeaway', 'meal_delivery', 'food'] },
             { name: 'Shopping', value: 'shopping', searchTerms: 'shopping mall store shop market supermarket', googleTypes: ['shopping_mall', 'store', 'supermarket', 'department_store', 'clothing_store'] },
-            { name: 'Sport', value: 'sport', searchTerms: 'gym fitness stadium sport', googleTypes: ['gym', 'stadium', 'sports_club'] },
-            { name: 'Travel & Tour', value: 'travel', searchTerms: 'travel tour agency hotel tourist attraction', googleTypes: ['travel_agency', 'tourist_attraction', 'lodging', 'airport', 'bus_station', 'train_station'] }
+            { name: 'Sports & Recreational', value: 'sport', searchTerms: 'gym fitness stadium sport recreation', googleTypes: ['gym', 'stadium', 'sports_club'] },
+            { name: 'Transport', value: 'transport', searchTerms: 'bus train taxi transport station', googleTypes: ['bus_station', 'train_station', 'taxi_stand', 'transit_station'] },
+            { name: 'Flight & Travel', value: 'travel', searchTerms: 'airport travel tour agency tourist flight', googleTypes: ['airport', 'travel_agency', 'tourist_attraction'] },
+            { name: 'Education', value: 'education', searchTerms: 'school university college academy institute', googleTypes: ['school', 'university'] }
         ];
         
         // Load categories from API
@@ -587,6 +591,17 @@
         window.addEventListener('load', function() {
             setTimeout(loadCategories, 100); // Small delay to ensure DOM is ready
             setTimeout(initializeAmenityFilter, 200); // Initialize amenity filter after DOM is ready
+            
+            // Add sort order change listener
+            const sortOrderSelect = document.getElementById('sortOrder');
+            if (sortOrderSelect) {
+                sortOrderSelect.addEventListener('change', function() {
+                    // Re-display results with new sort order
+                    if (allResults && allResults.length > 0) {
+                        displayResults(allResults);
+                    }
+                });
+            }
         });
         
         function applyFilters() {
@@ -612,9 +627,10 @@
                 country: document.getElementById('filterCountry')?.value || '',
                 city: document.getElementById('filterCity')?.value || '',
                 location: document.getElementById('filterLocation')?.value || '',
+                priceRange: document.getElementById('priceRangeSelect')?.value || '',
                 priceMin: document.getElementById('minRange')?.value || '0',
                 priceMax: document.getElementById('maxRange')?.value || '1000000',
-                features: [] // No feature checkboxes in PHP template
+                features: []
             };
         }
         
@@ -793,10 +809,19 @@
                         completedSearches++;
                         if (completedSearches === searchTypes.length) {
                             console.log(`Total results found: ${allResults.length}`);
-                            fetchPhoneNumbersForPlaces(allResults).then(() => {
-                                fetchAccessibilityInfoForPlaces(allResults).then(() => {
-                                    displayResults(allResults);
-                                });
+                            
+                            // Display results immediately
+                            displayResults(allResults);
+                            
+                            // Fetch additional details in background (parallel, non-blocking)
+                            Promise.all([
+                                fetchPhoneNumbersForPlaces(allResults),
+                                fetchAccessibilityInfoForPlaces(allResults)
+                            ]).then(() => {
+                                // Refresh display with updated info
+                                displayResults(allResults);
+                            }).catch(err => {
+                                console.error('Error fetching additional details:', err);
                             });
                         }
                     });
@@ -818,12 +843,13 @@
                             performNearbySearch(userLocation);
                         },
                         function(error) {
+                            console.warn('Geolocation error:', error.message);
                             // Use default location (Dhaka, Bangladesh)
                             const defaultLocation = { lat: 23.8103, lng: 90.4125 };
                             map.setCenter(defaultLocation);
                             performNearbySearch(defaultLocation);
                         },
-                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                        { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
                     );
                     return;
                 } else {
@@ -860,28 +886,43 @@
                 
                 if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                     allResults.push(...results);
-                        console.log(`Received ${results.length} results, total: ${allResults.length}`);
-                        
-                    if (pagination && pagination.hasNextPage) {
+                    console.log(`Received ${results.length} results, total: ${allResults.length}`);
+                    
+                    // Show first batch immediately (fast initial display)
+                    if (allResults.length <= 20) {
+                        displayResults(allResults);
+                    }
+                    
+                    if (pagination && pagination.hasNextPage && allResults.length < 40) {
+                        // Reduced delay from 200ms to 100ms for faster pagination
                         setTimeout(() => {
                             pagination.nextPage();
-                        }, 2000);
+                        }, 100);
                     } else {
                         isResolved = true;
-                            console.log(`Total results found: ${allResults.length}`);
-                        // Fetch phone numbers for all places
-                        await fetchPhoneNumbersForPlaces(allResults);
-                        // Fetch accessibility info for all places (to filter non-accessible places)
-                        await fetchAccessibilityInfoForPlaces(allResults);
-                        await displayResults(allResults);
+                        console.log(`Total results found: ${allResults.length}`);
+                        
+                        // Display all results
+                        displayResults(allResults);
+                        
+                        // Fetch additional details in parallel (non-blocking)
+                        Promise.all([
+                            fetchPhoneNumbersForPlaces(allResults),
+                            fetchAccessibilityInfoForPlaces(allResults)
+                        ]).then(() => {
+                            // Refresh display with updated info
+                            displayResults(allResults);
+                        }).catch(err => {
+                            console.error('Error fetching additional details:', err);
+                        });
                     }
                 } else {
                     isResolved = true;
-                        console.log('Search status:', status);
-                        if (status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-                            console.error('Places API error:', status);
-                        }
-                    await displayResults(allResults);
+                    console.log('Search status:', status);
+                    if (status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                        console.error('Places API error:', status);
+                    }
+                    displayResults(allResults);
                 }
             };
             
@@ -1024,12 +1065,45 @@
                 return;
             }
 
-            // Sort by rating (top rating first)
-            filteredResults.sort((a, b) => {
-                const ratingA = typeof a.rating === 'number' ? a.rating : (parseFloat(a.rating) || 0);
-                const ratingB = typeof b.rating === 'number' ? b.rating : (parseFloat(b.rating) || 0);
-                return ratingB - ratingA;
-            });
+            // Sort by rating (default - top rating first)
+            const sortOrder = document.getElementById('sortOrder')?.value || 'rating';
+            
+            switch(sortOrder) {
+                case 'newest':
+                    // Sort by newest (we don't have timestamp, so keep current order)
+                    break;
+                case 'rating':
+                    // Sort by highest rating
+                    filteredResults.sort((a, b) => {
+                        const ratingA = typeof a.rating === 'number' ? a.rating : (parseFloat(a.rating) || 0);
+                        const ratingB = typeof b.rating === 'number' ? b.rating : (parseFloat(b.rating) || 0);
+                        return ratingB - ratingA;
+                    });
+                    break;
+                case 'price-low':
+                    // Sort by price low to high (using price_level if available)
+                    filteredResults.sort((a, b) => {
+                        const priceA = a.price_level || 0;
+                        const priceB = b.price_level || 0;
+                        return priceA - priceB;
+                    });
+                    break;
+                case 'price-high':
+                    // Sort by price high to low
+                    filteredResults.sort((a, b) => {
+                        const priceA = a.price_level || 0;
+                        const priceB = b.price_level || 0;
+                        return priceB - priceA;
+                    });
+                    break;
+                default:
+                    // Default order - by rating
+                    filteredResults.sort((a, b) => {
+                        const ratingA = typeof a.rating === 'number' ? a.rating : (parseFloat(a.rating) || 0);
+                        const ratingB = typeof b.rating === 'number' ? b.rating : (parseFloat(b.rating) || 0);
+                        return ratingB - ratingA;
+                    });
+            }
             
             // Clear existing markers
             markers.forEach(marker => {
@@ -1223,7 +1297,7 @@
                 
                 const cardHtml = `
                     <div class="col-12 col-sm-6">
-                        <div class="listing-card card h-100 border-0 shadow-sm" id="listing-${index}">
+                        <div class="listing-card card h-100 border-0 shadow-sm" id="listing-${index}" style="cursor: pointer;" onclick="window.location.href='/place/google/${placeId}/'">
                             <div class="card-image-wrapper position-relative">
                                 ${photoUrl ? `<img src="${photoUrl}" class="card-img-top" alt="${name}">` : '<div class="card-img-top" style="height: 180px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #999;">No Image Available</div>'}
                                 <div class="price-badge">$${priceMin} - $${priceMax}</div>
@@ -1316,14 +1390,14 @@
         async function fetchPhoneNumbersForPlaces(places) {
             if (!placesService) return;
             
-            // Fetch phone numbers in batches to avoid rate limiting
-            const batchSize = 5;
+            // Fetch phone numbers in larger batches for faster loading
+            const batchSize = 10;
             for (let i = 0; i < places.length; i += batchSize) {
                 const batch = places.slice(i, i + batchSize);
                 await Promise.all(batch.map(place => fetchPhoneNumberForPlace(place.place_id)));
-                // Small delay between batches
+                // Reduced delay from 500ms to 100ms
                 if (i + batchSize < places.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
         }
@@ -1357,14 +1431,14 @@
         async function fetchAccessibilityInfoForPlaces(places) {
             if (!placesService) return;
             
-            // Fetch accessibility info in batches to avoid rate limiting
-            const batchSize = 5;
+            // Fetch accessibility info in larger batches for faster loading
+            const batchSize = 10;
             for (let i = 0; i < places.length; i += batchSize) {
                 const batch = places.slice(i, i + batchSize);
                 await Promise.all(batch.map(place => fetchAccessibilityForPlace(place.place_id, place)));
-                // Small delay between batches
+                // Reduced delay from 500ms to 100ms
                 if (i + batchSize < places.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
         }

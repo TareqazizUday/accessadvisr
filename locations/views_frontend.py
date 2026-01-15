@@ -241,6 +241,397 @@ class AllContributionsView(TemplateView):
         return context
 
 
+class EntertainmentView(TemplateView):
+    template_name = 'entertainment.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find entertainment category
+        entertainment_categories = Category.objects.filter(
+            Q(name__icontains='entertainment') |
+            Q(name__icontains='cinema') |
+            Q(name__icontains='theater') |
+            Q(name__icontains='movie') |
+            Q(name__icontains='concert')
+        )
+        
+        # Get locations in entertainment categories
+        if entertainment_categories.exists():
+            locations = Location.objects.filter(
+                category__in=entertainment_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific entertainment category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        return context
+
+
+class FoodDrinkView(TemplateView):
+    template_name = 'food_drink.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find food & drink category
+        food_drink_categories = Category.objects.filter(
+            Q(name__icontains='food') |
+            Q(name__icontains='drink') |
+            Q(name__icontains='restaurant') |
+            Q(name__icontains='cafe') |
+            Q(name__icontains='bar')
+        )
+        
+        # Get locations in food & drink categories
+        if food_drink_categories.exists():
+            locations = Location.objects.filter(
+                category__in=food_drink_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific food & drink category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
+class ShoppingView(TemplateView):
+    template_name = 'shopping.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find shopping category
+        shopping_categories = Category.objects.filter(
+            Q(name__icontains='shopping') |
+            Q(name__icontains='shop') |
+            Q(name__icontains='store') |
+            Q(name__icontains='mall') |
+            Q(name__icontains='market')
+        )
+        
+        # Get locations in shopping categories
+        if shopping_categories.exists():
+            locations = Location.objects.filter(
+                category__in=shopping_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific shopping category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
+class SportsRecreationalView(TemplateView):
+    template_name = 'sports_recreational.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find sports & recreational category
+        sports_categories = Category.objects.filter(
+            Q(name__icontains='sport') |
+            Q(name__icontains='recreational') |
+            Q(name__icontains='gym') |
+            Q(name__icontains='fitness') |
+            Q(name__icontains='park')
+        )
+        
+        # Get locations in sports & recreational categories
+        if sports_categories.exists():
+            locations = Location.objects.filter(
+                category__in=sports_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific sports category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
+class TransportView(TemplateView):
+    template_name = 'transport.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find transport category
+        transport_categories = Category.objects.filter(
+            Q(name__icontains='transport') |
+            Q(name__icontains='station') |
+            Q(name__icontains='terminal') |
+            Q(name__icontains='airport') |
+            Q(name__icontains='taxi')
+        )
+        
+        # Get locations in transport categories
+        if transport_categories.exists():
+            locations = Location.objects.filter(
+                category__in=transport_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific transport category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
+class FlightTravelView(TemplateView):
+    template_name = 'flight_travel.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find flight & travel category
+        flight_travel_categories = Category.objects.filter(
+            Q(name__icontains='flight') |
+            Q(name__icontains='travel') |
+            Q(name__icontains='airport') |
+            Q(name__icontains='airline') |
+            Q(name__icontains='tourism')
+        )
+        
+        # Get locations in flight & travel categories
+        if flight_travel_categories.exists():
+            locations = Location.objects.filter(
+                category__in=flight_travel_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific flight & travel category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
+class EducationView(TemplateView):
+    template_name = 'education.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
+        
+        # Import Location and Category models
+        from locations.models import Location, Category
+        from django.db.models import Q
+        
+        # Get filter parameters
+        keywords = self.request.GET.get('keywords', '').strip()
+        location_search = self.request.GET.get('location', '').strip()
+        
+        # Try to find education category
+        education_categories = Category.objects.filter(
+            Q(name__icontains='education') |
+            Q(name__icontains='school') |
+            Q(name__icontains='university') |
+            Q(name__icontains='college') |
+            Q(name__icontains='library')
+        )
+        
+        # Get locations in education categories
+        if education_categories.exists():
+            locations = Location.objects.filter(
+                category__in=education_categories,
+                status='active'
+            ).select_related('category').prefetch_related('amenities')
+            
+            # Apply keyword filter
+            if keywords:
+                locations = locations.filter(
+                    Q(name__icontains=keywords) |
+                    Q(description__icontains=keywords) |
+                    Q(keywords__icontains=keywords)
+                )
+            
+            # Apply location filter
+            if location_search:
+                locations = locations.filter(
+                    Q(name__icontains=location_search)
+                )
+            
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
+        else:
+            # If no specific education category, show all active locations
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
+        
+        context['locations'] = locations
+        
+        return context
+
+
 class AccommodationView(TemplateView):
     template_name = 'accommodation.html'
     
@@ -287,10 +678,11 @@ class AccommodationView(TemplateView):
                     Q(name__icontains=location_search)
                 )
             
-            locations = locations.order_by('name')
+            # Order by rating (highest first), then by name
+            locations = locations.order_by('-rating', 'name')
         else:
             # If no specific accommodation category, show all active locations
-            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities')
+            locations = Location.objects.filter(status='active').select_related('category').prefetch_related('amenities').order_by('-rating', 'name')
         
         context['locations'] = locations
         context['category_name'] = 'Accommodation'

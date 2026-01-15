@@ -1,4 +1,5 @@
 {% load static %}
+{% load rating_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,33 +39,17 @@
             <div class="col-lg-4 col-md-6">
                 <div class="contribution-card bg-white shadow-sm h-100 rounded-1 overflow-hidden">
                     <div class="p-4 text-center">
-                        <img src="https://i.pravatar.cc/150?u={{ review.author_name|slugify }}" class="reviewer-img rounded-circle mb-3" alt="{{ review.author_name }}" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #eee;">
+                        {% if review.user %}
+                            {% if review.user.profile.profile_picture %}
+                                <img src="{{ review.user.profile.profile_picture.url }}" class="reviewer-img rounded-circle mb-3" alt="{{ review.author_name }}" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #eee;">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ review.author_name|urlencode }}&size=80&background=FF431E&color=fff&bold=true" class="reviewer-img rounded-circle mb-3" alt="{{ review.author_name }}" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #eee;">
+                            {% endif %}
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ review.author_name|urlencode }}&size=80&background=FF431E&color=fff&bold=true" class="reviewer-img rounded-circle mb-3" alt="{{ review.author_name }}" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid #eee;">
+                        {% endif %}
                         <h6 class="mb-2 fw-bold">{{ review.author_name }}</h6>
-                        <div class="stars text-warning small d-flex justify-content-center mb-0">
-                            {% with avg_rating=review.get_average_rating %}
-                                {% if avg_rating >= 5 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                                {% elif avg_rating >= 4.5 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                                {% elif avg_rating >= 4 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 3.5 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 3 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 2.5 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 2 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 1.5 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% elif avg_rating >= 1 %}
-                                    <i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% else %}
-                                    <i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
+                        {% star_rating review.get_average_rating %}
                     </div>
                     <div class="bg-orange p-4 text-white">
                         <p class="mb-0 small">{{ review.author_name }} reviewed {{ review.place_name }}</p>
