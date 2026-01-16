@@ -87,4 +87,34 @@
 @media (max-width: 768px) {
     .section-title { font-size: 1.8rem; }
     .explore-section { text-align: left !important; }
+    
+    .place-card {
+        margin-bottom: 20px;
+    }
+    
+    .place-card .card-img-top {
+        height: 180px;
+    }
+    
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        bottom: -20px;
+        right: 15px;
+        border: 3px solid white;
+    }
+    
+    .badge-heart {
+        width: 28px;
+        height: 28px;
+        top: 10px;
+        left: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .badge-verified {
+        width: 18px;
+        height: 18px;
+        font-size: 1rem;
+    }
 }

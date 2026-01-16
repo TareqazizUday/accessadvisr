@@ -1,0 +1,234 @@
+/* Donate Page Mobile Responsive Styles */
+
+/* Mobile Responsive */
+@media (max-width: 991px) {
+    /* Adjust for tablets */
+    .donate_card_section h5 {
+        font-size: 1.15rem !important;
+    }
+}
+
+@media (max-width: 767px) {
+    /* General container and spacing */
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* col-lg-11 wrapper - remove padding for full width usage */
+    .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    section {
+        overflow-x: hidden !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Donate card section */
+    .donate_card_section {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .donate_card_section .col-12,
+    .donate_card_section .col-md-6,
+    .donate_card_section .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .donate_card_section .card {
+        margin-bottom: 1rem !important;
+    }
+    
+    .donate_card_img {
+        height: 160px !important;
+    }
+    
+    .donate_card_title {
+        font-size: 0.9rem !important;
+        min-height: auto !important;
+    }
+    
+    .donate_card_section h5 {
+        font-size: 1.1rem !important;
+    }
+    
+    .donate_card_section .btn-orange {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .donate_card_read_more {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Donate description section */
+    .donate-description-section p {
+        font-size: 0.95rem !important;
+        line-height: 1.7 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Donate FAQ accordion */
+    .donate_card_faq_section {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .donate_card_accordion {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .donate_card_btn {
+        font-size: 0.95rem !important;
+        padding: 1rem !important;
+    }
+    
+    .donate_card_body {
+        font-size: 0.9rem !important;
+        line-height: 1.6 !important;
+        padding: 1rem !important;
+    }
+    
+    .donate_card_body ul li {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Video slider section */
+    .video-slider-section {
+        overflow-x: hidden !important;
+    }
+    
+    /* Headings */
+    .sponsor-heading {
+        font-size: 1.5rem !important;
+    }
+    
+    .orange-divider {
+        width: 60px !important;
+        margin: 0.5rem auto !important;
+    }
+    
+    /* Donation popup - make it mobile friendly */
+    .donation-popup {
+        width: calc(100vw - 30px) !important;
+        padding: 1.5rem !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+    
+    .donation-popup h3 {
+        font-size: 1.3rem !important;
+    }
+    
+    .donation-popup .form-label {
+        font-size: 0.9rem !important;
+    }
+    
+    .donation-popup .form-control,
+    .donation-popup .form-select {
+        font-size: 0.9rem !important;
+    }
+    
+    .donation-popup .btn {
+        width: 100% !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* Ensure columns stack properly */
+    .col-lg-10,
+    .col-lg-11 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Prevent horizontal overflow */
+    body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    /* Images */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .donate_card_section .col-12,
+    .donate_card_section .col-md-6,
+    .donate_card_section .col-lg-4 {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .donate_card_img {
+        height: 140px !important;
+    }
+    
+    .donate_card_title {
+        font-size: 0.85rem !important;
+    }
+    
+    .donate_card_section h5 {
+        font-size: 1rem !important;
+    }
+    
+    .donate_card_section .btn-orange {
+        padding: 0.35rem 0.7rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .donate_card_read_more {
+        font-size: 0.7rem !important;
+    }
+    
+    .donate-description-section p {
+        font-size: 0.9rem !important;
+    }
+    
+    .donate_card_btn {
+        font-size: 0.9rem !important;
+        padding: 0.85rem !important;
+    }
+    
+    .donate_card_body {
+        font-size: 0.85rem !important;
+        padding: 0.85rem !important;
+    }
+    
+    .sponsor-heading {
+        font-size: 1.3rem !important;
+    }
+    
+    .donation-popup {
+        width: calc(100vw - 20px) !important;
+        padding: 1.25rem !important;
+    }
+    
+    .donation-popup h3 {
+        font-size: 1.2rem !important;
+    }
+    
+    .col-lg-10,
+    .col-lg-11 {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+}

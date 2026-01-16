@@ -1,0 +1,105 @@
+/* Partners Page Mobile Responsive CSS */
+
+/* Global Mobile Fixes */
+@media (max-width: 767px) {
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
+    /* Consistent container spacing */
+    .partners-header-section .container,
+    .video-slider-section .container,
+    .slider-section .container,
+    .partners_friends_section .container,
+    .partner-cards-section .container,
+    .container.text-center {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Row spacing */
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Column spacing */
+    [class*="col-"] {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Spacing between sections */
+    section {
+        margin-bottom: 1.5rem;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    /* Text descriptions */
+    .text-muted.medium,
+    .text-secondary.medium {
+        font-size: 0.9rem !important;
+        line-height: 1.6;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Headings */
+    .mt-5 {
+        margin-top: 2rem !important;
+    }
+    
+    .mb-5 {
+        margin-bottom: 2rem !important;
+    }
+    
+    .mt-4 {
+        margin-top: 1.5rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    /* Remove extra padding from inline styles */
+    p[style*="padding"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .partners-header-section .container,
+    .video-slider-section .container,
+    .slider-section .container,
+    .partners_friends_section .container,
+    .partner-cards-section .container,
+    .container.text-center {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    [class*="col-"] {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .text-muted.medium,
+    .text-secondary.medium {
+        font-size: 0.85rem !important;
+    }
+    
+    section {
+        margin-bottom: 1rem;
+    }
+    
+    .mt-5 {
+        margin-top: 1.5rem !important;
+    }
+    
+    .mb-5 {
+        margin-bottom: 1.5rem !important;
+    }
+}

@@ -1,0 +1,229 @@
+/* Mobile responsive styles for Packages Page */
+@media (max-width: 767px) {
+    /* General container padding for all sections */
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* col-lg-11 wrapper - remove padding to allow container to control spacing */
+    .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Inner columns - consistent 15px padding */
+    .col-12,
+    .col-md-6,
+    .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Headings section */
+    .sponsor-heading {
+        font-size: 1.5rem !important;
+        padding: 0 15px !important;
+    }
+    
+    .orange-divider {
+        margin: 10px auto !important;
+    }
+    
+    /* Description text */
+    .text-muted.medium {
+        font-size: 0.95rem !important;
+        padding: 0 15px !important;
+    }
+    
+    /* Price table section */
+    .price_table_section {
+        padding: 30px 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    .price_table_section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .price_table_section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .price_table_section .col-12,
+    .price_table_section .col-md-6,
+    .price_table_section .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .price_table_card {
+        margin-bottom: 0 !important;
+    }
+    
+    .price_table_header h4 {
+        font-size: 1.3rem !important;
+    }
+    
+    .price_table_header p {
+        font-size: 0.85rem !important;
+    }
+    
+    .price_table_card .display-4 {
+        font-size: 2.5rem !important;
+    }
+    
+    .price_table_card ul li {
+        font-size: 0.85rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Video slider section */
+    .video-slider-section {
+        overflow-x: hidden !important;
+    }
+    
+    .video-slider-section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .video-slider-section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Partner slide section */
+    .partner-slide-section {
+        overflow-x: hidden !important;
+    }
+    
+    .partner-slide-section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .partner-slide-section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Partner cards section */
+    .partner-cards-section {
+        overflow-x: hidden !important;
+        padding: 30px 0 !important;
+    }
+    
+    .partner-cards-section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .partner-cards-section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .partner-cards-section .col-12,
+    .partner-cards-section .col-md-6,
+    .partner-cards-section .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .partner-card {
+        margin-bottom: 20px !important;
+    }
+    
+    .partner-card .card-image-box {
+        height: 200px !important;
+    }
+    
+    .partner-card .partner-img {
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    
+    .partner-title {
+        font-size: 1.1rem !important;
+    }
+    
+    .partner-desc {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Load More button section */
+    #loadMoreContainer {
+        padding: 20px 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    #loadMoreContainer .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    #loadMoreContainer .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Button section */
+    .btn-orange {
+        padding: 10px 30px !important;
+        font-size: 0.9rem !important;
+        width: auto !important;
+        display: inline-block !important;
+    }
+    
+    #loadMoreBtn {
+        margin: 10px auto !important;
+    }
+    
+    /* Remaining partners section */
+    #remainingPartnersSection {
+        overflow-x: hidden !important;
+    }
+    
+    #remainingPartnersSection .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    #remainingPartnersSection .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Prevent any horizontal overflow */
+    body {
+        overflow-x: hidden !important;
+    }
+    
+    section {
+        overflow-x: hidden !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .sponsor-heading {
+        font-size: 1.3rem !important;
+    }
+    
+    .price_table_card .display-4 {
+        font-size: 2rem !important;
+    }
+    
+    .text-muted.medium {
+        font-size: 0.9rem !important;
+    }
+}

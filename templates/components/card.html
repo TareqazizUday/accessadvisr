@@ -1,7 +1,9 @@
 <section class="pb-5" style="padding-bottom: 5rem !important;">
     <div class="container">
-        <div class="row gy-4" id="most-rated-places-container">
-            <!-- Places will be loaded dynamically here -->
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row gy-4" id="most-rated-places-container">
+                    <!-- Places will be loaded dynamically here -->
             <div class="col-lg-4 col-md-6">
                 <div class="card h-100 border-0 shadow-sm place-card">
                     <div class="position-relative">
@@ -16,6 +18,8 @@
                         <h5 class="card-title fw-bold mb-1">Loading places...</h5>
                         <p class="text-muted small mb-3">Please allow location access</p>
                     </div>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -151,14 +155,24 @@ function displayMostRatedPlaces(categoryPlaces, container) {
         const phone = place.formatted_phone_number || place.international_phone_number || '';
         const phoneDisplay = phone ? (phone.length > 10 ? phone.substring(0, 10) + '***' : phone) : 'N/A';
         
-        // Check if place is open now - use business_status as fallback (deprecated open_now removed)
+        // Check if place is open now
         let statusText = 'Unknown';
         let statusClass = 'text-muted';
         
-        if (place.business_status === 'OPERATIONAL') {
-            statusText = 'Operational';
-            statusClass = 'text-success';
-        } else if (place.business_status === 'CLOSED_TEMPORARILY' || place.business_status === 'CLOSED_PERMANENTLY') {
+        // Check opening_hours for current open/close status
+        if (place.opening_hours && typeof place.opening_hours.isOpen === 'function') {
+            // Use isOpen() method if available
+            const isOpen = place.opening_hours.isOpen();
+            statusText = isOpen ? 'Open' : 'Closed';
+            statusClass = isOpen ? 'text-success' : 'text-danger';
+        } else if (place.opening_hours && place.opening_hours.open_now !== undefined) {
+            // Fallback to open_now property
+            statusText = place.opening_hours.open_now ? 'Open' : 'Closed';
+            statusClass = place.opening_hours.open_now ? 'text-success' : 'text-danger';
+        } else if (place.business_status === 'CLOSED_TEMPORARILY') {
+            statusText = 'Closed';
+            statusClass = 'text-danger';
+        } else if (place.business_status === 'CLOSED_PERMANENTLY') {
             statusText = 'Closed';
             statusClass = 'text-danger';
         }

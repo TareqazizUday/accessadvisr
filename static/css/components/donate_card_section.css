@@ -1,12 +1,34 @@
 /* Unique Prefixed Styles for Donate Card */
+
+/* Card container alignment */
+.donate_card_section .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.donate_card_section .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.donate_card_section .card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 .donate_card_img {
     height: 180px;
     object-fit: cover;
+    width: 100%;
 }
 
 .donate_card_title {
     color: #1a2b48; /* Dark navy from your theme */
     font-size: 0.95rem;
+    min-height: 2.8em; /* Ensure consistent title height */
+    line-height: 1.4;
 }
 
 .donate_card_read_more {

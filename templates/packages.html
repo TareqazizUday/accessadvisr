@@ -36,15 +36,19 @@
 
 <!---- sponsor heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">AccessAdvisr Sponsorship Packages</h2>
-    <div class="orange-divider mx-auto"></div>
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h2 class="fw-bold sponsor-heading">AccessAdvisr Sponsorship Packages</h2>
+            <div class="orange-divider mx-auto"></div>
+        </div>
+    </div>
 </div>
 
 
 <!----- sponsor description section ------>
 <div class="container text-center mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-11">
             <p class="text-muted medium mb-4 lh-lg">
                 AccessAdvisr offers a range of sponsorship packages designed to support our mission of improving 
                 accessibility worldwide. By becoming a sponsor, your organisation can help empower disabled 
@@ -62,8 +66,12 @@
 
 <!---- sponsor heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">Our Sponsors</h2>
-    <div class="orange-divider mx-auto"></div>
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h2 class="fw-bold sponsor-heading">Our Sponsors</h2>
+            <div class="orange-divider mx-auto"></div>
+        </div>
+    </div>
 </div>
 
 <!------------- sponsor slider section ---------->
@@ -73,7 +81,7 @@
 <!----- sponsor description section ------>
 <div class="container text-center mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-11">
             <p class="text-muted medium mb-4 lh-lg">
                 Thanks to the generous support of our sponsors, AccessAdvisr can continue delivering trusted accessibility reviews and resources for the benefit of the community. Their contribution helps us power the movement of #DisabledPeopleGoingPlaces, making it easier for disabled people to explore, review, and enjoy inclusive spaces with confidence.
             </p>
@@ -87,10 +95,45 @@
 <!-------- sponsor card section ------------------>
 {% include 'components/partner_card.html' %}
 
+<!-------- remaining partners section (initially hidden) ------------------>
+{% if remaining_partners %}
+{% include 'components/partner_card_remaining.html' %}
+{% endif %}
 
-<div class="container text-center">
-    <a href="#" class="btn btn-orange btn-fixed">Load More</a>
+<div class="container text-center" id="loadMoreContainer">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            {% if remaining_partners %}
+            <button id="loadMoreBtn" class="btn btn-orange btn-fixed">Load More</button>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const remainingSection = document.getElementById('remainingPartnersSection');
+    
+    if (loadMoreBtn && remainingSection) {
+        // Initially hide the remaining partners section
+        remainingSection.style.display = 'none';
+        
+        loadMoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show the remaining partners section
+            remainingSection.style.display = 'block';
+            
+            // Hide the Load More button
+            loadMoreBtn.style.display = 'none';
+            
+            // Smooth scroll to the remaining partners
+            remainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+});
+</script>
 
 
 

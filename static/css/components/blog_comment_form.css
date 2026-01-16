@@ -1,0 +1,270 @@
+/* Blog Detail Comment Form Styles */
+
+/* Comment Form Section */
+.comment-form {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    margin-top: 2rem;
+}
+
+.comment-form h4 {
+    font-size: 1.75rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.comment-form h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #FF431E;
+    border-radius: 2px;
+}
+
+.comment-form p.text-muted {
+    font-size: 0.9rem;
+    color: #6c757d !important;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Inputs */
+.comment-form .form-control {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+}
+
+.comment-form .form-control:focus {
+    border-color: #FF431E;
+    box-shadow: 0 0 0 0.2rem rgba(255, 67, 30, 0.1);
+    background-color: #ffffff;
+    outline: none;
+}
+
+.comment-form .form-control::placeholder {
+    color: #adb5bd;
+    font-size: 0.9rem;
+}
+
+.comment-form textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Form Labels */
+.comment-form label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Checkbox Section */
+.comment-form .form-check {
+    padding: 0.75rem;
+    background: transparent;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+}
+
+.comment-form .form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.comment-form .form-check-input:checked {
+    background-color: #FF431E;
+    border-color: #FF431E;
+}
+
+.comment-form .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 67, 30, 0.15);
+    border-color: #FF431E;
+}
+
+.comment-form .form-check-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    line-height: 1.5;
+}
+
+/* Submit Button */
+.comment-form .btn-orange {
+    background: #FF431E;
+    border: none;
+    padding: 0.85rem 3.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 67, 30, 0.25);
+    color: #ffffff;
+}
+
+.comment-form .btn-orange:hover {
+    background: #e63a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 67, 30, 0.35);
+    color: #ffffff;
+}
+
+.comment-form .btn-orange:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(255, 67, 30, 0.25);
+}
+
+/* Form Spacing */
+.comment-form .row {
+    margin-bottom: 0;
+}
+
+.comment-form .mb-3 {
+    margin-bottom: 1.25rem !important;
+}
+
+.comment-form .mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Success/Error Messages */
+.comment-form .alert {
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.comment-form .alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.comment-form .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Loading State */
+.comment-form .btn-orange:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.comment-form .btn-orange.loading {
+    position: relative;
+    color: transparent;
+}
+
+.comment-form .btn-orange.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    .comment-form {
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+    
+    .comment-form h4 {
+        font-size: 1.5rem;
+    }
+    
+    .comment-form .form-control {
+        padding: 0.65rem 0.85rem;
+        font-size: 0.9rem;
+    }
+    
+    .comment-form .btn-orange {
+        padding: 0.75rem 2rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+    
+    .comment-form .form-check {
+        padding: 0.5rem 0;
+    }
+    
+    .comment-form .form-check-input {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .comment-form .form-check-label {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .comment-form {
+        padding: 1.25rem;
+        border-radius: 10px;
+    }
+    
+    .comment-form h4 {
+        font-size: 1.3rem;
+    }
+    
+    .comment-form p.text-muted {
+        font-size: 0.85rem;
+    }
+    
+    .comment-form .form-control {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .comment-form textarea.form-control {
+        min-height: 100px;
+    }
+    
+    .comment-form .btn-orange {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.85rem;
+    }
+}

@@ -151,14 +151,94 @@
     .listings-hero h1 {
         font-size: 1.75rem !important;
     }
+    
+    /* Sidebar should stack on tablet */
+    .col-lg-4 {
+        margin-bottom: 20px;
+    }
 }
 
 @media (max-width: 767.98px) {
     .listings-hero {
         min-height: 120px !important;
+        padding: 20px 15px !important;
     }
     
     .listings-hero h1 {
         font-size: 1.5rem !important;
+    }
+    
+    .listings-hero .breadcrumb {
+        font-size: 0.85rem !important;
+    }
+    
+    /* Main content spacing */
+    section.py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    /* Sidebar filters */
+    .col-lg-4 {
+        margin-bottom: 25px;
+    }
+    
+    .col-lg-4 .bg-white {
+        padding: 1.5rem !important;
+    }
+    
+    /* Form elements */
+    .form-control,
+    .form-select {
+        font-size: 0.95rem !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+    
+    /* Listing cards */
+    .listing-card {
+        margin-bottom: 20px;
+    }
+    
+    .listing-card .card-img-top {
+        height: 200px !important;
+    }
+    
+    .listing-card .card-body {
+        padding: 1rem !important;
+        padding-top: 2rem !important;
+    }
+    
+    .listing-card .badge.bg-orange {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.5rem !important;
+    }
+    
+    /* Pagination and buttons */
+    .btn {
+        font-size: 0.9rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    /* Results count */
+    #resultsCount {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Prevent horizontal scroll */
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+        overflow-x: hidden;
+    }
+    
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .col-lg-8,
+    .col-lg-4 {
+        padding-left: 0;
+        padding-right: 0;
     }
 }

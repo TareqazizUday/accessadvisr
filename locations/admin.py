@@ -1,5 +1,29 @@
 from django.contrib import admin
-from .models import Location, Category, Amenity, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply, AboutPost, AboutComment, AboutCommentReply, DonationCampaign, Donation, UserProfile
+from .models import Category, Review, ReviewReply, Blog, BlogComment, BlogCommentReply, Partner, PartnerComment, PartnerCommentReply, AboutPost, AboutComment, AboutCommentReply, DonationCampaign, Donation, UserProfile, ContactMessage
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'status', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['name', 'email', 'message']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('Contact Information', {
+            'fields': ('name', 'email', 'message')
+        }),
+        ('Status & Notes', {
+            'fields': ('status', 'admin_notes')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        # Prevent manual addition from admin
+        return False
 
 
 @admin.register(UserProfile)
@@ -25,47 +49,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'icon']
     search_fields = ['name']
-
-
-@admin.register(Amenity)
-class AmenityAdmin(admin.ModelAdmin):
-    list_display = ['name', 'icon']
-    search_fields = ['name']
-
-
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'latitude', 'longitude', 'status', 'created_at']
-    list_filter = ['category', 'status', 'created_at']
-    search_fields = ['name', 'keywords']
-    readonly_fields = ['created_at', 'updated_at']
-    filter_horizontal = ['amenities']
-    
-    fieldsets = (
-        ('Basic Information', {
-            'fields': ('name', 'category', 'status')
-        }),
-        ('Location', {
-            'fields': ('latitude', 'longitude')
-        }),
-        ('Content', {
-            'fields': ('description', 'what_we_looking_for', 'why_this_matters', 'how_to_apply')
-        }),
-        ('Contact & Links', {
-            'fields': ('email', 'website', 'video_url')
-        }),
-        ('Social Media', {
-            'fields': ('social_facebook', 'social_twitter', 'social_google_plus', 'social_pinterest'),
-            'classes': ('collapse',)
-        }),
-        ('Features', {
-            'fields': ('amenities', 'keywords')
-        }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
-        }),
-    )
 
 
 @admin.register(Review)

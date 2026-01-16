@@ -24,13 +24,16 @@ from locations.views_partner_comments import SubmitPartnerCommentView, SubmitPar
 from locations.views_blog_comments import SubmitBlogCommentView, SubmitBlogCommentReplyView
 from locations.views_about_comments import SubmitAboutCommentView, SubmitAboutCommentReplyView
 from locations.views_donations import SubmitDonationView
-from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, EntertainmentView, FoodDrinkView, ShoppingView, SportsRecreationalView, TransportView, FlightTravelView, EducationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView
+from locations.views_frontend import AccessAdvisrIndexView, AboutView, AboutPostDetailView, BlogsView, BlogDetailView, ContactView, DonateView, PackagesView, PartnersView, AllContributionsView, AccommodationView, EntertainmentView, FoodDrinkView, ShoppingView, SportsRecreationalView, TransportView, FlightTravelView, EducationView, PartnerDetailView, PartnerListView, SponsorDetailView, SponsorListView, SubmitListingView
 from locations.views_auth import RegisterView, LoginView, LogoutView
 from locations.views_profile import profile_view, profile_edit, my_reviews, my_favorites, profile_settings, delete_review
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('locations.urls')),
+    
+    # Submit Listing
+    path('submit-listing/', SubmitListingView.as_view(), name='submit_listing'),
     
     # Authentication URLs
     path('api/auth/register/', RegisterView.as_view(), name='register'),

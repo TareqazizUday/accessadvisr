@@ -75,6 +75,7 @@
 @media (max-width: 767.98px) {
     .hero-map-section {
         height: 350px;
+        margin-bottom: 20px;
     }
 
     .search-container {
@@ -82,16 +83,29 @@
         bottom: 0;
         transform: none;
         left: 0;
-        margin-top: -50px; /* Slight overlap on mobile */
-        padding: 0 20px;
+        margin-top: 0;
+        padding: 0 15px;
+        margin-bottom: 20px;
     }
 
     .search-bar-wrapper {
         padding: 10px;
+        margin-bottom: 0;
+    }
+
+    .search-bar-wrapper .col-md-3 {
+        padding: 0 !important;
+    }
+
+    .search-bar-wrapper .btn-orange {
+        width: 100%;
+        margin-top: 10px;
     }
 
     .border-end-custom {
         border-right: none;
-        border-bottom: 1px solid #eee; /* Stacked separators */
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
     }
 }

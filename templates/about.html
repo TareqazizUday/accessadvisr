@@ -35,15 +35,19 @@
 
 <!---- sub heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">About AccessAdvisr</h2>
-    <div class="orange-divider mx-auto"></div>
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h2 class="fw-bold sponsor-heading">About AccessAdvisr</h2>
+            <div class="orange-divider mx-auto"></div>
+        </div>
+    </div>
 </div>
 
 
 <!----- sub header description section ------>
 <div class="container text-center mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-11">
             <p class="text-muted medium mb-4 lh-lg">
                 AccessAdvisr exists to give disabled people a stronger voice in 
                 shaping accessibility. We provide a platform, supported by our website 
@@ -58,14 +62,18 @@
 
 <!---- sub heading ------>
 <div class="container text-center mt-5 mb-4">
-    <h2 class="fw-bold sponsor-heading">Core Values Driving AccessAdvisr</h2>
-    <div class="orange-divider mx-auto"></div>
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <h2 class="fw-bold sponsor-heading">Core Values Driving AccessAdvisr</h2>
+            <div class="orange-divider mx-auto"></div>
+        </div>
+    </div>
 </div>
 
 <!----- sub header description section ------>
 <div class="container text-center mt-4 mb-5">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-11">
             <p class="text-muted medium mb-4 lh-lg">
                 Since its inception, AccessAdvisr has grown into a trusted accessibility platform, empowering people with disabilities worldwide. We actively engage with our community through YouTube, Facebook, Instagram, BlueSky, and LinkedIn, 
                 sharing insights, updates, and initiatives that reflect our commitment to inclusion.
@@ -78,7 +86,9 @@
 {% if all_about_posts %}
 <section class="about_section_values py-5">
     <div class="container">
-        <div class="row gy-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row gy-4">
             {% for post in all_about_posts %}
             <div class="col-12 col-md-4">
                 <div class="card border-0 h-100 shadow-sm about-post-card">
@@ -100,6 +110,8 @@
                 </div>
             </div>
             {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </section>

@@ -33,13 +33,45 @@
 <!-------- blogs card section ------------------>
 {% include 'components/blogs_card.html' %}
 
+<!-------- remaining blogs section (initially hidden) ------------------>
+{% if remaining_blogs %}
+{% include 'components/blogs_card_remaining.html' %}
+{% endif %}
 
 {% if has_more %}
-<div class="container text-center">
-    <button id="loadMoreBtn" class="btn btn-orange btn-fixed">Load More</button>
+<div class="container text-center" id="loadMoreContainer">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <button id="loadMoreBtn" class="btn btn-orange btn-fixed">Load More</button>
+        </div>
+    </div>
 </div>
 {% endif %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const remainingSection = document.getElementById('remainingBlogsSection');
+    
+    if (loadMoreBtn && remainingSection) {
+        // Initially hide the remaining blogs section
+        remainingSection.style.display = 'none';
+        
+        loadMoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show the remaining blogs section
+            remainingSection.style.display = 'block';
+            
+            // Hide the Load More button
+            loadMoreBtn.style.display = 'none';
+            
+            // Smooth scroll to the remaining blogs
+            remainingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+});
+</script>
 
 <!---------- footer section ---------->
 {% include 'components/footer.html' %}

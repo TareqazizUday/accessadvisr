@@ -1,0 +1,133 @@
+/* Contact Box Widget Styles */
+
+.contact-box {
+    background: linear-gradient(135deg, #FF431E 0%, #ff5a3d 100%);
+    color: #ffffff;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(255, 67, 30, 0.25);
+    transition: all 0.3s ease;
+}
+
+.contact-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(255, 67, 30, 0.35);
+}
+
+/* Heading */
+.contact-box h5 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+}
+
+/* Phone Icon Circle */
+.contact-box .icon-circle {
+    width: 70px;
+    height: 70px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.contact-box:hover .icon-circle {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.contact-box .icon-circle i {
+    font-size: 1.8rem;
+    color: #FF431E;
+}
+
+/* Subtext */
+.contact-box p {
+    font-size: 1rem;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    opacity: 0.95;
+    font-weight: 400;
+}
+
+/* Phone Number Link */
+.contact-box a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.75rem;
+    display: block;
+    transition: all 0.3s ease;
+    letter-spacing: 0.5px;
+}
+
+.contact-box a:hover {
+    color: #ffffff;
+    text-decoration: none;
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    .contact-box {
+        padding: 2rem 1.5rem;
+        border-radius: 12px;
+        margin-top: 1.5rem;
+    }
+    
+    .contact-box h5 {
+        font-size: 1.3rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .contact-box .icon-circle {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1.25rem;
+    }
+    
+    .contact-box .icon-circle i {
+        font-size: 1.5rem;
+    }
+    
+    .contact-box p {
+        font-size: 0.95rem;
+    }
+    
+    .contact-box a {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-box {
+        padding: 1.75rem 1.25rem;
+    }
+    
+    .contact-box h5 {
+        font-size: 1.2rem;
+    }
+    
+    .contact-box .icon-circle {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .contact-box .icon-circle i {
+        font-size: 1.4rem;
+    }
+    
+    .contact-box a {
+        font-size: 1.3rem;
+    }
+}

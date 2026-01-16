@@ -1,6 +1,9 @@
 /* Unique Prefixed Styles */
 .tip_card_main {
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .tip_card_main:hover {
@@ -11,6 +14,7 @@
 .tip_card_img {
     height: 200px;
     object-fit: cover;
+    width: 100%;
 }
 
 /* Floating Avatar Position */
@@ -33,13 +37,44 @@
     font-size: 1.15rem;
     color: #333;
     line-height: 1.4;
+    min-height: 2.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tip_card_main .card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 3rem 1.5rem 1rem;
+}
+
+.tip_card_main .card-body p {
+    flex-grow: 1;
+    min-height: 4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tip_card_link {
-    color: #444; /* Darker link as shown in image */
+    color: #444;
     font-size: 0.8rem;
     letter-spacing: 1px;
     transition: color 0.2s ease;
+    margin-top: auto;
+}
+
+.tip_card_main .card-footer {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Card link wrapper styling */
@@ -47,6 +82,7 @@
     text-decoration: none;
     color: inherit;
     display: block;
+    height: 100%;
 }
 
 .tip_card_section a:hover {
@@ -55,10 +91,21 @@
 }
 
 .tip_card_main:hover .tip_card_link {
-    color: #FF431F; /* Brand color on hover */
+    color: #FF431F;
 }
 
 /* Hover effect on images */
 .tip_card_main:hover .tip_card_img {
     filter: brightness(0.9);
+}
+
+/* Ensure equal column heights */
+.tip_card_section .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tip_card_section [class*="col-"] {
+    display: flex;
+    flex-direction: column;
 }

@@ -21,6 +21,12 @@
 @import url("components/donate_description.css");
 @import url("components/donation_popup.css");
 @import url("components/listing_half_map.css");
+@import url("components/packages_page_mobile.css");
+@import url("components/blogs_page_mobile.css");
+@import url("components/blog_comment_form.css");
+@import url("components/contact_box.css");
+@import url("components/blog_detail_mobile.css");
+@import url("components/donate_page_mobile.css");
 
 
 @import url("components/footer.css");
@@ -46,6 +52,31 @@ body {
 
 .spacer{
     height: 100px;
+}
+
+/* Mobile global fixes */
+@media (max-width: 767.98px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    section {
+        overflow-x: hidden;
+    }
+    
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .spacer {
+        height: 50px;
+    }
 }
 
 /*--------------------------------------------------------------------*/

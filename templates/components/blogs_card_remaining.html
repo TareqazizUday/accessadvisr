@@ -1,0 +1,49 @@
+{% load static %}
+<section class="tip_card_section py-5" id="remainingBlogsSection">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row gy-5" id="remainingBlogsContainer">
+                    {% if remaining_blogs %}
+                        {% for blog in remaining_blogs %}
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <a href="{% url 'blog_detail' blog.slug %}" class="text-decoration-none" style="display: block; color: inherit;">
+                            <div class="card h-100 border-0 shadow-sm tip_card_main" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                                <div class="position-relative">
+                                    {% if blog.image %}
+                                        <img src="{{ blog.image.url }}" class="card-img-top tip_card_img" alt="{{ blog.title }}">
+                                    {% else %}
+                                        <img src="https://runway-media-production.global.ssl.fastly.net/us/originals/2021/11/Wheelchair-Hotel-Checkin_Johner-Images.jpg?width=2000&crop=16%3A9%2Coffset-x50%2Coffset-y50" class="card-img-top tip_card_img" alt="{{ blog.title }}">
+                                    {% endif %}
+                                    <div class="tip_card_avatar_wrap">
+                                        <img src="https://i2.wp.com/accessadvisr.com/wp-content/plugins/wp-first-letter-avatar/images/default/128/latin_a.png?ssl=1" class="tip_card_avatar shadow" alt="{{ blog.author|first|upper }}">
+                                    </div>
+                                </div>
+                                <div class="card-body text-center pt-5 px-4 d-flex flex-column">
+                                    <h5 class="fw-bold tip_card_title mb-3">{{ blog.title }}</h5>
+                                    <p class="text-muted small mb-4">
+                                        {{ blog.content|striptags|truncatewords:25 }}
+                                    </p>
+                                    <span class="mt-auto fw-bold tip_card_link">READ MORE »</span>
+                                </div>
+                                <div class="card-footer bg-white border-top-0 py-3 text-center">
+                                    <small class="text-muted opacity-50">
+                                        {{ blog.created_at|date:"F d, Y" }}
+                                        • 
+                                        {% if blog.get_comment_count > 0 %}
+                                            {{ blog.get_comment_count }} Comment{{ blog.get_comment_count|pluralize }}
+                                        {% else %}
+                                            No Comments
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

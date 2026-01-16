@@ -2,72 +2,72 @@
 <section class="partner-cards-section py-5" id="remainingPartnersSection">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-lg-11">
                 <div class="row gy-4" id="remainingPartnersContainer">
                     {% if remaining_partners %}
                         {% for partner in remaining_partners %}
                             <div class="col-lg-4 col-md-6 partner-card-item">
-                                <div class="partner-card shadow-sm">
-                                    <a href="{% url 'partner_detail' partner.slug %}" class="card-image-box">
-                                        {% if partner.image %}
-                                            <img src="{{ partner.image.url }}" class="partner-img" alt="{{ partner.title }}">
-                                        {% else %}
-                                            <div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;">
-                                                <span>No Image</span>
-                                            </div>
-                                        {% endif %}
-                                    </a>
-                                    <div class="card-body-content">
-                                        <h5 class="partner-title">{{ partner.title }}</h5>
-                                        <div class="author-info">
-                                            <a href="{% url 'home' %}" class="partner_card_href">
+                                <a href="{% url 'partner_detail' partner.slug %}" class="partner-card-link">
+                                    <div class="partner-card shadow-sm">
+                                        <div class="card-image-box">
+                                            {% if partner.image %}
+                                                <img src="{{ partner.image.url }}" class="partner-img" alt="{{ partner.title }}">
+                                            {% else %}
+                                                <div class="partner-img-placeholder">
+                                                    <span>No Image</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-body-content">
+                                            <h5 class="partner-title">{{ partner.title }}</h5>
+                                            <div class="author-info">
                                                 <img src="{% static 'images/icons/accessadvisr_logo.png' %}" class="brand-icon" alt="A">
                                                 <span class="brand-text">accessadvisr</span>
-                                            </a>
+                                            </div>
+                                            <p class="partner-desc">
+                                                {% if partner.short_description %}
+                                                    {{ partner.short_description|truncatewords:20 }}
+                                                {% else %}
+                                                    Partner: {{ partner.title }} – supporting accessibility and inclusion...
+                                                {% endif %}
+                                            </p>
+                                            <span class="read-more-btn">Read More</span>
                                         </div>
-                                        <p class="partner-desc">
-                                            {% if partner.short_description %}
-                                                {{ partner.short_description|truncatewords:20 }}
-                                            {% else %}
-                                                Partner: {{ partner.title }} – supporting accessibility and inclusion...
-                                            {% endif %}
-                                        </p>
-                                        <a href="{% url 'partner_detail' partner.slug %}" class="read-more-btn">Read More</a>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         {% endfor %}
                     {% elif remaining_sponsors %}
                         {% for sponsor in remaining_sponsors %}
                             <div class="col-lg-4 col-md-6 partner-card-item">
-                                <div class="partner-card shadow-sm">
-                                    <a href="{% url 'partner_detail' sponsor.slug %}" class="card-image-box">
-                                        {% if sponsor.image %}
-                                            <img src="{{ sponsor.image.url }}" class="partner-img" alt="{{ sponsor.title }}">
-                                        {% else %}
-                                            <div class="partner-img-placeholder" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f5f5f5; color: #999; font-size: 14px;">
-                                                <span>No Image</span>
-                                            </div>
-                                        {% endif %}
-                                    </a>
-                                    <div class="card-body-content">
-                                        <h5 class="partner-title">{{ sponsor.title }}</h5>
-                                        <div class="author-info">
-                                            <a href="{% url 'home' %}" class="partner_card_href">
+                                <a href="{% url 'partner_detail' sponsor.slug %}" class="partner-card-link">
+                                    <div class="partner-card shadow-sm">
+                                        <div class="card-image-box">
+                                            {% if sponsor.image %}
+                                                <img src="{{ sponsor.image.url }}" class="partner-img" alt="{{ sponsor.title }}">
+                                            {% else %}
+                                                <div class="partner-img-placeholder">
+                                                    <span>No Image</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-body-content">
+                                            <h5 class="partner-title">{{ sponsor.title }}</h5>
+                                            <div class="author-info">
                                                 <img src="{% static 'images/icons/accessadvisr_logo.png' %}" class="brand-icon" alt="A">
                                                 <span class="brand-text">accessadvisr</span>
-                                            </a>
+                                            </div>
+                                            <p class="partner-desc">
+                                                {% if sponsor.short_description %}
+                                                    {{ sponsor.short_description|truncatewords:20 }}
+                                                {% else %}
+                                                    Partner: {{ sponsor.title }} – supporting accessibility and inclusion...
+                                                {% endif %}
+                                            </p>
+                                            <span class="read-more-btn">Read More</span>
                                         </div>
-                                        <p class="partner-desc">
-                                            {% if sponsor.short_description %}
-                                                {{ sponsor.short_description|truncatewords:20 }}
-                                            {% else %}
-                                                Partner: {{ sponsor.title }} – supporting accessibility and inclusion...
-                                            {% endif %}
-                                        </p>
-                                        <a href="{% url 'partner_detail' sponsor.slug %}" class="read-more-btn">Read More</a>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         {% endfor %}
                     {% else %}
@@ -79,7 +79,7 @@
                 
                 <!-- Load More Button -->
                 {% if remaining_partners_count > remaining_partners_showing %}
-                <div class="container text-center mt-4" id="loadMoreContainer">
+                <div class="text-center mt-4" id="loadMoreContainer">
                     <button class="btn btn-orange btn-fixed" id="loadMoreBtn" 
                             data-current="{{ remaining_partners_showing }}" 
                             data-total="{{ remaining_partners_count }}">
@@ -87,7 +87,7 @@
                     </button>
                 </div>
                 {% elif remaining_sponsors_count > remaining_sponsors_showing %}
-                <div class="container text-center mt-4" id="loadMoreContainer">
+                <div class="text-center mt-4" id="loadMoreContainer">
                     <button class="btn btn-orange btn-fixed" id="loadMoreBtn" 
                             data-current="{{ remaining_sponsors_showing }}" 
                             data-total="{{ remaining_sponsors_count }}">

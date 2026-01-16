@@ -145,6 +145,10 @@ class Location(models.Model):
     # Many-to-many relationship with amenities
     amenities = models.ManyToManyField(Amenity, blank=True, related_name='locations')
     
+    # Google Maps integration
+    place_id = models.CharField(max_length=255, blank=True, help_text="Google Place ID if linked to Google Maps")
+    slug = models.SlugField(max_length=250, unique=True, blank=True, help_text="URL-friendly version of the name")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -154,6 +158,8 @@ class Location(models.Model):
             models.Index(fields=['latitude', 'longitude']),
             models.Index(fields=['category']),
             models.Index(fields=['status']),
+            models.Index(fields=['slug']),
+            models.Index(fields=['place_id']),
         ]
     
     def __str__(self):
@@ -778,3 +784,36 @@ class Donation(models.Model):
         elif self.donation_amount in ['5', '10']:
             return float(self.donation_amount)
         return 0
+
+
+class ContactMessage(models.Model):
+    """Model for storing contact form submissions"""
+    STATUS_CHOICES = [
+        ('new', 'New'),
+        ('read', 'Read'),
+        ('replied', 'Replied'),
+        ('archived', 'Archived'),
+    ]
+    
+    name = models.CharField(max_length=200, help_text="Name of the person contacting")
+    email = models.EmailField(help_text="Contact email address")
+    message = models.TextField(help_text="Message content")
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', help_text="Message status")
+    admin_notes = models.TextField(blank=True, help_text="Internal notes (not visible to user)")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Contact Message'
+        verbose_name_plural = 'Contact Messages'
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['email']),
+        ]
+    
+    def __str__(self):
+        return f"Message from {self.name} ({self.email}) - {self.created_at.strftime('%Y-%m-%d')}"

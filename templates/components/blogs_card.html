@@ -1,9 +1,11 @@
 {% load static %}
 <section class="tip_card_section py-5">
     <div class="container">
-        <div class="row gy-5">
-            {% if blogs %}
-                {% for blog in blogs %}
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row gy-5">
+                    {% if blogs %}
+                        {% for blog in blogs %}
                     <div class="col-12 col-md-6 col-lg-4">
                         <a href="{% url 'blog_detail' blog.slug %}" class="text-decoration-none" style="display: block; color: inherit;">
                             <div class="card h-100 border-0 shadow-sm tip_card_main" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
@@ -46,6 +48,8 @@
                     </div>
                 </div>
             {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </section>

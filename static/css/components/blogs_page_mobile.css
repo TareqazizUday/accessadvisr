@@ -1,0 +1,266 @@
+/* Mobile responsive styles for Blogs Page */
+@media (max-width: 767px) {
+    /* General container padding for all sections */
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* col-lg-11 wrapper - remove padding to allow container to control spacing */
+    .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Inner columns - consistent 15px padding */
+    .col-12,
+    .col-md-6,
+    .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    /* Blog cards section */
+    .tip_card_section {
+        overflow-x: hidden !important;
+        padding: 30px 0 !important;
+    }
+    
+    .tip_card_section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        max-width: 100% !important;
+    }
+    
+    .tip_card_section .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .tip_card_section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .tip_card_section .col-12,
+    .tip_card_section .col-md-6,
+    .tip_card_section .col-lg-4 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        margin-bottom: 30px !important;
+    }
+    
+    /* Blog cards */
+    .tip_card_main {
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .tip_card_main a {
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .tip_card_img {
+        height: 180px !important;
+        width: 100% !important;
+        object-fit: cover !important;
+    }
+    
+    .tip_card_title {
+        font-size: 1.1rem !important;
+        line-height: 1.4 !important;
+        word-wrap: break-word !important;
+        min-height: 2.5rem !important;
+    }
+    
+    .tip_card_avatar {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .tip_card_avatar_wrap {
+        bottom: -20px !important;
+    }
+    
+    .card-body {
+        padding: 2.5rem 1rem 1rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+    }
+    
+    .card-body p {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        flex-grow: 1 !important;
+        min-height: 3.5rem !important;
+    }
+    
+    .tip_card_link {
+        font-size: 0.75rem !important;
+        margin-top: auto !important;
+    }
+    
+    .card-footer {
+        padding: 0.75rem !important;
+        min-height: 45px !important;
+    }
+    
+    .card-footer small {
+        font-size: 0.75rem !important;
+        display: block !important;
+        word-wrap: break-word !important;
+    }
+    
+    /* Load More button section */
+    #loadMoreContainer {
+        padding: 20px 0 40px 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    #loadMoreContainer .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    #loadMoreContainer .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    #loadMoreContainer .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Button section */
+    .btn-orange {
+        padding: 10px 30px !important;
+        font-size: 0.9rem !important;
+        width: auto !important;
+        display: inline-block !important;
+    }
+    
+    #loadMoreBtn {
+        margin: 10px auto !important;
+        display: block !important;
+    }
+    
+    /* Remaining blogs section */
+    #remainingBlogsSection {
+        overflow-x: hidden !important;
+        padding-top: 0 !important;
+    }
+    
+    #remainingBlogsSection .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    #remainingBlogsSection .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    #remainingBlogsSection .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Prevent any horizontal overflow */
+    body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    section {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Ensure cards don't overflow */
+    .card {
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .card img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* Tablet devices */
+@media (max-width: 991px) and (min-width: 768px) {
+    .tip_card_section .col-md-6 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .tip_card_img {
+        height: 200px !important;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .tip_card_section {
+        padding: 20px 0 !important;
+    }
+    
+    .tip_card_title {
+        font-size: 1rem !important;
+        min-height: 2rem !important;
+    }
+    
+    .tip_card_img {
+        height: 160px !important;
+    }
+    
+    .tip_card_avatar {
+        width: 45px !important;
+        height: 45px !important;
+        border: 3px solid #fff !important;
+    }
+    
+    .tip_card_avatar_wrap {
+        bottom: -18px !important;
+    }
+    
+    .card-body {
+        padding: 2rem 0.75rem 0.75rem !important;
+    }
+    
+    .card-body p {
+        font-size: 0.85rem !important;
+        min-height: 3rem !important;
+    }
+    
+    .tip_card_link {
+        font-size: 0.7rem !important;
+    }
+    
+    .card-footer {
+        min-height: 40px !important;
+    }
+    
+    .card-footer small {
+        font-size: 0.7rem !important;
+    }
+    
+    .btn-orange {
+        padding: 8px 25px !important;
+        font-size: 0.85rem !important;
+    }
+}

@@ -14,31 +14,6 @@
 			margin-top: 3rem;
 			padding-top: 2rem;
 		}
-		.comment-form {
-			background: #f9f9f9;
-			padding: 2rem;
-			border-radius: 8px;
-		}
-		.comment-form input,
-		.comment-form textarea {
-			width: 100%;
-			padding: 0.75rem;
-			margin-bottom: 1rem;
-			border: 1px solid #ddd;
-			border-radius: 4px;
-		}
-		.contact-box {
-			background: #FF431E;
-			color: white;
-			padding: 1.5rem;
-			border-radius: 8px;
-			margin-top: 2rem;
-		}
-		.contact-box a {
-			color: white;
-			text-decoration: none;
-			font-weight: bold;
-		}
 		.popular-blogs-section {
 			margin-top: 2rem;
 		}
@@ -137,9 +112,11 @@
 <!-- Main Content Section -->
 <section class="py-5">
     <div class="container">
-        <div class="row">
-            <!-- Left Column - Main Content -->
-            <div class="col-lg-8">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row">
+                    <!-- Left Column - Main Content -->
+                    <div class="col-lg-8">
                 <!-- Video Section (at top) -->
                 {% if blog.video_url %}
                     <div class="mb-5">
@@ -279,36 +256,40 @@
 
                     <!-- Leave a Comment Form -->
                     <div class="comment-form">
-                        <h4 class="fw-bold mb-4" style="font-size: 1.5rem; color: #333;">Leave a Comment</h4>
-                        <p class="text-muted small mb-4">Your email address will not be published.</p>
+                        <h4 class="fw-bold mb-3">Leave a Comment</h4>
+                        <p class="text-muted small">Your email address will not be published. Required fields are marked *</p>
+                        
                         <form id="commentForm">
                             {% csrf_token %}
                             <input type="hidden" name="blog_id" value="{{ blog.id }}">
                             
                             <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="author_name" id="author_name" placeholder="Name" required>
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label for="author_name" class="form-label">Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="author_name" id="author_name" placeholder="Enter your name" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <input type="email" class="form-control" name="author_email" id="author_email" placeholder="Email" required>
+                                    <label for="author_email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" name="author_email" id="author_email" placeholder="Enter your email" required>
                                 </div>
                             </div>
                             
                             <div class="mb-3">
-                                <textarea class="form-control" name="comment_text" id="comment_text" rows="5" placeholder="Your Comment" required></textarea>
+                                <label for="comment_text" class="form-label">Comment <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="comment_text" id="comment_text" rows="5" placeholder="Write your comment here..." required></textarea>
                             </div>
                             
                             <div class="mb-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="save_info" id="save_info">
                                     <label class="form-check-label" for="save_info">
-                                        Save my name, email, and website in this browser for the next time I comment.
+                                        Save my name and email in this browser for the next time I comment.
                                     </label>
                                 </div>
                             </div>
                             
                             <div class="text-center">
-                                <button type="submit" class="btn btn-orange btn-lg px-5">POST COMMENT</button>
+                                <button type="submit" class="btn btn-orange">Post Comment</button>
                             </div>
                         </form>
                     </div>
@@ -378,13 +359,15 @@
 
                 <!-- Contact Section -->
                 <div class="contact-box">
-                    <h5 class="fw-bold mb-3">
-                        <i class="bi bi-telephone-fill me-2"></i>
-                        Contact With Us For Any Advice
-                    </h5>
-                    <p class="mb-2">Need help? Talk to an expert</p>
-                    <a href="tel:+447554823078" class="h4">+44 (0) 755 482 3078</a>
+                    <h5 class="fw-bold">Contact With Us For Any Advice</h5>
+                    <div class="icon-circle">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <p>Need help? Talk to an expert</p>
+                    <a href="tel:+447554823078">+44 (0) 755 482 3078</a>
                 </div>
+            </div>
+        </div>
             </div>
         </div>
     </div>

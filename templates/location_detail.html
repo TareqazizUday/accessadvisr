@@ -1,0 +1,323 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ location.name }} - AccessAdvisr</title>
+    <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/place-detail.css' %}">
+    <style>
+    .location-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 0;
+        color: white;
+    }
+    
+    .location-status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .status-inactive {
+        background: #ff9800;
+        color: white;
+    }
+    
+    .status-active {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .location-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .amenity-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #f5f5f5;
+        border-radius: 20px;
+        margin: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .rating-display {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ff9800;
+    }
+    
+    .review-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+    }
+    </style>
+</head>
+<body>
+
+<!-- include navbar -->
+{% include 'components/navbar.html' %}
+
+<!-- include authentication modals -->
+{% include 'components/auth_modals.html' %}
+
+
+<!-- Location Hero Section -->
+<section class="location-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 mb-3">
+                    {{ location.name }}
+                    {% if location.status == 'inactive' %}
+                    <span class="location-status-badge status-inactive">
+                        <i class="bi bi-clock"></i> Pending Approval
+                    </span>
+                    {% else %}
+                    <span class="location-status-badge status-active">
+                        <i class="bi bi-check-circle"></i> Verified
+                    </span>
+                    {% endif %}
+                </h1>
+                
+                {% if location.category %}
+                <p class="lead mb-2">
+                    <i class="bi bi-tag-fill"></i> {{ location.category.name }}
+                </p>
+                {% endif %}
+                
+                {% if location.address %}
+                <p class="mb-2">
+                    <i class="bi bi-geo-alt-fill"></i> {{ location.address }}
+                </p>
+                {% endif %}
+                
+                {% if location.rating > 0 %}
+                <p class="mb-0">
+                    <span class="rating-display">
+                        {{ location.rating }} <i class="bi bi-star-fill" style="font-size: 1.5rem;"></i>
+                    </span>
+                </p>
+                {% endif %}
+            </div>
+            
+            <div class="col-lg-4 text-center">
+                {% if location.created_by %}
+                <p class="mb-2"><small>Submitted by</small></p>
+                <p class="fw-bold">{{ location.created_by.username }}</p>
+                <p class="small">{{ location.created_at|date:"F d, Y" }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Location Details -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Left Column - Image & Description -->
+            <div class="col-lg-8">
+                {% if location.image %}
+                <img src="{{ location.image.url }}" alt="{{ location.name }}" class="location-image mb-4">
+                {% else %}
+                <div class="location-image mb-4 d-flex align-items-center justify-content-center bg-light">
+                    <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Description -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">
+                            <i class="bi bi-info-circle-fill text-primary"></i> About This Place
+                        </h3>
+                        {% if location.description %}
+                        <p class="card-text">{{ location.description|linebreaks }}</p>
+                        {% else %}
+                        <p class="text-muted">No description available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Accessible Features -->
+                {% if location.amenities.all %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title mb-3">
+                            <i class="bi bi-check2-square text-success"></i> Accessible Features
+                        </h3>
+                        <div>
+                            {% for amenity in location.amenities.all %}
+                            <span class="amenity-badge">
+                                <i class="bi bi-check-circle-fill text-success"></i> {{ amenity.name }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Reviews Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">
+                            <i class="bi bi-chat-dots-fill text-primary"></i> Reviews
+                            <span class="badge bg-primary">{{ reviews|length }}</span>
+                        </h3>
+                        
+                        {% if reviews %}
+                            {% for review in reviews %}
+                            <div class="review-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="mb-1">{{ review.author_name }}</h5>
+                                        <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning text-dark">
+                                            {{ review.get_average_rating }} <i class="bi bi-star-fill"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="mb-0">{{ review.review_text }}</p>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No reviews yet. Be the first to review!</p>
+                        {% endif %}
+                        
+                        {% if location.place_id %}
+                        <div class="text-center mt-4">
+                            <a href="{% url 'place_detail' location.place_id %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add a Review
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Map & Info -->
+            <div class="col-lg-4">
+                <!-- Map -->
+                <div class="card mb-4">
+                    <div class="card-body p-0">
+                        <div id="map" style="height: 300px; width: 100%;"></div>
+                    </div>
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-info-circle-fill"></i> Information
+                        </h5>
+                        
+                        {% if location.phone %}
+                        <p class="mb-2">
+                            <i class="bi bi-telephone-fill text-primary"></i> 
+                            <a href="tel:{{ location.phone }}">{{ location.phone }}</a>
+                        </p>
+                        {% endif %}
+                        
+                        {% if location.email %}
+                        <p class="mb-2">
+                            <i class="bi bi-envelope-fill text-primary"></i> 
+                            <a href="mailto:{{ location.email }}">{{ location.email }}</a>
+                        </p>
+                        {% endif %}
+                        
+                        {% if location.website %}
+                        <p class="mb-2">
+                            <i class="bi bi-globe text-primary"></i> 
+                            <a href="{{ location.website }}" target="_blank">Visit Website</a>
+                        </p>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <p class="small text-muted mb-0">
+                            <i class="bi bi-calendar"></i> Added: {{ location.created_at|date:"F d, Y" }}
+                        </p>
+                        <p class="small text-muted mb-0">
+                            <i class="bi bi-arrow-clockwise"></i> Updated: {{ location.updated_at|date:"F d, Y" }}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Social Share -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-3">Share This Place</h5>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-primary">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ location.name }}" target="_blank" class="btn btn-outline-info">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="mailto:?subject={{ location.name }}&body=Check out this place: {{ request.build_absolute_uri }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Google Maps Script -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places"></script>
+<script>
+function initMap() {
+    const location = { lat: {{ location.latitude }}, lng: {{ location.longitude }} };
+    
+    const map = new google.maps.Map(document.getElementById('map'), {
+        center: location,
+        zoom: 15,
+        mapTypeControl: false,
+        fullscreenControl: true
+    });
+    
+    const marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        title: "{{ location.name }}",
+        animation: google.maps.Animation.DROP
+    });
+    
+    const infoWindow = new google.maps.InfoWindow({
+        content: '<div style="padding: 10px;"><strong>{{ location.name }}</strong><br>{{ location.address }}</div>'
+    });
+    
+    marker.addListener('click', function() {
+        infoWindow.open(map, marker);
+    });
+}
+
+// Initialize map when page loads
+google.maps.event.addDomListener(window, 'load', initMap);
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-JUMjoW8OzDJw4oFpWIB2Bu/c6768ObEthBja5LqKqLD4hkxQ1tyAUBBs+eLxNbVB" crossorigin="anonymous"></script>
+
+</body>
+</html>
+

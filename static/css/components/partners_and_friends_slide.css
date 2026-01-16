@@ -65,18 +65,19 @@
             padding: 40px 0;
         }
         
-        /* Hide desktop columns on mobile */
-        #partners_friends_Carousel .carousel-item .col-md-4 {
-            display: none !important;
+        /* For desktop carousel items */
+        #partners_friends_Carousel .carousel-item:not([data-mobile]) .col-md-4 {
+            display: none;
         }
         
-        /* Show and center the single item */
+        /* Show single mobile items */
         #partners_friends_Carousel .carousel-item .col-12 {
-            display: flex !important;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 15px;
+            min-height: 220px;
         }
         
         .partners_friends_card {
@@ -88,10 +89,14 @@
             align-items: center;
             justify-content: center;
         }
+        
         .partners_friends_card img {
             max-width: 120px;
-            margin-bottom: 15px;
+            width: auto;
+            height: auto;
+            margin: 0 auto 15px;
         }
+        
         .partners_friends_caption {
             font-size: 1rem;
             min-height: auto;
@@ -99,10 +104,12 @@
             text-align: center;
             width: 100%;
         }
+        
         .partners_friends_prev_icon,
         .partners_friends_next_icon {
             font-size: 3rem;
         }
+        
         .carousel-control-prev, .carousel-control-next {
             width: 10%;
         }

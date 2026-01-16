@@ -2,7 +2,9 @@
 {% load rating_tags %}
 <section class="recent-contributions py-5" style="padding-top: 0 !important;">
     <div class="container" style="padding-top: 0 !important;">
-        <div class="row gy-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="row gy-4">
             {% for review in recent_contributions %}
             <div class="col-lg-4 col-md-6">
                 <div class="contribution-card bg-white shadow-sm h-100 rounded-1 overflow-hidden">
@@ -29,6 +31,8 @@
                 <p>No recent contributions yet. Be the first to share your review!</p>
             </div>
             {% endfor %}
+                </div>
+            </div>
         </div>
 
         <div class="text-center mt-5">

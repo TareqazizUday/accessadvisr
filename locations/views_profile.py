@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Count, Avg
-from .models import Review, ReviewReply, Location, UserProfile
+from .models import Review, ReviewReply, UserProfile
 import json
 
 
@@ -37,9 +37,10 @@ def profile_view(request, username=None):
         avg_rating = 0
         total_likes = total_dislikes = total_hearts = 0
     
-    # Get reviewed locations (place_id in Review -> id in Location)
-    reviewed_place_ids = Review.objects.filter(author_email=user.email).values_list('place_id', flat=True).distinct()[:6]
-    reviewed_locations = Location.objects.filter(id__in=reviewed_place_ids)
+    # Get recently reviewed places - just get unique place_ids from reviews
+    recent_reviews_with_places = Review.objects.filter(
+        author_email=user.email
+    ).values('place_id', 'place_name', 'created_at').distinct()[:6]
     
     context = {
         'profile_user': user,
@@ -51,7 +52,7 @@ def profile_view(request, username=None):
         'total_likes': total_likes,
         'total_dislikes': total_dislikes,
         'total_hearts': total_hearts,
-        'reviewed_locations': reviewed_locations,
+        'recent_reviews': recent_reviews_with_places,
         'is_own_profile': user == request.user,
     }
     
@@ -143,19 +144,16 @@ def my_reviews(request):
 
 @login_required
 def my_favorites(request):
-    """View user's favorite locations (locations with liked/hearted reviews)"""
-    # Get locations where user has given hearts or likes
-    favorite_reviews = Review.objects.filter(author_email=request.user.email, hearts__gt=0)
-    
-    # Get unique place_ids from Review (place_id in Review -> id in Location)
-    place_ids = favorite_reviews.values_list('place_id', flat=True).distinct()
-    
-    # Get Location objects using id field
-    favorite_locations = Location.objects.filter(id__in=place_ids)
+    """View user's favorite locations (places with liked/hearted reviews)"""
+    # Get reviews where user has given hearts or likes
+    favorite_reviews = Review.objects.filter(
+        author_email=request.user.email,
+        hearts__gt=0
+    ).values('place_id', 'place_name', 'created_at', 'hearts', 'likes').distinct()
     
     context = {
-        'favorite_locations': favorite_locations,
-        'total_favorites': favorite_locations.count(),
+        'favorite_reviews': favorite_reviews,
+        'total_favorites': favorite_reviews.count(),
     }
     
     return render(request, 'profile/my_favorites.html', context)

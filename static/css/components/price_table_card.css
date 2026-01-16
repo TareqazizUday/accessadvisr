@@ -22,3 +22,21 @@
 .price_table_currency {
     vertical-align: super;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 767px) {
+    .price_table_section .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .price_table_section .col-lg-11 {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    .price_table_section .col-12 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
