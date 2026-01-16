@@ -7,7 +7,7 @@
                     {% if remaining_partners %}
                         {% for partner in remaining_partners %}
                             <div class="col-lg-4 col-md-6 partner-card-item">
-                                <a href="{% url 'partner_detail' partner.slug %}" class="partner-card-link">
+                                <a href="{% url 'partner-detail' partner.slug %}" class="partner-card-link">
                                     <div class="partner-card shadow-sm">
                                         <div class="card-image-box">
                                             {% if partner.image %}
@@ -40,7 +40,7 @@
                     {% elif remaining_sponsors %}
                         {% for sponsor in remaining_sponsors %}
                             <div class="col-lg-4 col-md-6 partner-card-item">
-                                <a href="{% url 'partner_detail' sponsor.slug %}" class="partner-card-link">
+                                <a href="{% url 'partner-detail' sponsor.slug %}" class="partner-card-link">
                                     <div class="partner-card shadow-sm">
                                         <div class="card-image-box">
                                             {% if sponsor.image %}

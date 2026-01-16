@@ -32,7 +32,7 @@
                             {% endfor %}
                         {% endif %}
 
-                        <form method="POST" action="{% url 'profile_edit' %}" enctype="multipart/form-data">
+                        <form method="POST" action="{% url 'profile-edit' %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             
                             <!-- Profile Picture Section -->

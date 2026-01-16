@@ -1,0 +1,40 @@
+<!-- SEO Template Helper -->
+{% load static %}
+
+<!-- Basic Meta Tags -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<meta name="author" content="AccessAdvisr">
+
+<!-- Dynamic Title and Description -->
+<title>{% if page_title %}{{ page_title }}{% else %}{{ title|default:"AccessAdvisr - Accessibility Reviews" }}{% endif %}</title>
+<meta name="description" content="{{ description|default:'Discover accessible places with AccessAdvisr. Read detailed accessibility reviews and find inclusive venues for barrier-free travel experiences.' }}">
+<meta name="keywords" content="{{ keywords|default:'accessibility reviews, inclusive travel, wheelchair accessible places, disability-friendly venues' }}">
+
+<!-- Open Graph Meta Tags -->
+<meta property="og:title" content="{{ og_title|default:title|default:'AccessAdvisr - Accessibility Reviews' }}">
+<meta property="og:description" content="{{ og_description|default:description|default:'Discover accessible places with detailed accessibility reviews.' }}">
+<meta property="og:type" content="{% if og_type %}{{ og_type }}{% else %}website{% endif %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:site_name" content="AccessAdvisr">
+{% if og_image %}<meta property="og:image" content="{{ og_image }}">{% endif %}
+
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ twitter_title|default:title|default:'AccessAdvisr' }}">
+<meta name="twitter:description" content="{{ twitter_description|default:description|default:'Your guide to accessible places.' }}">
+{% if twitter_image %}<meta name="twitter:image" content="{{ twitter_image }}">{% endif %}
+
+<!-- Canonical URL -->
+<link rel="canonical" href="{{ canonical_url|default:request.build_absolute_uri }}">
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
+<!-- Structured Data -->
+{% if structured_data %}
+<script type="application/ld+json">
+{{ structured_data|safe }}
+</script>
+{% endif %}

@@ -23,11 +23,11 @@
                     <ul class="dropdown-menu border-0 shadow-lg">
                         <li><a class="dropdown-item" href="{% url 'accommodation' %}"><i class="bi bi-house-door me-2"></i>Accommodation</a></li>
                         <li><a class="dropdown-item" href="{% url 'entertainment' %}"><i class="bi bi-ticket-perforated me-2"></i>Entertainment</a></li>
-                        <li><a class="dropdown-item" href="{% url 'food_drink' %}"><i class="bi bi-cup-straw me-2"></i>Food & Drink</a></li>
+                        <li><a class="dropdown-item" href="{% url 'food-drink' %}"><i class="bi bi-cup-straw me-2"></i>Food & Drink</a></li>
                         <li><a class="dropdown-item" href="{% url 'shopping' %}"><i class="bi bi-bag-check me-2"></i>Shopping</a></li>
-                        <li><a class="dropdown-item" href="{% url 'sports_recreational' %}"><i class="bi bi-trophy me-2"></i>Sports & Recreational</a></li>
+                        <li><a class="dropdown-item" href="{% url 'sports-recreational' %}"><i class="bi bi-trophy me-2"></i>Sports & Recreational</a></li>
                         <li><a class="dropdown-item" href="{% url 'transport' %}"><i class="bi bi-bus-front me-2"></i>Transport</a></li>
-                        <li><a class="dropdown-item" href="{% url 'flight_travel' %}"><i class="bi bi-airplane me-2"></i>Flight & Travel</a></li>
+                        <li><a class="dropdown-item" href="{% url 'flight-travel' %}"><i class="bi bi-airplane me-2"></i>Flight & Travel</a></li>
                         <li><a class="dropdown-item" href="{% url 'education' %}"><i class="bi bi-book me-2"></i>Education</a></li>
                     </ul>
                 </li>
@@ -56,7 +56,7 @@
                 
                 <!-- Add Review Button -->
                 <li class="nav-item">
-                    <a class="btn btn-add-review" href="{% url 'submit_listing' %}">
+                    <a class="btn btn-add-review" href="{% url 'submit-listing' %}">
                         <i class="bi bi-plus-circle-fill me-2"></i>Add Reviews
                     </a>
                 </li>
@@ -98,17 +98,17 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="{% url 'my_reviews' %}">
+                            <a class="dropdown-item py-2" href="{% url 'my-reviews' %}">
                                 <i class="bi bi-star-fill me-2 text-warning"></i>My Reviews
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="{% url 'my_favorites' %}">
+                            <a class="dropdown-item py-2" href="{% url 'my-favorites' %}">
                                 <i class="bi bi-heart-fill me-2 text-danger"></i>Favorites
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="{% url 'profile_settings' %}">
+                            <a class="dropdown-item py-2" href="{% url 'profile-settings' %}">
                                 <i class="bi bi-gear-fill me-2 text-secondary"></i>Settings
                             </a>
                         </li>

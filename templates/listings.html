@@ -264,7 +264,7 @@
                     {% for location in locations %}
                     <!-- Card -->
                     <div class="col-md-6">
-                        <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card" style="cursor: pointer;" onclick="window.location.href='{% url 'place_detail' location.id %}'">
+                        <div class="card h-100 border-0 shadow-sm overflow-hidden listing-card" style="cursor: pointer;" onclick="window.location.href='{% url 'place-detail' location.id %}'">
                             <div class="position-relative">
                                 <img src="https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&q=80&w=400" class="card-img-top" alt="{{ location.name }}" style="height: 180px; object-fit: cover;">
                                 <span class="position-absolute top-0 start-0 m-2 badge bg-white text-dark small px-2 py-1">$60 - $85</span>
@@ -278,7 +278,7 @@
                             </div>
                             <div class="card-body text-center" style="padding-top: 2rem;">
                                 <h6 class="fw-bold mb-1">
-                                    <a href="{% url 'place_detail' location.id %}" class="text-dark text-decoration-none">{{ location.name }}</a>
+                                    <a href="{% url 'place-detail' location.id %}" class="text-dark text-decoration-none">{{ location.name }}</a>
                                     {% if location.verified %}<i class="bi bi-patch-check-fill text-primary small"></i>{% endif %}
                                 </h6>
                                 <p class="text-muted small mb-2">{{ location.description|truncatewords:3|default:"Villa, food for you" }}</p>

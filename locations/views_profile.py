@@ -80,12 +80,12 @@ def profile_edit(request):
             # Validation
             if not email:
                 messages.error(request, 'Email is required')
-                return redirect('profile_edit')
+                return redirect('profile-edit')
             
             # Check if email is already taken by another user
             if User.objects.filter(email=email).exclude(id=user.id).exists():
                 messages.error(request, 'This email is already in use')
-                return redirect('profile_edit')
+                return redirect('profile-edit')
             
             # Update user
             user.first_name = first_name
@@ -112,7 +112,7 @@ def profile_edit(request):
             
         except Exception as e:
             messages.error(request, f'Error updating profile: {str(e)}')
-            return redirect('profile_edit')
+            return redirect('profile-edit')
     
     context = {
         'user': request.user,
@@ -173,15 +173,15 @@ def profile_settings(request):
             
             if not request.user.check_password(old_password):
                 messages.error(request, 'Current password is incorrect')
-                return redirect('profile_settings')
+                return redirect('profile-settings')
             
             if new_password != confirm_password:
                 messages.error(request, 'New passwords do not match')
-                return redirect('profile_settings')
+                return redirect('profile-settings')
             
             if len(new_password) < 8:
                 messages.error(request, 'Password must be at least 8 characters long')
-                return redirect('profile_settings')
+                return redirect('profile-settings')
             
             request.user.set_password(new_password)
             request.user.save()
@@ -203,11 +203,11 @@ def delete_review(request, review_id):
             return JsonResponse({'success': True, 'message': 'Review deleted successfully'})
         
         messages.success(request, 'Review deleted successfully')
-        return redirect('my_reviews')
+        return redirect('my-reviews')
         
     except Exception as e:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': False, 'error': str(e)})
         
         messages.error(request, f'Error deleting review: {str(e)}')
-        return redirect('my_reviews')
+        return redirect('my-reviews')

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'rest_framework',
     'corsheaders',
     'locations',
@@ -153,3 +154,5 @@ CORS_ALLOW_ALL_ORIGINS = True  # For development only
 
 # Google Maps API Key (from environment variable)
 GOOGLE_MAPS_API_KEY = config('GOOGLE_MAPS_API_KEY', default='')
+
+# Site ID for sitemap

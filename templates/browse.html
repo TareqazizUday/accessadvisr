@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
     <link rel="stylesheet" href="{% static 'css/components/listings.css' %}">
 </head>
-<body>
+<body{% if user.is_authenticated %} class="user-authenticated"{% endif %}>
     
 <!-- include navbar -->
 {% include 'components/navbar.html' %}
@@ -749,6 +749,8 @@ function showNoResults() {
     document.getElementById('loadMoreContainer').style.display = 'none';
 }
 </script>
+
+<script src="{% static 'js/auth-checker.js' %}"></script>
 
 </body>
 </html>

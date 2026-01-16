@@ -40,10 +40,10 @@
                         <span>{{ user.username }}</span>
                     </button>
                     <ul class="dropdown-menu profile-dropdown">
-                        <li><a class="dropdown-item" href="{% url 'my_profile' %}">My Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'my_reviews' %}">My Reviews</a></li>
-                        <li><a class="dropdown-item" href="{% url 'my_favorites' %}">My Favorites</a></li>
-                        <li><a class="dropdown-item" href="{% url 'profile_settings' %}">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my-profile' %}">My Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my-reviews' %}">My Reviews</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my-favorites' %}">My Favorites</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile-settings' %}">Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" onclick="handleLogout(event); return false;">Logout</a></li>
                     </ul>

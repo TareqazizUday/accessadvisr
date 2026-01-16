@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/place-detail.css' %}">
 </head>
-<body>
+<body{% if user.is_authenticated %} class="user-authenticated"{% endif %}>
     {% include 'includes/menu_bar.html' %}
     <div class="container">
         <header>
@@ -175,6 +175,8 @@
     {% endif %}
     
     {% include 'components/auth_modals.html' %}
+    {% include 'includes/auth_modal.html' %}
+    <script src="{% static 'js/auth-checker.js' %}"></script>
 </body>
 </html>
 

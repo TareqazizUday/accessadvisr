@@ -1,0 +1,39 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://yoursite.com/sitemap.xml
+
+# Disallow admin and API endpoints from indexing
+Disallow: /admin/
+Disallow: /api/auth/
+Disallow: /api/reviews/
+Disallow: /api/profile/
+Disallow: /api/partner-comments/
+Disallow: /api/blog-comments/
+Disallow: /api/about-comments/
+Disallow: /api/donations/
+
+# Allow public pages
+Allow: /about/
+Allow: /blogs/
+Allow: /blog/
+Allow: /partners/
+Allow: /partner/
+Allow: /contact/
+Allow: /donate/
+Allow: /packages/
+Allow: /browse/
+Allow: /listings/
+Allow: /accommodation/
+Allow: /entertainment/
+Allow: /food-drink/
+Allow: /shopping/
+Allow: /sports-recreational/
+Allow: /transport/
+Allow: /flight-travel/
+Allow: /education/
+Allow: /place/
+
+# Crawl delay (optional, adjust as needed)
+Crawl-delay: 1

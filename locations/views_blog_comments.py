@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -12,9 +13,17 @@ from .models import Blog, BlogComment, BlogCommentReply
 @method_decorator(csrf_exempt, name='dispatch')
 class SubmitBlogCommentView(APIView):
     parser_classes = [JSONParser]
+    permission_classes = [IsAuthenticated]
     """API endpoint to submit a comment on a blog post"""
     
     def post(self, request):
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required. Please login to submit a comment.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
         try:
             # DRF automatically parses JSON when JSONParser is used
             data = request.data if hasattr(request, 'data') else {}
@@ -89,9 +98,17 @@ class SubmitBlogCommentView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class SubmitBlogCommentReplyView(APIView):
     parser_classes = [JSONParser]
+    permission_classes = [IsAuthenticated]
     """API endpoint to submit a reply to a blog comment"""
     
     def post(self, request):
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required. Please login to submit a reply.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
         try:
             # DRF automatically parses JSON when JSONParser is used
             data = request.data if hasattr(request, 'data') else {}

@@ -4,7 +4,7 @@ Usage: {% include 'components/place_card.html' with location=location %}
 {% endcomment %}
 
 <div class="col-lg-4 col-md-6">
-    <div class="card h-100 border-0 shadow-sm place-card" data-url="{% url 'place_detail' location.id %}" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform='translateY(0)'">
+    <div class="card h-100 border-0 shadow-sm place-card" data-url="{% url 'place-detail' location.id %}" style="cursor: pointer; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-8px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="position-relative">
             {% if location.image %}
                 <img src="{{ location.image.url }}" class="card-img-top" alt="{{ location.name }}" style="height: 200px; object-fit: cover;">
@@ -23,7 +23,7 @@ Usage: {% include 'components/place_card.html' with location=location %}
         </div>
         <div class="card-body pt-4">
             <h5 class="card-title fw-bold mb-1">
-                <a href="{% url 'place_detail' location.id %}" style="text-decoration: none; color: inherit;">{{ location.name }}</a>
+                <a href="{% url 'place-detail' location.id %}" style="text-decoration: none; color: inherit;">{{ location.name }}</a>
             </h5>
             <p class="text-muted small mb-3">
                 {% if location.description %}

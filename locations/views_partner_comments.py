@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -12,6 +13,7 @@ from .models import Partner, PartnerComment, PartnerCommentReply
 @method_decorator(csrf_exempt, name='dispatch')
 class SubmitPartnerCommentView(APIView):
     parser_classes = [JSONParser]
+    permission_classes = [IsAuthenticated]
     """API endpoint to submit a comment on a partner post"""
     
     def post(self, request):
@@ -89,6 +91,7 @@ class SubmitPartnerCommentView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class SubmitPartnerCommentReplyView(APIView):
     parser_classes = [JSONParser]
+    permission_classes = [IsAuthenticated]
     """API endpoint to submit a reply to a partner comment"""
     
     def post(self, request):

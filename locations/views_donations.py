@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 import json
 from .models import Donation, DonationCampaign
 
@@ -11,8 +12,16 @@ from .models import Donation, DonationCampaign
 @method_decorator(csrf_exempt, name='dispatch')
 class SubmitDonationView(APIView):
     """API endpoint to submit a donation"""
+    permission_classes = [IsAuthenticated]
     
     def post(self, request):
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            return Response(
+                {'error': 'Authentication required. Please login to make a donation.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+            
         try:
             data = json.loads(request.body)
             

@@ -368,7 +368,7 @@ class Blog(models.Model):
     def get_absolute_url(self):
         """Return the URL for the blog detail page"""
         from django.urls import reverse
-        return reverse('blog_detail', kwargs={'slug': self.slug})
+        return reverse('blog-detail', kwargs={'slug': self.slug})
     
     def get_comment_count(self):
         """Get count of approved comments"""
@@ -527,7 +527,7 @@ class Partner(models.Model):
     def get_absolute_url(self):
         """Return the URL for the partner detail page"""
         from django.urls import reverse
-        return reverse('partner_detail', kwargs={'slug': self.slug})
+        return reverse('partner-detail', kwargs={'slug': self.slug})
 
 
 def about_post_image_upload_path(instance, filename):
@@ -623,7 +623,7 @@ class AboutPost(models.Model):
     def get_absolute_url(self):
         """Return the URL for the about post detail page"""
         from django.urls import reverse
-        return reverse('about_post_detail', kwargs={'slug': self.slug})
+        return reverse('about-post-detail', kwargs={'slug': self.slug})
 
 
 class AboutComment(models.Model):

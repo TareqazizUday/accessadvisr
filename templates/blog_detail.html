@@ -5,10 +5,64 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{{ blog.title }} - AccessAdvisr</title>
+	
+	<!-- SEO Meta Tags -->
+	<title>{{ blog.title }} - AccessAdvisr Blog</title>
+	<meta name="description" content="{{ blog.content|striptags|truncatewords:25 }}">
+	<meta name="keywords" content="accessibility blog, {{ blog.title }}, inclusive travel, disability awareness">
+	<meta name="author" content="{% if blog.author.username %}{{ blog.author.get_full_name|default:blog.author.username }}{% else %}{{ blog.author|default:'AccessAdvisr' }}{% endif %}">
+	<meta name="robots" content="index, follow">
+	
+	<!-- Open Graph Meta Tags -->
+	<meta property="og:title" content="{{ blog.title }}">
+	<meta property="og:description" content="{{ blog.content|striptags|truncatewords:25 }}">
+	<meta property="og:type" content="article">
+	<meta property="og:url" content="{{ request.build_absolute_uri }}">
+	{% if blog.image %}<meta property="og:image" content="{{ blog.image.url }}">{% endif %}
+	<meta property="article:published_time" content="{{ blog.created_at|date:'c' }}">
+	{% if blog.updated_at %}<meta property="article:modified_time" content="{{ blog.updated_at|date:'c' }}">{% endif %}
+	
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="{{ blog.title }}">
+	<meta name="twitter:description" content="{{ blog.content|striptags|truncatewords:20 }}">
+	{% if blog.image %}<meta name="twitter:image" content="{{ blog.image.url }}">{% endif %}
+	
+	<!-- Canonical URL -->
+	<link rel="canonical" href="{{ request.build_absolute_uri }}">
+	
 	<link rel="stylesheet" href="{% static 'css/accessadvisr-style.css' %}">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+	
+	<!-- Blog Structured Data -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		"headline": "{{ blog.title|escapejs }}",
+		"description": "{{ blog.content|striptags|truncatewords:25|escapejs }}",
+		{% if blog.image %}"image": "{{ blog.image.url }}",{% endif %}
+		"datePublished": "{{ blog.created_at|date:'c' }}",
+		{% if blog.updated_at %}"dateModified": "{{ blog.updated_at|date:'c' }}",{% endif %}
+		"author": {
+			"@type": "Person",
+			"name": "{% if blog.author.username %}{{ blog.author.get_full_name|default:blog.author.username|escapejs }}{% else %}{{ blog.author|default:'AccessAdvisr'|escapejs }}{% endif %}"
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": "AccessAdvisr",
+			"logo": {
+				"@type": "ImageObject",
+				"url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.png' %}"
+			}
+		},
+		"mainEntityOfPage": {
+			"@type": "WebPage",
+			"@id": "{{ request.build_absolute_uri }}"
+		}
+	}
+	</script>
 	<style>
 		.comment-section {
 			margin-top: 3rem;
@@ -313,7 +367,7 @@
                                 {% endif %}
                                 <div class="card-body">
                                     <h5 class="card-title">
-                                        <a href="{% url 'blog_detail' recent_blog.slug %}" class="text-decoration-none text-dark">
+                                        <a href="{% url 'blog-detail' recent_blog.slug %}" class="text-decoration-none text-dark">
                                             {{ recent_blog.title }}
                                         </a>
                                     </h5>
@@ -344,7 +398,7 @@
                                 {% endif %}
                                 <div class="card-body">
                                     <h6 class="card-title">
-                                        <a href="{% url 'blog_detail' popular_blog.slug %}" class="text-decoration-none text-dark">
+                                        <a href="{% url 'blog-detail' popular_blog.slug %}" class="text-decoration-none text-dark">
                                             {{ popular_blog.title }}
                                         </a>
                                     </h6>
